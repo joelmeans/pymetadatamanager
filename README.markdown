@@ -1,7 +1,7 @@
 pymetadatamanager
 ====================
 
-(c) 2009 - 2011 Joel Means <means.joel@gmail.com>.
+(c) 2009 - 2011 Joel Means
 
 For the latest version, please visit:
 [http://github.com/joelmeans/pymediamanager](http://github.com/joel.means/pymediamanager)
