@@ -7,7 +7,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 ## General TODO
 
-01. <strike>Learn how to organize a proper python program.</strike>
+01. <del>Learn how to organize a proper python program.</del>
 
 02. Add a "copying" file for GPL info.
 
