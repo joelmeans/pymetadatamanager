@@ -202,7 +202,7 @@ class MainWindow(QtGui.QMainWindow):
     def set_episode_plot_updated(self):
         self.episode_plot_updated = 1
         self.new_episode_plot = \
-         str(self.ui.text_episode_plot.toPlainText())
+         str(self.ui.text_episode_plot.toPlainText().toUtf8())
         self.ui.pushButton_save_episode_changes.setEnabled(1)
         self.ui.pushButton_revert_episode_changes.setEnabled(1)
 

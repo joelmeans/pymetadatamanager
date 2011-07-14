@@ -24,7 +24,7 @@
 __author__="jmeans"
 __date__ ="$Feb 10, 2010 3:15:02 PM$"
 
-from MainWindow import MainWindow
+from pymetadatamanager.MainWindow import MainWindow
 from PyQt4 import QtGui
 
 if __name__ == "__main__":

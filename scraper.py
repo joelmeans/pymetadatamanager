@@ -19,9 +19,9 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ############################################################################
 
-from file_parser import FileParser
-from tvdb import TVDB
-from tvshowdb import TVShowDB
+from pymetadatamanager.file_parser import FileParser
+from pymetadatamanager.tvdb import TVDB
+from pymetadatamanager.tvshowdb import TVShowDB
 
 dbTV = TVShowDB('TV.db')
 dbTV.init_db()
