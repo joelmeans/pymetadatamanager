@@ -613,7 +613,7 @@ class TVShowDB(object):
                             aspect = 0
                         else:
                             aspect_sep = str(elem_aspect.text()).split(':')
-                            if len(aspect_sep) < 1:
+                            if len(aspect_sep) < 2:
                                 aspect = 0
                             else:
                                 if aspect_sep[1] > 0:

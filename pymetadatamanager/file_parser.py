@@ -37,7 +37,7 @@ class FileParser(object):
                         season_ep_list = ssxeee.group(0).split('x')
                         season = season_ep_list[0]
                         episode = season_ep_list[1]
-                        show = re.sub('_[0-9]{2}x[0-9]{3}.', '', file)
+                        show = re.sub('_?[0-9]{2}x[0-9]{3}.', '', file)
                         show = re.sub(ext, '', show)
                         show = re.sub('part[0-9].', '', show)
                         show = re.sub('bt.', '', show)
@@ -51,7 +51,7 @@ class FileParser(object):
                         season_ep_list = ssxee.group(0).split('x')
                         season = season_ep_list[0]
                         episode = season_ep_list[1]
-                        show = re.sub('_[0-9]{2}x[0-9]{2}.', '', file)
+                        show = re.sub('_?[0-9]{2}x[0-9]{2}.', '', file)
                         show = re.sub(ext, '', show)
                         show = re.sub('part[0-9].', '', show)
                         show = re.sub('bt.', '', show)

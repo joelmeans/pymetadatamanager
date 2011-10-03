@@ -27,7 +27,7 @@ sql_query="SELECT title,subtitle,basename FROM recorded WHERE cutlist='1'"
 sql.execute(sql_query)
 reply = sql.fetchall()
 
-#find determine the output name and do the conversion
+#determine the output name and do the conversion
 for episode in reply:
     print episode
     name = episode[1]

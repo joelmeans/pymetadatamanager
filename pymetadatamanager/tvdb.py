@@ -194,13 +194,8 @@ class TVDB(object):
                  series.findtext("SeriesName")) for series in \
                  tree.getiterator("Series")]
             except SyntaxError:
-                pass
-        print "Possible matches for %s:" % (series_name)
-        for series in match_list:
-            print series[0]
-            print "    " + series[1]
-        seriesid = raw_input("Please select the ID of the correct match: ")
-        return seriesid
+                print "No possible matches found for %s." % (series_name)
+        return match_list 
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
