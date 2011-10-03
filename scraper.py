@@ -57,7 +57,7 @@ for series_name in series_list:
         pass
     #If not, get the info for the series
     else:
-	match_list = TVDB.find_series(series_name)
+        match_list = TVDB.find_series(series_name)
         if len(match_list) == 0:
             print "No matches found on thetvdb.com for %s." % (series_name)
             series_id = raw_input("Please input the ID for the correct series: ")
