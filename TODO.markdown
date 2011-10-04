@@ -23,7 +23,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
     b) Popup a window for possible series name matches.
 
-    c) Add code for auto-selecting if there is a single match.
+    c) <del>Add code for auto-selecting if there is a single match.</del>
 
 03. Add more filename parsing options.
 
