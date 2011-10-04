@@ -314,6 +314,9 @@ class MainWindow(QtGui.QMainWindow):
         series_root = series_doc.firstChildElement('tvshow')
         #These are the lists we will populate from the series info
         season_banners_url = []
+	self.series_banners_url = []
+        self.series_banners_wide_url = []
+	self.series_fanart_banners_url = []
         elem_series_banner = series_root.firstChildElement('thumb')
         while not elem_series_banner.isNull():
             try:
@@ -361,6 +364,8 @@ class MainWindow(QtGui.QMainWindow):
         series_doc = dbTV.make_series_dom(series_id)
         series_root = series_doc.firstChildElement('tvshow')
         #These are the lists we will populate from the season info
+        self.season_banners_url = []
+	self.season_banners_wide_url = []
         elem_series_banner = series_root.firstChildElement('thumb')
         while not elem_series_banner.isNull():
             try:
