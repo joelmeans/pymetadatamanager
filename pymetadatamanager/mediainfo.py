@@ -47,7 +47,7 @@ class MediaInfo(object):
 
     def __del__(self):
         try:
-	    if os.path.exists(self.temp_file):
+            if os.path.exists(self.temp_file):
                 os.remove(self.temp_file)
         except AttributeError:
 	    pass

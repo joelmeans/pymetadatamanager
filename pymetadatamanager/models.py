@@ -181,10 +181,10 @@ class AbstractBannerModel(QtCore.QAbstractTableModel):
          self.data[index.row()][index.column()])
 
     def columnCount(self, parent):
-	try:    
+        try:    
             return len(self.data[0])
-	except IndexError:
-	    return 0
+        except IndexError:
+            return 0
 
     def rowCount(self, parent):
         return len(self.data)
