@@ -79,6 +79,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.line_tvdb_rating.textEdited.connect(self.set_episode_tvdb_rating_updated)
         self.ui.pushButton_save_episode_changes.pressed.connect(self.update_episode)
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
+        
+        self.ui.actionScan_Files.triggered.connect(self.scan_files)
 
         #Initialize some variables
         self.series_name_updated = 0
@@ -617,3 +619,8 @@ class MainWindow(QtGui.QMainWindow):
         empty_model = EmptyTableModel()
         self.ui.tableView_season_banners.setModel(empty_model)
         self.ui.tableView_season_banners_wide.setModel(empty_model)
+        
+    def scan_files(self):
+        print "Scanning Files"
+    
+

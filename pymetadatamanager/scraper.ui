@@ -635,10 +635,28 @@
      <string>Edit</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionScan_Files"/>
+    <addaction name="actionEdit_Preferences"/>
+   </widget>
    <addaction name="menuTVDB_Scraper"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionScan_Files">
+   <property name="text">
+    <string>Scan Files</string>
+   </property>
+  </action>
+  <action name="actionEdit_Preferences">
+   <property name="text">
+    <string>Edit Preferences</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
