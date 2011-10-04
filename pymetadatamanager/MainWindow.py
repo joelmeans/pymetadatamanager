@@ -93,6 +93,12 @@ class MainWindow(QtGui.QMainWindow):
         self.episode_tvdb_id_updated = 0
         self.episode_tvdb_rating_updated = 0
 
+        #Create some empty lists for later
+        self.series_banners_url = []
+        self.series_banners_wide_url = []
+        self.series_fanart_banners_url = []
+        self.season_banners_url = []
+        self.season_banners_wide_url = []
 
     def column_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -308,9 +314,6 @@ class MainWindow(QtGui.QMainWindow):
         series_root = series_doc.firstChildElement('tvshow')
         #These are the lists we will populate from the series info
         season_banners_url = []
-        self.series_banners_url = []
-        self.series_banners_wide_url = []
-        self.series_fanart_banners_url = []
         elem_series_banner = series_root.firstChildElement('thumb')
         while not elem_series_banner.isNull():
             try:
@@ -358,8 +361,6 @@ class MainWindow(QtGui.QMainWindow):
         series_doc = dbTV.make_series_dom(series_id)
         series_root = series_doc.firstChildElement('tvshow')
         #These are the lists we will populate from the season info
-        self.season_banners_url = []
-        self.season_banners_wide_url = []
         elem_series_banner = series_root.firstChildElement('thumb')
         while not elem_series_banner.isNull():
             try:

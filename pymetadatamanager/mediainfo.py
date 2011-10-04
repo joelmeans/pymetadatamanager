@@ -22,10 +22,8 @@ __author__="jmeans"
 __date__ ="$Feb 12, 2010 9:26:59 AM$"
 
 import os
-import re
 from subprocess import Popen
 from PyQt4 import QtXml, QtCore
-from BeautifulSoup import BeautifulSoup
 
 class MediaInfo(object):
     """
@@ -48,8 +46,11 @@ class MediaInfo(object):
         self.temp_file = self.temp_dir + "/info.xml"
 
     def __del__(self):
-        if os.path.exists(self.temp_file):
-            os.remove(self.temp_file)
+        try:
+	    if os.path.exists(self.temp_file):
+                os.remove(self.temp_file)
+        except AttributeError:
+	    pass
         
     def make_info_xml_native(self, infile, outfile="none"):
         """Calls 'mediainfo' to output an xml file with metadata for infile"""

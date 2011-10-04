@@ -181,7 +181,7 @@ class Ui_MainWindow(object):
 
         #Add the tab for series posters (banners)
         self.tab_series_banners = QtGui.QWidget()
-        self.tab_series_banners.setObjectName("tab_series_bannerss")
+        self.tab_series_banners.setObjectName("tab_series_banners")
 
         #A table view for the series posters on the tab
         self.tableView_series_banners = QtGui.QTableView(self.tab_series_banners)
