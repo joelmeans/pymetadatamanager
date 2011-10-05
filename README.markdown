@@ -23,3 +23,8 @@ There is also a GUI for viewing and limited modification of what is in the datab
 	testing.py
 
 This is written in PyQt4, which I am also learning as I go.
+
+
+## Updates
+
+10/05/2011 - I have added the ability to scrape from the GUI (menu Tools/Scan Files).  The scraper.py script still works fine, but this is an important feature.  Also, I have renamed testing.py to main.py and reorganized the entire project.
