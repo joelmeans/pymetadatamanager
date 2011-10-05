@@ -17,13 +17,15 @@ Development of this project is slow and there is a lot to do to make this a work
 
 01. Add a settings file and GUI interface for the settings.
 
-02. Add a button to the GUI to scan the media collection.
+02. <del>Add a button to the GUI to scan the media collection.</del>
 
-    a) Put the button.
+    a) <del>Put the button.</del>
+ 
+    b) <del>Rewrite scraper to allow interaction with GUI.</del> 
 
-    b) Popup a window for possible series name matches.
+    c) <del>Popup a window for possible series name matches.</del>
 
-    c) <del>Add code for auto-selecting if there is a single match.</del>
+    d) <del>Add code for auto-selecting if there is a single match.</del>
 
 03. Add more filename parsing options.
 
@@ -43,3 +45,4 @@ Development of this project is slow and there is a lot to do to make this a work
 
 10. Add a way to save selected artworks.
 
+11. Fix sorting to ignore "A", "An", "The".

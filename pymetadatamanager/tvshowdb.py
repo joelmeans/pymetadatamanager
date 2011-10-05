@@ -156,9 +156,10 @@ class TVShowDB(object):
             self.sqlTV.execute('SELECT * FROM episodes WHERE episodeid=(?)', \
              (episode.episodeid, ))
             if len(self.sqlTV.fetchall()):
-                print "Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number)
+                #print "Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number)
+                pass
             else:
-                print "Adding season %s episode %s to the DB" % (episode.season_number, episode.episode_number)
+                #print "Adding season %s episode %s to the DB" % (episode.season_number, episode.episode_number)
                 self.sqlTV.execute('INSERT INTO episodes ("episodeid", "name", \
                  "overview", "season_number", "episode_number", "language", \
                  "prod_code", "rating", "first_aired", "thumb") VALUES \
@@ -549,9 +550,9 @@ class TVShowDB(object):
                  series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
                 if episodes[0] is not None:
                     self.write_episodes_to_db(episodes, series_id)
-                    print "Adding Series %s, season %s, episode \
-                     %s to database" \
-                     % (series_id, file_season, file_episode)
+                    #print "Adding Series %s, season %s, episode \
+                    # %s to database" \
+                    # % (series_id, file_season, file_episode)
                 else:
                     print "Series %s, season %s, episode %s not \
                            found on thetvdb.com" \
@@ -1202,14 +1203,14 @@ class TVShowDB(object):
                 for episode in episodes:
                     episode_id = episode.episodeid
                     if not self.check_db_for_episode(episode_id):
-                        print "  Adding info for episode %s" % (episode_id,)
+                        #print "  Adding info for episode %s" % (episode_id,)
                         episode_list.append(episode)
                 if len(episode_list):
                     self.write_episodes_to_db(episode_list, series_id)
 
     def clean_db_files(self):
         """Cleans missing files out of the database"""
-        print "Removing missing files from the database"
+        print "Checking for missing files."
         self.sqlTV.execute('SELECT filepath, filename FROM files')
         files = self.sqlTV.fetchall()
         for file in files:

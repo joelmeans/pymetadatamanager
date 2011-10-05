@@ -25,6 +25,7 @@ from PyQt4 import QtGui, QtCore
 from scraper_ui import Ui_MainWindow
 from tvshowdb import TVShowDB
 from tvdb import TVDB
+from scanner import Scanner
 from models import AbstractShowModel, AbstractBannerModel, EmptyTableModel, \
     AbstractBannerWideModel
 
@@ -57,6 +58,11 @@ class MainWindow(QtGui.QMainWindow):
         self.progress.setMinimumDuration(500)
         self.progress.setWindowModality(QtCore.Qt.WindowModal)
         self.progress.setWindowTitle("Information")
+
+        #Create a dialog window
+        self.input_dialog = QtGui.QInputDialog()
+        self.input_dialog.setGeometry(1000, 1000, 50, 100)
+        self.input_dialog.setWindowTitle("Multiple Matches")
 
         # Connect sockets to slots
         self.ui.columnView_show_tree.clicked.connect(self.column_view_clicked)
@@ -621,6 +627,42 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_season_banners_wide.setModel(empty_model)
         
     def scan_files(self):
+        self.progress.setLabelText("Scanning Files into DB...")
         print "Scanning Files"
-    
+        scanner = Scanner('/var/media/videos/TV')
+        scanner.set_series_list()
+        self.progress.setMaximum(len(scanner.series_list))
+        self.progress.setValue(0)
+        for series_name in scanner.series_list:
+            self.progress.setValue(scanner.series_list.index(series_name))
+            match_list = scanner.get_series_id_list(series_name)
+            if len(match_list) == 0:
+                print "No matches found on thetvdb.com for '%s'." % (series_name)
+                series_id = raw_input("Please input the ID for the correct series:")
+            elif len(match_list) == 1:
+                print "Found match for '%s'." % (series_name)
+                series_id = match_list[0][0]
+            else:
+                list = ''
+                for i in range(0,len(match_list)):
+                    list += "[%d] %s (%s)\n " % (i, match_list[i][1], match_list[i][0])
+                selection = self.input_dialog.getInt(self, '', "Select best match:\n %s" % (list), 0, 0, len(match_list) - 1)[0]
+                try:
+                    series_id = match_list[selection][0]
+                except IndexError:
+                    print "That is not an option."
+            scanner.add_series_to_db(series_id)
+            scanner.add_files_to_db(series_name, series_id)
+        scanner.__del__()
+        self.progress.setValue(len(scanner.series_list))
 
+        #Create a dom representing the shows in the database
+        doc = dbTV.make_shows_dom()
+        #Turn that into a model
+        model = AbstractShowModel(doc)
+        #Set that as the model for the columnView
+        self.ui.columnView_show_tree.setModel(model)
+        self.ui.columnView_show_tree.setColumnWidths([300,150,150,500])
+        self.clear_season_artwork()
+        self.clear_episode_info()
+        self.clear_series_artwork()
