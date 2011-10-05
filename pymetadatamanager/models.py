@@ -170,7 +170,7 @@ class AbstractBannerModel(QtCore.QAbstractTableModel):
         if not len(banners_col_0) == len(banners_col_2):
             banners_col_2.append('none')
         self.banners_table_list = [banners_col_0, banners_col_1, banners_col_2]
-        self.data = self.transpose(self.banners_table_list)
+        self.list = self.transpose(self.banners_table_list)
 
     def data(self, index, role):
         if not index.isValid():
@@ -178,16 +178,16 @@ class AbstractBannerModel(QtCore.QAbstractTableModel):
         elif role != QtCore.Qt.DecorationRole:
             return QtCore.QVariant()
         return QtCore.QVariant( \
-         self.data[index.row()][index.column()])
+         self.list[index.row()][index.column()])
 
     def columnCount(self, parent):
         try:    
-            return len(self.data[0])
+            return len(self.list[0])
         except IndexError:
             return 0
 
     def rowCount(self, parent):
-        return len(self.data)
+        return len(self.list)
 
     def transpose(self, list):
         newlist = []
@@ -199,20 +199,20 @@ class AbstractBannerWideModel(QtCore.QAbstractTableModel):
     """Create a table model of banners from a list of banner files"""
     def __init__(self, banners, parent=None):
         super(AbstractBannerWideModel, self).__init__(parent)
-        self.data = banners
+        self.list = banners
 
     def data(self, index, role):
         if not index.isValid():
             return QtCore.QVariant()
         elif role != QtCore.Qt.DecorationRole:
             return QtCore.QVariant()
-        return QtCore.QVariant(self.data[index.row()])
+        return QtCore.QVariant(self.list[index.row()])
 
     def columnCount(self, parent):
         return 1
 
     def rowCount(self, parent):
-        return len(self.data)
+        return len(self.list)
 
 class EmptyTableModel(QtCore.QAbstractTableModel):
     """Create an empty table model to clear a display"""

@@ -87,6 +87,11 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
         
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
+        self.ui.tableView_series_banners.clicked.connect(self.series_banner_selected)
+        self.ui.tableView_series_banners_wide.clicked.connect(self.series_banner_wide_selected)
+        self.ui.tableView_series_fanart.clicked.connect(self.series_fanart_selected)
+        self.ui.tableView_season_banners.clicked.connect(self.season_banner_selected)
+        self.ui.tableView_season_banners_wide.clicked.connect(self.season_banner_wide_selected)
 
         #Initialize some variables
         self.series_name_updated = 0
@@ -430,6 +435,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_series_banners.setModel(banner_model_series)
         self.ui.tableView_series_banners.resizeColumnsToContents()
         self.ui.tableView_series_banners.resizeRowsToContents()
+        self.ui.tableView_series_banners.verticalHeader().hide()
+        self.ui.tableView_series_banners.horizontalHeader().hide()
         self.progress.setValue(len(self.series_banners_url))
 
     def set_series_banners_wide(self):
@@ -448,6 +455,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_series_banners_wide.setModel(banner_model_series_wide)
         self.ui.tableView_series_banners_wide.resizeColumnsToContents()
         self.ui.tableView_series_banners_wide.resizeRowsToContents()
+        self.ui.tableView_series_banners_wide.verticalHeader().hide()
+        self.ui.tableView_series_banners_wide.horizontalHeader().hide()
         self.progress.setValue(len(self.series_banners_wide_url))
 
     def set_series_fanart(self):
@@ -466,6 +475,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_series_fanart.setModel(banner_model_series_fanart)
         self.ui.tableView_series_fanart.resizeColumnsToContents()
         self.ui.tableView_series_fanart.resizeRowsToContents()
+        self.ui.tableView_series_fanart.verticalHeader().hide()
+        self.ui.tableView_series_fanart.horizontalHeader().hide()
         self.progress.setValue(len(self.series_fanart_banners_url))
 
     def set_season_banners(self):
@@ -484,6 +495,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_season_banners.setModel(banner_model_season)
         self.ui.tableView_season_banners.resizeColumnsToContents()
         self.ui.tableView_season_banners.resizeRowsToContents()
+        self.ui.tableView_season_banners.verticalHeader().hide()
+        self.ui.tableView_season_banners.horizontalHeader().hide()
         self.progress.setValue(len(self.season_banners_url))
 
     def set_season_banners_wide(self):
@@ -502,6 +515,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_season_banners_wide.setModel(banner_model_season_wide)
         self.ui.tableView_season_banners_wide.resizeColumnsToContents()
         self.ui.tableView_season_banners_wide.resizeRowsToContents()
+        self.ui.tableView_season_banners_wide.verticalHeader().hide()
+        self.ui.tableView_season_banners_wide.horizontalHeader().hide()
         self.progress.setValue(len(self.season_banners_wide_url))
 
     def set_actor_thumb(self, index):
@@ -666,3 +681,19 @@ class MainWindow(QtGui.QMainWindow):
         self.clear_season_artwork()
         self.clear_episode_info()
         self.clear_series_artwork()
+
+    def series_banner_selected(self, index):
+        self.series_banner = self.ui.tableView_series_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+
+    def series_banner_wide_selected(self, index):
+        self.series_banner_wide = self.ui.tableView_series_banners_wide.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+
+    def series_fanart_selected(self, index):
+        self.series_fanart = self.ui.tableView_series_fanart.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+
+    def season_banner_selected(self, index):
+        self.season_banner = self.ui.tableView_season_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+
+    def season_banner_wide_selected(self, index):
+        self.season_banner_wide = self.ui.tableView_season_banners_wide.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+
