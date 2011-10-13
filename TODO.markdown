@@ -52,3 +52,7 @@ Development of this project is slow and there is a lot to do to make this a work
 13. <del>Figure out urllib vs urllib2 (why am I using both in tvdb.py?).</del>
 
 14. Add ability to get season and episode numbers given series and episode name.
+
+15. <del>Fix filename parsing to ignore extra stuff in the name after '_' or between '.'.</del>
+
+16. <del>Fix problem with having an apostrope in a show name (e.g. "Blue's Clues").</del>

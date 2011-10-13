@@ -31,7 +31,7 @@ class Config(object):
     def __init__(self):
         self.home_dir = os.environ['HOME']
         self.config_dir = self.get_config_dir()
-        self.video_dirs = ['/var/media/videos/TV/30 Rock']
+        self.video_dirs = ['/var/media/videos/TV']
         self.tvshowdb = os.path.join(self.config_dir, 'TV.db')
 
     def __del__(self):

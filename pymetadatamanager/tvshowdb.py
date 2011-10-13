@@ -554,9 +554,7 @@ class TVShowDB(object):
                     # %s to database" \
                     # % (series_id, file_season, file_episode)
                 else:
-                    print "Series %s, season %s, episode %s not \
-                           found on thetvdb.com" \
-                      % (series_id, file_season, file_episode)
+                    print "Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode)
                 self.sqlTV.execute('SELECT episodes.id FROM episodes \
                  JOIN episodelinkshow ON episodelinkshow.idEpisode=episodes.id \
                  JOIN shows ON episodelinkshow.idShow=shows.id \
@@ -647,8 +645,9 @@ class TVShowDB(object):
 
     def check_db_for_series_name(self, series_name):
         """See if a series with a given series_name exists in the database"""
-        seriesname = '%s%s%s' % ("'%", series_name, "%'")
-        sql = 'SELECT seriesid FROM shows WHERE name LIKE %s' % (seriesname)
+        seriesname = '%s%s%s' % ("%", series_name, "%")
+        self.sqlTV.execute("SELECT seriesid FROM shows WHERE name LIKE (?)", \
+                            (seriesname,))
         self.sqlTV.execute(sql)
         series_id_list = self.sqlTV.fetchall()
         if len(series_id_list):

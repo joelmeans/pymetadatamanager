@@ -34,29 +34,19 @@ class FileParser(object):
                     ssxeee = re.search('[0-9]{2}x[0-9]{3}', file)
                     ssxee = re.search('[0-9]{2}x[0-9]{2}', file)
                     if ssxeee:
-                        season_ep_list = ssxeee.group(0).split('x')
-                        season = season_ep_list[0]
-                        episode = season_ep_list[1]
-                        show = re.sub('_?[0-9]{2}x[0-9]{3}.', '', file)
-                        show = re.sub(ext, '', show)
-                        show = re.sub('part[0-9].', '', show)
-                        show = re.sub('bt.', '', show)
-                        show = re.sub('dvdrip.', '', show)
-                        show = re.sub('bdrip.', '', show)
+                        season_ep = ssxeee.group(0)
+                        season = season_ep.split('x')[0]
+                        episode = season_ep.split('x')[1]
+                        show = file.split(season_ep)[0].rstrip()
                         show_name = re.sub('_', ' ', show)
                         show_tuple = (directory, file, show_name, season, \
                           episode)
                         self.file_list.append(show_tuple)
                     elif ssxee:
-                        season_ep_list = ssxee.group(0).split('x')
-                        season = season_ep_list[0]
-                        episode = season_ep_list[1]
-                        show = re.sub('_?[0-9]{2}x[0-9]{2}.', '', file)
-                        show = re.sub(ext, '', show)
-                        show = re.sub('part[0-9].', '', show)
-                        show = re.sub('bt.', '', show)
-                        show = re.sub('dvdrip.', '', show)
-                        show = re.sub('bdrip.', '', show)
+                        season_ep = ssxee.group(0)
+                        season = season_ep.split('x')[0]
+                        episode = season_ep.split('x')[1]
+                        show = file.split(season_ep)[0].rstrip()
                         show_name = re.sub('_', ' ', show)
                         show_tuple = (directory, file, show_name, season, \
                           episode)

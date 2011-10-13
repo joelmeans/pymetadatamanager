@@ -22,8 +22,11 @@
 from pymetadatamanager.file_parser import FileParser
 from pymetadatamanager.tvdb import TVDB
 from pymetadatamanager.tvshowdb import TVShowDB
+from pymetadatamanager.configuration import Config
 
-dbTV = TVShowDB('TV.db')
+config = Config()
+
+dbTV = TVShowDB(config.tvshowdb)
 dbTV.init_db()
 
 TVDB = TVDB()

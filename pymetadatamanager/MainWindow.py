@@ -677,6 +677,7 @@ class MainWindow(QtGui.QMainWindow):
             scanner.__del__()
             self.progress.setValue(len(scanner.series_list))
 
+        print "Finished Scanning"
         #Create a dom representing the shows in the database
         doc = dbTV.make_shows_dom()
         #Turn that into a model
