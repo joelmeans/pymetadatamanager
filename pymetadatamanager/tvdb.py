@@ -24,6 +24,7 @@ import xml.etree.cElementTree as ETree
 import zipfile
 import cStringIO
 import os
+import os.path
 
 class TVDB(object):
     """
@@ -41,11 +42,10 @@ class TVDB(object):
         self.tvdb_banner_url = self.tvdb_mirror_url  + "/banners"
         self.lang = "en"
         self.temp_dir = "temp"
-        if os.path.isdir(self.temp_dir):
-            pass
-        elif os.path.exists(self.temp_dir):
-            os.remove(self.temp_dir)
-            os.mkdir(self.temp_dir)
+        if os.path.exists(self.temp_dir):
+            if not os.path.isdir(self.temp_dir):
+                os.remove(self.temp_dir)
+                os.mkdir(self.temp_dir)
         else:
             os.mkdir(self.temp_dir)
 
@@ -96,7 +96,7 @@ class TVDB(object):
             self.writers = [writer.strip() for writer in \
              node.findtext("Writer").split("|") if writer]
             if node.findtext("filename"):
-                self.thumb = "%s/%s" % (tvdb_banner_url, \
+                self.thumb = os.path.join(tvdb_banner_url, \
                  node.findtext("filename"))
             else:
                 self.thumb = ""
@@ -109,7 +109,7 @@ class TVDB(object):
             self.actorid = node.findtext("id")
             thumbnail = node.findtext("Image")
             if not thumbnail == "":
-                self.thumb = "%s/%s" % (tvdb_banner_url, thumbnail)
+                self.thumb = os.path.join(tvdb_banner_url, thumbnail)
             else:
                 self.thumb = "none"
             self.name = node.findtext("Name")
@@ -132,7 +132,10 @@ class TVDB(object):
         """Gets the current server time.  Needed for updates"""
         updates_args = urllib.urlencode({"type": "none"}, doseq = True)
         tvdb_time_url = "%s/Updates.php?%s" % (self.tvdb_api_url, updates_args)
-        server_time = urllib.urlopen(tvdb_time_url)
+        try:
+            server_time = urllib2.urlopen(tvdb_time_url)
+        except urllib2.HTTPError, e:
+            return None
         tree = ETree.parse(server_time)
         time = tree.findtext("Time")
         return time
@@ -143,7 +146,10 @@ class TVDB(object):
          doseq = True)
         tvdb_update_url = "%s/Updates.php?%s" % (self.tvdb_api_url, \
          updates_args)
-        updates = urllib.urlopen(tvdb_update_url)
+        try:
+            updates = urllib2.urlopen(tvdb_update_url)
+        except urllib2.HTTPError, e:
+            return None
         series_list = []
         if updates:
             try:
@@ -160,7 +166,10 @@ class TVDB(object):
          doseq = True)
         tvdb_update_url = "%s/Updates.php?%s" % (self.tvdb_api_url, \
          updates_args)
-        updates = urllib.urlopen(tvdb_update_url)
+        try:
+            updates = urllib2.urlopen(tvdb_update_url)
+        except urllib2.HTTPError, e:
+           return None
         episode_list = []
         if updates:
             try:
@@ -184,7 +193,10 @@ class TVDB(object):
          doseq=True)
         series_search_url = "%s/GetSeries.php?%s" % (self.tvdb_api_url, \
          series_args)
-        matches = urllib.urlopen(series_search_url)
+        try:
+           matches = urllib2.urlopen(series_search_url)
+        except urllib2.HTTPError, e:
+           return None
         match_list = []
         seriesid = 0
         if matches:
@@ -199,28 +211,28 @@ class TVDB(object):
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
-        xml_file = "%s.xml" % (self.lang,)
-        series_temp_dir = "%s/%s" % (self.temp_dir, series_id) 
-        if os.path.isdir(series_temp_dir):
-            pass
-        elif os.path.exists(series_temp_dir):
-            os.remove(series_temp_dir)
-            os.mkdir(series_temp_dir)
+        xml_dir = os.path.join(self.temp_dir, series_id) 
+        xml_file = os.path.join(xml_dir, "%s.xml" % (self.lang))
+        if os.path.exists(xml_dir):
+            if not os.path.isdir(xml_dir):
+                os.remove(xml_dir)
+                os.mkdir(xml_dir)
         else:
-            os.mkdir(series_temp_dir)
+            os.mkdir(xml_dir)
         #See if we already have the info for this series
-        if os.path.isfile("%s/%s" % (series_temp_dir, xml_file)):
-            pass
-        else:
+        if not os.path.isfile(xml_file):
             series_info_url = "%s/series/%s/all/%s.zip" % \
              (self.tvdb_apikey_url, series_id, self.lang)
-            series_info_remote = urllib.urlopen(series_info_url)
+            try:
+                series_info_remote = urllib2.urlopen(series_info_url)
+            except urllib2.HTTPError, e:
+                return None
             series_info_memory = cStringIO.StringIO(series_info_remote.read()) 
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_file = series_info_zip.extractall(series_temp_dir)
+            series_file = series_info_zip.extractall(xml_dir)
             series_info_zip.close()
         try:
-            tree = ETree.parse("%s/%s" % (series_temp_dir, xml_file))
+            tree = ETree.parse(xml_file)
             series_node = tree.find("Series")
             series_info = self.Series(series_node)
         except SyntaxError:
@@ -229,19 +241,20 @@ class TVDB(object):
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
-        xml_file = "%s/%s/%s.xml" % (self.temp_dir, series_id, self.lang)
+        xml_path = os.path.join(self.temp_dir, series_id)
         xml_file_in_zip = "%s.xml" % (self.lang,)
+        xml_file = os.path.join(xml_path, xml_file_in_zip)
         #See if we already have the file (from get_series_by_id)
-        if os.path.isfile(xml_file):
-            pass
-        #If not, get it
-        else:
+        if not os.path.isfile(xml_file):
             series_info_url = "%s/series/%s/all/%s.zip" % \
              (self.tvdb_apikey_url, series_id, self.lang)
-            series_info_remote = urllib.urlopen(series_info_url)
+            try:
+                series_info_remote = urllib2.urlopen(series_info_url)
+            except:
+                return None
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract(xml_file_in_zip, "%s/%s" % (self.temp_dir, series_id))
+            series_info_zip.extract(xml_file_in_zip, xml_path)
         #Parse it up and put the info into a list of Episode objects
         tree = ETree.parse(xml_file)
         episode_node = tree.findall("Episode")
@@ -252,18 +265,19 @@ class TVDB(object):
 
     def get_actors_by_id(self, series_id):
         """Gets information about the actors in a given series"""
-        xml_file = "%s/%s/actors.xml" % (self.temp_dir, series_id)
+        xml_path = os.path.join(self.temp_dir, series_id)
+        xml_file = os.path.join(xml_path, "actors.xml")
         #See if we already have the file (from get_series_by_id)
-        if os.path.isfile(xml_file):
-            pass
-        #If not, get it
-        else:
+        if not os.path.isfile(xml_file):
             series_info_url = "%s/series/%s/all/en.zip" % \
              (self.tvdb_apikey_url, series_id)
-            series_info_remote = urllib.urlopen(series_info_url)
+            try:
+                series_info_remote = urllib2.urlopen(series_info_url)
+            except urllib2.HTTPError, e:
+                return None
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract('actors.xml', "%s/%s" % (self.temp_dir, series_id))
+            series_info_zip.extract('actors.xml', xml_path)
         #Parse it up and put the info into a list of Actor objects
         tree = ETree.parse(xml_file)
         actor_node = tree.findall("Actor")
@@ -275,18 +289,19 @@ class TVDB(object):
 
     def get_banners_by_id(self, series_id):
         """Gets information about banners for a given series"""
-        xml_file = "%s/%s/banners.xml" % (self.temp_dir, series_id)
+        xml_path = os.path.join(self.temp_dir, series_id)
+        xml_file = os.path.join(xml_path, "banners.xml")
         #See if we already have the file (from get_series_by_id)
-        if os.path.isfile(xml_file):
-            pass
-        #If not, get it
-        else:
+        if not os.path.isfile(xml_file):
             series_info_url = "%s/series/%s/all/en.zip" % \
              (self.tvdb_apikey_url, series_id)
-            series_info_remote = urllib.urlopen(series_info_url)
+            try:
+                series_info_remote = urllib2.urlopen(series_info_url)
+            except urllib2.HTTPError, e:
+                return None
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract('banners.xml', "%s/%s" % (self.temp_dir, series_id))
+            series_info_zip.extract('banners.xml', xml_path)
         #Parse it up and put the info into a list of Banner objects
         tree = ETree.parse(xml_file)
         banner_node = tree.findall("Banner")
@@ -300,7 +315,10 @@ class TVDB(object):
         """Parse the <lang>.xml file for episode information"""
         series_info_url = "%s/series/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, self.lang)
-        series_info = urllib.urlopen(series_info_url)
+        try:
+            series_info = urllib2.urlopen(series_info_url)
+        except urllib2.HTTPError, e:
+            return None
         tree = ETree.parse(series_info)
         series_node = tree.find("Series")
         series_info = self.Series(series_node)
@@ -310,7 +328,10 @@ class TVDB(object):
         """Parse the <lang>.xml file for episode information"""
         episode_info_url = "%s/episodes/%s/%s.xml" % \
             (self.tvdb_apikey_url, episode_id, self.lang)
-        episode_info = urllib.urlopen(episode_info_url)
+        try:
+            episode_info = urllib2.urlopen(episode_info_url)
+        except urllib2.HTTPError, e:
+            return None
         tree = ETree.parse(episode_info)
         episode_node = tree.find("Episode")
         episode_info = self.Episode(episode_node, self.tvdb_banner_url)
@@ -337,12 +358,12 @@ class TVDB(object):
             banner_type = url.split("/")[-2]
             if banner_type == "original":
                 banner_type = "fanart-original"
-            filedir = "%s/%s" % (self.temp_dir, banner_type)
-            filename = "%s/%s" % (filedir, banner_name)
+            filedir = os.path.join(self.temp_dir, banner_type)
+            filename = os.path.join(filedir, banner_name)
             if not os.path.isdir(filedir):
                 os.mkdir(filedir)
             if not os.path.isfile(filename):
                 urllib.urlretrieve(url, filename)
             return filename
         else:
-            return Null
+            return None

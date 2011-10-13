@@ -117,7 +117,10 @@ class AbstractShowModel(QtCore.QAbstractItemModel):
             return QtCore.QVariant()
         node = self.nodeFromIndex(index)
         if index.column() == 0:
-            return QtCore.QVariant(node.name)
+            try:
+                return QtCore.QVariant(node.name)
+            except AttributeError:
+                return QtCore.QVariant()
         else:
             return QtCore.QVariant()
 

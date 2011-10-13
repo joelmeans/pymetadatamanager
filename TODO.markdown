@@ -47,8 +47,8 @@ Development of this project is slow and there is a lot to do to make this a work
 
 11. Fix sorting to ignore "A", "An", "The".
 
-12. Get os.path stuff straightened out for cross-platform compatibility.
+12. <del>Get os.path stuff straightened out for cross-platform compatibility.</del>
 
-13. Figure out urllib vs urllib2 (why am I using both in tvdb.py?).
+13. <del>Figure out urllib vs urllib2 (why am I using both in tvdb.py?).</del>
 
 14. Add ability to get season and episode numbers given series and episode name.
