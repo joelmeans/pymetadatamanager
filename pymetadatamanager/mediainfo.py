@@ -24,6 +24,7 @@ __date__ ="$Feb 12, 2010 9:26:59 AM$"
 import os
 from subprocess import Popen
 from PyQt4 import QtXml, QtCore
+from configuration import Config
 
 class MediaInfo(object):
     """
@@ -35,12 +36,12 @@ class MediaInfo(object):
     a QDomDocument for processing by other programs.
     """
     def __init__(self):
-        self.temp_dir = "temp"
-        if os.path.isdir(self.temp_dir):
-            pass
-        elif os.path.exists(self.temp_dir):
-            os.rm(self.temp_dir)
-            os.mkdir(self.temp_dir)
+        config = Config()
+        self.temp_dir = os.path.join(config.config_dir, "temp")
+        if os.path.exists(self.temp_dir):
+            if not os.path.isdir(self.temp_dir):
+                os.remove(self.temp_dir)
+                os.mkdir(self.temp_dir)
         else:
             os.mkdir(self.temp_dir)
         self.temp_file = os.path.join(self.temp_dir, "info.xml")

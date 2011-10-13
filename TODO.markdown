@@ -37,7 +37,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
     a) <del>Figure out where and how to put this in windows.</del>
 
-07. Find a better way to display artwork.
+07. <del>Find a better way to display artwork.</del>
 
 08. Clear the cache on exiting (maybe not, just add GUI option to clear).
 
