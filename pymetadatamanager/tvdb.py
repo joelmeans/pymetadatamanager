@@ -199,13 +199,17 @@ class TVDB(object):
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
-        series_file_name = "%s/%s-%s.xml" % (self.temp_dir, self.lang, \
-         series_id)
-        actors_file_name = "%s/actors-%s.xml" % (self.temp_dir, series_id)
-        banners_file_name = "%s/banners-%s.xml" % (self.temp_dir, series_id)
-        xml_file_in_zip = "%s.xml" % (self.lang,)
+        xml_file = "%s.xml" % (self.lang,)
+        series_temp_dir = "%s/%s" % (self.temp_dir, series_id) 
+        if os.path.isdir(series_temp_dir):
+            pass
+        elif os.path.exists(series_temp_dir):
+            os.remove(series_temp_dir)
+            os.mkdir(series_temp_dir)
+        else:
+            os.mkdir(series_temp_dir)
         #See if we already have the info for this series
-        if os.path.isfile(series_file_name):
+        if os.path.isfile("%s/%s" % (series_temp_dir, xml_file)):
             pass
         else:
             series_info_url = "%s/series/%s/all/%s.zip" % \
@@ -213,23 +217,10 @@ class TVDB(object):
             series_info_remote = urllib.urlopen(series_info_url)
             series_info_memory = cStringIO.StringIO(series_info_remote.read()) 
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            #Now we can read the file and write the necessary xml to a temp file
-            #This could be done with a ZipFile.extract() in 2.6, but not 2.5
-            series_file = open(series_file_name, 'w')
-            series_file.write(series_info_zip.read(xml_file_in_zip))
-            series_file.close()
-            #Write the actors file out
-            actors_file = open(actors_file_name, 'w')
-            actors_file.write(series_info_zip.read('actors.xml'))
-            actors_file.close()
-            #Write the banners file out
-            banners_file = open(banners_file_name, 'w')
-            banners_file.write(series_info_zip.read('banners.xml'))
-            banners_file.close()
+            series_file = series_info_zip.extractall(series_temp_dir)
             series_info_zip.close()
-        #Now read in the info from the file
         try:
-            tree = ETree.parse(series_file_name)
+            tree = ETree.parse("%s/%s" % (series_temp_dir, xml_file))
             series_node = tree.find("Series")
             series_info = self.Series(series_node)
         except SyntaxError:
@@ -238,7 +229,7 @@ class TVDB(object):
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
-        xml_file = "%s/%s-%s.xml" % (self.temp_dir, self.lang, series_id)
+        xml_file = "%s/%s/%s.xml" % (self.temp_dir, series_id, self.lang)
         xml_file_in_zip = "%s.xml" % (self.lang,)
         #See if we already have the file (from get_series_by_id)
         if os.path.isfile(xml_file):
@@ -250,9 +241,7 @@ class TVDB(object):
             series_info_remote = urllib.urlopen(series_info_url)
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_file = open(xml_file, 'w')
-            series_file.write(series_info_zip.read(xml_file_in_zip))
-            series_file.close()
+            series_info_zip.extract(xml_file_in_zip, "%s/%s" % (self.temp_dir, series_id))
         #Parse it up and put the info into a list of Episode objects
         tree = ETree.parse(xml_file)
         episode_node = tree.findall("Episode")
@@ -263,7 +252,7 @@ class TVDB(object):
 
     def get_actors_by_id(self, series_id):
         """Gets information about the actors in a given series"""
-        xml_file = "%s/actors-%s.xml" % (self.temp_dir, series_id)
+        xml_file = "%s/%s/actors.xml" % (self.temp_dir, series_id)
         #See if we already have the file (from get_series_by_id)
         if os.path.isfile(xml_file):
             pass
@@ -274,9 +263,7 @@ class TVDB(object):
             series_info_remote = urllib.urlopen(series_info_url)
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            actors_file = open(xml_file, 'w')
-            actors_file.write(series_info_zip.read('actors.xml'))
-            actors_file.close()
+            series_info_zip.extract('actors.xml', "%s/%s" % (self.temp_dir, series_id))
         #Parse it up and put the info into a list of Actor objects
         tree = ETree.parse(xml_file)
         actor_node = tree.findall("Actor")
@@ -288,7 +275,7 @@ class TVDB(object):
 
     def get_banners_by_id(self, series_id):
         """Gets information about banners for a given series"""
-        xml_file = "%s/banners-%s.xml" % (self.temp_dir, series_id)
+        xml_file = "%s/%s/banners.xml" % (self.temp_dir, series_id)
         #See if we already have the file (from get_series_by_id)
         if os.path.isfile(xml_file):
             pass
@@ -299,9 +286,7 @@ class TVDB(object):
             series_info_remote = urllib.urlopen(series_info_url)
             series_info_memory = cStringIO.StringIO(series_info_remote.read())
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            actors_file = open(xml_file, 'w')
-            actors_file.write(series_info_zip.read('banners.xml'))
-            actors_file.close()
+            series_info_zip.extract('banners.xml', "%s/%s" % (self.temp_dir, series_id))
         #Parse it up and put the info into a list of Banner objects
         tree = ETree.parse(xml_file)
         banner_node = tree.findall("Banner")

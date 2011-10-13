@@ -23,7 +23,7 @@ import re
 
 class FileParser(object):
     def __init__(self):
-        self.exts = ['mkv', 'avi', 'mpg', 'iso']
+        self.exts = ['mkv', 'avi', 'mpg', 'iso', 'm4v', 'mp4']
         self.file_list = []
 
     def parse_filename(self, arg, directory, files):

@@ -31,7 +31,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 04. Switch all ElementTree stuff over to QtXml.
 
-05. Read series info zip file remotely (now possible in Python 2.7).
+05. <del>Extract series info zip file directly (now possible in Python 2.6).</del>
 
 06. Move the cache to the user's home directory.
 
@@ -46,3 +46,9 @@ Development of this project is slow and there is a lot to do to make this a work
 10. Add a way to save selected artworks.
 
 11. Fix sorting to ignore "A", "An", "The".
+
+12. Get os.path stuff straightened out for cross-platform compatibility.
+
+13. Figure out urllib vs urllib2 (why am I using both in tvdb.py?).
+
+14. Add ability to get season and episode numbers given series and episode name.
