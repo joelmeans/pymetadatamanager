@@ -24,7 +24,7 @@ import xml.etree.cElementTree as ETree
 import zipfile
 import cStringIO
 import os
-import os.path
+from configuration import Config
 
 class TVDB(object):
     """
@@ -41,13 +41,14 @@ class TVDB(object):
         self.tvdb_apikey_url = self.tvdb_api_url + "/" + self.tvdb_apikey
         self.tvdb_banner_url = self.tvdb_mirror_url  + "/banners"
         self.lang = "en"
-        self.temp_dir = "temp"
-        if os.path.exists(self.temp_dir):
-            if not os.path.isdir(self.temp_dir):
-                os.remove(self.temp_dir)
-                os.mkdir(self.temp_dir)
+        config = Config()
+        self.cache_dir = os.path.join(config.config_dir, "cache")
+        if os.path.exists(self.cache_dir):
+            if not os.path.isdir(self.cache_dir):
+                os.remove(self.cache_dir)
+                os.mkdir(self.cache_dir)
         else:
-            os.mkdir(self.temp_dir)
+            os.mkdir(self.cache_dir)
 
     class Series(object):
         """Class to hold info about a series"""
@@ -211,7 +212,7 @@ class TVDB(object):
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
-        xml_dir = os.path.join(self.temp_dir, series_id) 
+        xml_dir = os.path.join(self.cache_dir, series_id) 
         xml_file = os.path.join(xml_dir, "%s.xml" % (self.lang))
         if os.path.exists(xml_dir):
             if not os.path.isdir(xml_dir):
@@ -241,7 +242,7 @@ class TVDB(object):
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
-        xml_path = os.path.join(self.temp_dir, series_id)
+        xml_path = os.path.join(self.cache_dir, series_id)
         xml_file_in_zip = "%s.xml" % (self.lang,)
         xml_file = os.path.join(xml_path, xml_file_in_zip)
         #See if we already have the file (from get_series_by_id)
@@ -265,7 +266,7 @@ class TVDB(object):
 
     def get_actors_by_id(self, series_id):
         """Gets information about the actors in a given series"""
-        xml_path = os.path.join(self.temp_dir, series_id)
+        xml_path = os.path.join(self.cache_dir, series_id)
         xml_file = os.path.join(xml_path, "actors.xml")
         #See if we already have the file (from get_series_by_id)
         if not os.path.isfile(xml_file):
@@ -289,7 +290,7 @@ class TVDB(object):
 
     def get_banners_by_id(self, series_id):
         """Gets information about banners for a given series"""
-        xml_path = os.path.join(self.temp_dir, series_id)
+        xml_path = os.path.join(self.cache_dir, series_id)
         xml_file = os.path.join(xml_path, "banners.xml")
         #See if we already have the file (from get_series_by_id)
         if not os.path.isfile(xml_file):
@@ -358,7 +359,7 @@ class TVDB(object):
             banner_type = url.split("/")[-2]
             if banner_type == "original":
                 banner_type = "fanart-original"
-            filedir = os.path.join(self.temp_dir, banner_type)
+            filedir = os.path.join(self.cache_dir, banner_type)
             filename = os.path.join(filedir, banner_name)
             if not os.path.isdir(filedir):
                 os.mkdir(filedir)

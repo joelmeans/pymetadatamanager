@@ -28,9 +28,13 @@ from tvdb import TVDB
 from scanner import Scanner
 from models import AbstractShowModel, AbstractBannerModel, EmptyTableModel, \
     AbstractBannerWideModel
+from configuration import Config
+
+#Get configuration information
+config = Config()
 
 #Connect to the database
-dbTV = TVShowDB('TV.db')
+dbTV = TVShowDB(config.tvshowdb)
 dbTV.init_db()
 
 #Setup the connection to thetvdb.com
@@ -642,34 +646,36 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_season_banners_wide.setModel(empty_model)
         
     def scan_files(self):
-        self.progress.setLabelText("Scanning Files into DB...")
-        print "Scanning Files"
-        scanner = Scanner('/var/media/videos/TV')
-        scanner.set_series_list()
-        self.progress.setMaximum(len(scanner.series_list))
-        self.progress.setValue(0)
-        for series_name in scanner.series_list:
-            self.progress.setValue(scanner.series_list.index(series_name))
-            match_list = scanner.get_series_id_list(series_name)
-            if len(match_list) == 0:
-                print "No matches found on thetvdb.com for '%s'." % (series_name)
-                series_id = raw_input("Please input the ID for the correct series:")
-            elif len(match_list) == 1:
-                print "Found match for '%s'." % (series_name)
-                series_id = match_list[0][0]
-            else:
-                list = ''
-                for i in range(0,len(match_list)):
-                    list += "[%d] %s (%s)\n " % (i, match_list[i][1], match_list[i][0])
-                selection = self.input_dialog.getInt(self, '', "Select best match:\n %s" % (list), 0, 0, len(match_list) - 1)[0]
-                try:
-                    series_id = match_list[selection][0]
-                except IndexError:
-                    print "That is not an option."
-            scanner.add_series_to_db(series_id)
-            scanner.add_files_to_db(series_name, series_id)
-        scanner.__del__()
-        self.progress.setValue(len(scanner.series_list))
+        for video_dir in config.video_dirs:
+            self.progress.setLabelText("Scanning Files from %s into DB..." \
+                                       %  (video_dir))
+            print "Scanning Files"
+            scanner = Scanner(video_dir)
+            scanner.set_series_list()
+            self.progress.setMaximum(len(scanner.series_list))
+            self.progress.setValue(0)
+            for series_name in scanner.series_list:
+                self.progress.setValue(scanner.series_list.index(series_name))
+                match_list = scanner.get_series_id_list(series_name)
+                if len(match_list) == 0:
+                    print "No matches found on thetvdb.com for '%s'." % (series_name)
+                    series_id = raw_input("Please input the ID for the correct series:")
+                elif len(match_list) == 1:
+                    print "Found match for '%s'." % (series_name)
+                    series_id = match_list[0][0]
+                else:
+                    list = ''
+                    for i in range(0,len(match_list)):
+                        list += "[%d] %s (%s)\n " % (i, match_list[i][1], match_list[i][0])
+                    selection = self.input_dialog.getInt(self, '', "Select best match:\n %s" % (list), 0, 0, len(match_list) - 1)[0]
+                    try:
+                        series_id = match_list[selection][0]
+                    except IndexError:
+                        print "That is not an option."
+                scanner.add_series_to_db(series_id)
+                scanner.add_files_to_db(series_name, series_id)
+            scanner.__del__()
+            self.progress.setValue(len(scanner.series_list))
 
         #Create a dom representing the shows in the database
         doc = dbTV.make_shows_dom()

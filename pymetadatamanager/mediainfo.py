@@ -43,7 +43,7 @@ class MediaInfo(object):
             os.mkdir(self.temp_dir)
         else:
             os.mkdir(self.temp_dir)
-        self.temp_file = self.temp_dir + "/info.xml"
+        self.temp_file = os.path.join(self.temp_dir, "info.xml")
 
     def __del__(self):
         try:

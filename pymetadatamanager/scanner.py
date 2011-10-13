@@ -21,6 +21,7 @@
 from file_parser import FileParser
 from tvdb import TVDB
 from tvshowdb import TVShowDB
+from configuration import Config
 
 class Scanner(object):
     """
@@ -28,7 +29,8 @@ class Scanner(object):
     """
 
     def __init__(self, path):
-        self.dbTV = TVShowDB('TV.db')
+        self.config = Config()
+        self.dbTV = TVShowDB(self.config.tvshowdb)
       	self.dbTV.init_db()
         self.TVDB = TVDB()
         self.FP = FileParser()

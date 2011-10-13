@@ -33,13 +33,13 @@ Development of this project is slow and there is a lot to do to make this a work
 
 05. <del>Extract series info zip file directly (now possible in Python 2.6).</del>
 
-06. Move the cache to the user's home directory.
+06. <del>Move the cache to the user's home directory.</del>
 
-    a) Figure out where and how to put this in windows.
+    a) <del>Figure out where and how to put this in windows.</del>
 
 07. Find a better way to display artwork.
 
-08. Clear the cache on exiting.
+08. Clear the cache on exiting (maybe not, just add GUI option to clear).
 
 09. Add a way to save the nfo file.
 
