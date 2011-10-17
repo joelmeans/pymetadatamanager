@@ -154,7 +154,7 @@ class TVShowDB(object):
         for episode in episodes:
             #Check to see if the episode is already in the db
             self.sqlTV.execute('SELECT * FROM episodes WHERE episodeid=(?)', \
-             (int(episode.episodeid), ))
+             (episode.episodeid, ))
             if len(self.sqlTV.fetchall()):
                 #print "Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number)
                 pass
@@ -176,7 +176,7 @@ class TVShowDB(object):
                   episode.thumb))
                 #Link the episode to the series
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (str(episode.episodeid), ))
+                 episodeid=(?)', (episode.episodeid, ))
                 id_episode_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
                  (series_id, ))
@@ -207,7 +207,7 @@ class TVShowDB(object):
                  (guest, ))
                 id_guest_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (str(episode.episodeid), ))
+                 episodeid=(?)', (episode.episodeid, ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_guest_list[0]: id_guest = x
                 for y in id_episode_list[0]: id_episode = y
@@ -228,7 +228,7 @@ class TVShowDB(object):
                  (director, ))
                 id_director_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (int(episode.episodeid), ))
+                 episodeid=(?)', (episode.episodeid, ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_director_list[0]: id_director = x
                 for y in id_episode_list[0]: id_episode = y
@@ -250,7 +250,7 @@ class TVShowDB(object):
                  (writer, ))
                 id_writer_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (int(episode.episodeid), ))
+                 episodeid=(?)', (episode.episodeid, ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_writer_list[0]: id_writer = x
                 for y in id_episode_list[0]: id_episode = y

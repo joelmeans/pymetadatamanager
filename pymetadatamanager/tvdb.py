@@ -269,7 +269,6 @@ class TVDB(object):
             xml_data = open(xml_file, 'r')
             dom.setContent(xml_data.read())
             xml_data.close()
-#            print dom.toString(4).toUtf8()
             data = dom.firstChildElement("Data") 
             series_node = data.firstChildElement("Series")
             series_info = self.Series(series_node)
