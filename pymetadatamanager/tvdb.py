@@ -244,31 +244,18 @@ class TVDB(object):
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
-        xml_dir = os.path.join(self.cache_dir, series_id) 
-        xml_file = os.path.join(xml_dir, "%s.xml" % (self.lang))
-        if os.path.exists(xml_dir):
-            if not os.path.isdir(xml_dir):
-                os.remove(xml_dir)
-                os.mkdir(xml_dir)
-        else:
-            os.mkdir(xml_dir)
-        #See if we already have the info for this series
-        if not os.path.isfile(xml_file):
-            series_info_url = "%s/series/%s/all/%s.zip" % \
-             (self.tvdb_apikey_url, series_id, self.lang)
-            try:
-                series_info_remote = urllib2.urlopen(series_info_url)
-            except urllib2.HTTPError, e:
-                return None
-            series_info_memory = cStringIO.StringIO(series_info_remote.read()) 
-            series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_file = series_info_zip.extractall(xml_dir)
-            series_info_zip.close()
+        xml_file_in_zip = "%s.xml" % (self.lang,)
+        series_info_url = "%s/series/%s/all/%s.zip" % \
+          (self.tvdb_apikey_url, series_id, self.lang)
+        try:
+            series_info_remote = urllib2.urlopen(series_info_url)
+        except urllib2.HTTPError, e:
+            return None
+        series_info_memory = cStringIO.StringIO(series_info_remote.read()) 
+        series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
         try:
             dom = QtXml.QDomDocument()
-            xml_data = open(xml_file, 'r')
-            dom.setContent(xml_data.read())
-            xml_data.close()
+            dom.setContent(series_info_zip.read(xml_file_in_zip))
             data = dom.firstChildElement("Data") 
             series_node = data.firstChildElement("Series")
             series_info = self.Series(series_node)
@@ -278,25 +265,18 @@ class TVDB(object):
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
-        xml_path = os.path.join(self.cache_dir, series_id)
         xml_file_in_zip = "%s.xml" % (self.lang,)
-        xml_file = os.path.join(xml_path, xml_file_in_zip)
-        #See if we already have the file (from get_series_by_id)
-        if not os.path.isfile(xml_file):
-            series_info_url = "%s/series/%s/all/%s.zip" % \
-             (self.tvdb_apikey_url, series_id, self.lang)
-            try:
-                series_info_remote = urllib2.urlopen(series_info_url)
-            except:
-                return None
-            series_info_memory = cStringIO.StringIO(series_info_remote.read())
-            series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract(xml_file_in_zip, xml_path)
+        series_info_url = "%s/series/%s/all/%s.zip" % \
+          (self.tvdb_apikey_url, series_id, self.lang)
+        try:
+            series_info_remote = urllib2.urlopen(series_info_url)
+        except:
+            return None
+        series_info_memory = cStringIO.StringIO(series_info_remote.read())
+        series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
         #Parse it up and put the info into a list of Episode objects
         dom = QtXml.QDomDocument()
-        xml_data = open(xml_file, 'r')
-        dom.setContent(xml_data.read())
-        xml_data.close()
+        dom.setContent(series_info_zip.read(xml_file_in_zip))
         data = dom.firstChildElement("Data")
         episode_info = []
         episode_node = data.firstChildElement("Episode")
@@ -308,24 +288,17 @@ class TVDB(object):
 
     def get_actors_by_id(self, series_id):
         """Gets information about the actors in a given series"""
-        xml_path = os.path.join(self.cache_dir, series_id)
-        xml_file = os.path.join(xml_path, "actors.xml")
-        #See if we already have the file (from get_series_by_id)
-        if not os.path.isfile(xml_file):
-            series_info_url = "%s/series/%s/all/en.zip" % \
-             (self.tvdb_apikey_url, series_id)
-            try:
-                series_info_remote = urllib2.urlopen(series_info_url)
-            except urllib2.HTTPError, e:
-                return None
-            series_info_memory = cStringIO.StringIO(series_info_remote.read())
-            series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract('actors.xml', xml_path)
+        series_info_url = "%s/series/%s/all/en.zip" % \
+          (self.tvdb_apikey_url, series_id)
+        try:
+            series_info_remote = urllib2.urlopen(series_info_url)
+        except urllib2.HTTPError, e:
+            return None
+        series_info_memory = cStringIO.StringIO(series_info_remote.read())
+        series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
         #Parse it up and put the info into a list of Actor objects
         dom = QtXml.QDomDocument()
-        xml_data = open(xml_file, 'r')
-        dom.setContent(xml_data.read())
-        xml_data.close()
+        dom.setContent(series_info_zip.read("actors.xml"))
         actor_info_list = []
         actors = dom.firstChildElement("Actors")
         actor_node = actors.firstChildElement("Actor")
@@ -337,24 +310,17 @@ class TVDB(object):
 
     def get_banners_by_id(self, series_id):
         """Gets information about banners for a given series"""
-        xml_path = os.path.join(self.cache_dir, series_id)
-        xml_file = os.path.join(xml_path, "banners.xml")
-        #See if we already have the file (from get_series_by_id)
-        if not os.path.isfile(xml_file):
-            series_info_url = "%s/series/%s/all/en.zip" % \
-             (self.tvdb_apikey_url, series_id)
-            try:
-                series_info_remote = urllib2.urlopen(series_info_url)
-            except urllib2.HTTPError, e:
-                return None
-            series_info_memory = cStringIO.StringIO(series_info_remote.read())
-            series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
-            series_info_zip.extract('banners.xml', xml_path)
+        series_info_url = "%s/series/%s/all/en.zip" % \
+          (self.tvdb_apikey_url, series_id)
+        try:
+            series_info_remote = urllib2.urlopen(series_info_url)
+        except urllib2.HTTPError, e:
+            return None
+        series_info_memory = cStringIO.StringIO(series_info_remote.read())
+        series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
         #Parse it up and put the info into a list of Banner objects
         dom = QtXml.QDomDocument()
-        xml_data = open(xml_file, 'r')
-        dom.setContent(xml_data.read())
-        xml_data.close()
+        dom.setContent(series_info_zip.read("banners.xml"))
         banner_info_list = []
         banners = dom.firstChildElement("Banners")
         banner_node = banners.firstChildElement("Banner")
