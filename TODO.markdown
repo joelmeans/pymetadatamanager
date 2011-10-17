@@ -29,7 +29,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 03. Add more filename parsing options.
 
-04. Switch all ElementTree stuff over to QtXml.
+04. <del>Switch all ElementTree stuff over to QtXml.</del>
 
 05. <del>Extract series info zip file directly (now possible in Python 2.6).</del>
 

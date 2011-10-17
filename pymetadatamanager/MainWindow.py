@@ -162,7 +162,7 @@ class MainWindow(QtGui.QMainWindow):
     def set_series_overview_updated(self):
         self.series_overview_updated = 1
         self.new_series_overview = \
-         str(self.ui.text_series_overview.toPlainText())
+         unicode(self.ui.text_series_overview.toPlainText(), "latin-1")
         self.ui.pushButton_save_series_changes.setEnabled(1)
         self.ui.pushButton_revert_series_changes.setEnabled(1)
 
@@ -664,14 +664,24 @@ class MainWindow(QtGui.QMainWindow):
                     print "Found match for '%s'." % (series_name)
                     series_id = match_list[0][0]
                 else:
+                    match = False
                     list = ''
                     for i in range(0,len(match_list)):
-                        list += "[%d] %s (%s)\n " % (i, match_list[i][1], match_list[i][0])
-                    selection = self.input_dialog.getInt(self, '', "Select best match:\n %s" % (list), 0, 0, len(match_list) - 1)[0]
-                    try:
-                        series_id = match_list[selection][0]
-                    except IndexError:
-                        print "That is not an option."
+                        if match_list[i][1] == series_name:
+                            print "Found match for '%s'." % (series_name)
+                            series_id = match_list[i][0]
+                            match = True
+                        else:
+                            list += "[%d] %s (%s)\n " % (i, match_list[i][1], \
+                                                         match_list[i][0])
+                    if not match:
+                        selection = self.input_dialog.getInt(self, '', \
+                                    "Select best match:\n %s" % (list), \
+                                    0, 0, len(match_list) - 1)[0]
+                        try:
+                            series_id = match_list[selection][0]
+                        except IndexError:
+                            print "That is not an option."
                 scanner.add_series_to_db(series_id)
                 scanner.add_files_to_db(series_name, series_id)
             scanner.__del__()

@@ -73,7 +73,7 @@ class TVShowDB(object):
             self.sqlTV.execute('CREATE TABLE episodes (id INTEGER PRIMARY KEY, \
              episodeid INTEGER, name VARCHAR(50), overview VARCHAR(500), \
              season_number INTEGER, episode_number INTEGER, \
-             language VARCHAR(5), prod_code INT, rating VARCHAR(15), \
+             language VARCHAR(5), prod_code VARCHAR(10), rating VARCHAR(15), \
              first_aired VARCHAR(15), thumb VARCHAR(100))')
             self.sqlTV.execute('CREATE TABLE actors (id INTEGER PRIMARY KEY, \
              name VARCHAR(50), thumb VARCHAR(100))')
@@ -154,7 +154,7 @@ class TVShowDB(object):
         for episode in episodes:
             #Check to see if the episode is already in the db
             self.sqlTV.execute('SELECT * FROM episodes WHERE episodeid=(?)', \
-             (episode.episodeid, ))
+             (int(episode.episodeid), ))
             if len(self.sqlTV.fetchall()):
                 #print "Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number)
                 pass
@@ -163,14 +163,20 @@ class TVShowDB(object):
                 self.sqlTV.execute('INSERT INTO episodes ("episodeid", "name", \
                  "overview", "season_number", "episode_number", "language", \
                  "prod_code", "rating", "first_aired", "thumb") VALUES \
-                 (?,?,?,?,?,?,?,?,?,?)', (episode.episodeid, \
-                 episode.episode_name, episode.overview, \
-                 episode.season_number, episode.episode_number, \
-                 episode.language, episode.production_code, episode.rating, \
-                 episode.first_aired, episode.thumb))
+                 (?,?,?,?,?,?,?,?,?,?)', \
+                 (episode.episodeid, \
+                  episode.episode_name, \
+                  episode.overview, \
+                  episode.season_number, \
+                  episode.episode_number, \
+                  episode.language, \
+                  episode.production_code, \
+                  episode.rating, \
+                  episode.first_aired, \
+                  episode.thumb))
                 #Link the episode to the series
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
+                 episodeid=(?)', (str(episode.episodeid), ))
                 id_episode_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
                  (series_id, ))
@@ -201,7 +207,7 @@ class TVShowDB(object):
                  (guest, ))
                 id_guest_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
+                 episodeid=(?)', (str(episode.episodeid), ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_guest_list[0]: id_guest = x
                 for y in id_episode_list[0]: id_episode = y
@@ -222,7 +228,7 @@ class TVShowDB(object):
                  (director, ))
                 id_director_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
+                 episodeid=(?)', (int(episode.episodeid), ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_director_list[0]: id_director = x
                 for y in id_episode_list[0]: id_episode = y
@@ -244,7 +250,7 @@ class TVShowDB(object):
                  (writer, ))
                 id_writer_list = self.sqlTV.fetchall()
                 self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
+                 episodeid=(?)', (int(episode.episodeid), ))
                 id_episode_list = self.sqlTV.fetchall()
                 for x in id_writer_list[0]: id_writer = x
                 for y in id_episode_list[0]: id_episode = y
@@ -340,11 +346,18 @@ class TVShowDB(object):
             self.sqlTV.execute('INSERT INTO shows \
              ("seriesid", "name", "overview", "content_rating", "runtime", \
              "status", "language", "first_aired", "airs_day", "airs_time", \
-             "rating") VALUES (?,?,?,?,?,?,?,?,?,?,?)', (int(series.seriesid), \
-             series.name, series.overview, series.content_rating, \
-             int(series.runtime), series.status, series.language, \
-             series.first_aired, series.airs_day, series.airs_time, \
-             series.rating))
+             "rating") VALUES (?,?,?,?,?,?,?,?,?,?,?)', \
+             (series.seriesid, \
+              series.name, \
+              series.overview, \
+              series.content_rating, \
+              series.runtime, \
+              series.status, \
+              series.language, \
+              series.first_aired, \
+              series.airs_day, \
+              series.airs_time, \
+              series.rating))
             #Add the genres if they aren't already there and link them up
             for genre in series.genre:
                 self.sqlTV.execute('SELECT * FROM genres WHERE name=(?)', \
@@ -648,7 +661,6 @@ class TVShowDB(object):
         seriesname = '%s%s%s' % ("%", series_name, "%")
         self.sqlTV.execute("SELECT seriesid FROM shows WHERE name LIKE (?)", \
                             (seriesname,))
-        self.sqlTV.execute(sql)
         series_id_list = self.sqlTV.fetchall()
         if len(series_id_list):
             for x in series_id_list[0]: series_id = x

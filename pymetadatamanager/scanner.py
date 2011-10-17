@@ -41,7 +41,10 @@ class Scanner(object):
         self.set_file_list(path)
 
     def __del__(self):
-        self.dbTV.set_update_time(self.new_time)
+        try:
+            self.dbTV.set_update_time(self.new_time)
+        except AttributeError:
+            pass
 
     def set_file_list(self, path):
         self.file_list = self.FP.parse_files_by_path(path)

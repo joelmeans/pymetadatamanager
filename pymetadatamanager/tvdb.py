@@ -20,10 +20,10 @@
 
 import urllib
 import urllib2
-import xml.etree.cElementTree as ETree
 import zipfile
 import cStringIO
 import os
+from PyQt4 import QtXml
 from configuration import Config
 
 class TVDB(object):
@@ -53,80 +53,94 @@ class TVDB(object):
     class Series(object):
         """Class to hold info about a series"""
         def __init__(self, node):
-            self.seriesid = node.findtext("id")
+            self.seriesid = int(node.firstChildElement("id").text())
             self.actors = [actor.strip() for actor in \
-             node.findtext("Actors").split("|") if actor]
-            self.airs_day = node.findtext("Airs_DayOfWeek")
-            self.airs_time = node.findtext("Airs_Time")
-            self.content_rating = node.findtext("ContentRating")
-            self.first_aired = node.findtext("FirstAired")
+              unicode(node.firstChildElement("Actors").text(), \
+                      "latin-1").split("|") if actor]
+            self.airs_day = str(\
+              node.firstChildElement("Airs_DayOfWeek").text())
+            self.airs_time = str(node.firstChildElement("Airs_Time").text())
+            self.content_rating = str(\
+              node.firstChildElement("ContentRating").text())
+            self.first_aired = str(node.firstChildElement("FirstAired").text())
             self.genre = [genre.strip() for genre in \
-             node.findtext("Genre").split("|") if genre]
-            self.language = node.findtext("Language")
-            self.network = node.findtext("Network")
-            self.overview = node.findtext("Overview")
-            self.rating = node.findtext("Rating")
-#            self.runtime = [runtime for runtime in node.findtext("Runtime") if runtime]
-            self.runtime = node.findtext("Runtime")
+              str(node.firstChildElement("Genre").text()).split("|") if genre]
+            self.language = str(node.firstChildElement("Language").text())
+            self.network = str(node.firstChildElement("Network").text())
+            self.overview = unicode(node.firstChildElement("Overview").text(), \
+                                    "latin-1")
+            self.rating = str(node.firstChildElement("Rating").text())
+            self.runtime = str(node.firstChildElement("Runtime").text())
             if self.runtime == '':
                 self.runtime = '0'
-            self.name = node.findtext("SeriesName")
-            self.status = node.findtext("Status")
-            self.banner = node.findtext("banner")
-            self.fanart = node.findtext("fanart")
-            self.poster = node.findtext("poster")
-            self.last_updated = node.findtext("lastupdated")
+            self.name = str(node.firstChildElement("SeriesName").text())
+            self.status = str(node.firstChildElement("Status").text())
+            self.banner = str(node.firstChildElement("banner").text())
+            self.fanart = str(node.firstChildElement("fanart").text())
+            self.poster = str(node.firstChildElement("poster").text())
+            self.last_updated = str(\
+              node.firstChildElement("lastupdated").text())
 
     class Episode(object):
         """Class to hold info about an episode"""
         def __init__(self, node, tvdb_banner_url):
-        #def __init__(self, node, seriesid):
-            self.episodeid = node.findtext("id")
+            self.episodeid = int(node.firstChildElement("id").text())
             self.directors = [director.strip() for director in \
-             node.findtext("Director").split("|") if director]
-            self.episode_name = node.findtext("EpisodeName")
-            self.episode_number = node.findtext("EpisodeNumber")
-            self.first_aired = node.findtext("FirstAired")
+              unicode(node.firstChildElement("Director").text(), \
+                      "latin-1").split("|") if director]
+            self.episode_name = unicode(\
+              node.firstChildElement("EpisodeName").text(), "latin-1")
+            self.episode_number = int(\
+              node.firstChildElement("EpisodeNumber").text())
+            self.first_aired = str(node.firstChildElement("FirstAired").text())
             self.guest_stars = [guest.strip() for guest in \
-             node.findtext("GuestStars").split("|") if guest]
-            self.language = node.findtext("Language")
-            self.overview = node.findtext("Overview")
-            self.production_code = node.findtext("ProductionCode")
-            self.rating = node.findtext("Rating")
-            self.season_number = node.findtext("SeasonNumber")
+              unicode(node.firstChildElement("GuestStars").text(), \
+                      "latin-1").split("|") if guest]
+            self.language = str(node.firstChildElement("Language").text())
+            self.overview = unicode(\
+              node.firstChildElement("Overview").text(), "latin-1")
+            self.production_code = \
+              str(node.firstChildElement("ProductionCode").text())
+            self.rating = str(node.firstChildElement("Rating").text())
+            self.season_number = int(\
+              node.firstChildElement("SeasonNumber").text())
             self.writers = [writer.strip() for writer in \
-             node.findtext("Writer").split("|") if writer]
-            if node.findtext("filename"):
-                self.thumb = os.path.join(tvdb_banner_url, \
-                 node.findtext("filename"))
+              unicode(node.firstChildElement("Writer").text(), \
+                      "latin-1").split("|") if writer]
+            if not node.firstChildElement("filename").isNull():
+                self.thumb = "%s/%s" % (tvdb_banner_url, \
+                 str(node.firstChildElement("filename").text()))
             else:
                 self.thumb = ""
-            self.last_updated = node.findtext("lastupdated")
+            self.last_updated = node.firstChildElement("lastupdated").text()
 
     class Actor(object):
         """Class to hold actor info"""
         def __init__(self, node, seriesid, tvdb_banner_url):
             self.seriesid = seriesid
-            self.actorid = node.findtext("id")
-            thumbnail = node.findtext("Image")
+            self.actorid = unicode(node.firstChildElement("id").text(), \
+                                   "latin-1")
+            thumbnail = str(node.firstChildElement("Image").text())
             if not thumbnail == "":
-                self.thumb = os.path.join(tvdb_banner_url, thumbnail)
+                self.thumb = "%s/%s" % (tvdb_banner_url, thumbnail)
             else:
                 self.thumb = "none"
-            self.name = node.findtext("Name")
-            self.role = node.findtext("Role")
+            self.name = unicode(node.firstChildElement("Name").text(), \
+                                "latin-1")
+            self.role = unicode(node.firstChildElement("Role").text(), \
+                                "latin-1")
 
     class Banner(object):
         """Class to hold banner info"""
         def __init__(self, node, seriesid, tvdb_banner_url):
             self.seriesid = seriesid
-            self.id = node.findtext("id")
-            self.path = node.findtext("BannerPath")
-            self.type = node.findtext("BannerType")
-            self.type2 = node.findtext("BannerType2")
-            self.colors = node.findtext("Colors")
-            self.season = node.findtext("Season")
-            self.thumb = node.findtext("ThumbnailPath")
+            self.id = int(node.firstChildElement("id").text())
+            self.path = str(node.firstChildElement("BannerPath").text())
+            self.type = str(node.firstChildElement("BannerType").text())
+            self.type2 = str(node.firstChildElement("BannerType2").text())
+            self.colors = str(node.firstChildElement("Colors").text())
+            self.season = str(node.firstChildElement("Season").text())
+            self.thumb = str(node.firstChildElement("ThumbnailPath").text())
             self.url = tvdb_banner_url
 
     def get_server_time(self):
@@ -137,9 +151,11 @@ class TVDB(object):
             server_time = urllib2.urlopen(tvdb_time_url)
         except urllib2.HTTPError, e:
             return None
-        tree = ETree.parse(server_time)
-        time = tree.findtext("Time")
-        return time
+        dom = QtXml.QDomDocument()
+        dom.setContent(server_time.read())
+        item = dom.firstChildElement("Items")
+        time_element = item.firstChildElement("Time")
+        return time_element.text()
 
     def get_series_update_list(self, last_time):
         """Gets a list of updated series since last_time"""
@@ -154,9 +170,14 @@ class TVDB(object):
         series_list = []
         if updates:
             try:
-                tree = ETree.parse(updates)
-                series_element_list = tree.findall("Series")
-                series_list = [series.text for series in series_element_list]
+                dom = QtXml.QDomDocument()
+                dom.setContent(updates.read())
+                items = dom.firstChildElement("Items")
+                series_element = items.firstChildElement("Series")
+                while not series_element.isNull():
+                    series_list.append(str(series_element.text()))
+                    series_element = \
+                                   series_element.nextSiblingElement("Series")
             except SyntaxError:
                 pass
         return series_list
@@ -174,10 +195,14 @@ class TVDB(object):
         episode_list = []
         if updates:
             try:
-                tree = ETree.parse(updates)
-                episode_element_list = tree.findall("Episode")
-                episode_list = [episode.text for episode in \
-                 episode_element_list]
+                dom = QtXml.QDomDocument()
+                dom.setContent(updates.read())
+                items = dom.firstChildElement("Items")
+                episode_element = items.firstChildElement("Episode")
+                while not episode_element.isNull():
+                    episode_list.append(str(episode_element.text()))
+                    episode_element = \
+                                  episode_element.nextSiblingElement("Episode")
             except SyntaxError:
                 pass
         return episode_list
@@ -202,10 +227,17 @@ class TVDB(object):
         seriesid = 0
         if matches:
             try:
-                tree = ETree.parse(matches)
-                match_list = [(series.findtext("seriesid"), \
-                 series.findtext("SeriesName")) for series in \
-                 tree.getiterator("Series")]
+                dom = QtXml.QDomDocument()
+                dom.setContent(matches.read())
+                data = dom.firstChildElement("Data")
+                series_node = data.firstChildElement("Series")
+                while not series_node.isNull():
+                    match_id = str(\
+                          series_node.firstChildElement("seriesid").text())
+                    match_name = str(\
+                          series_node.firstChildElement("SeriesName").text())
+                    match_list.append((match_id, match_name))
+                    series_node = series_node.nextSiblingElement("Series")
             except SyntaxError:
                 print "No possible matches found for %s." % (series_name)
         return match_list 
@@ -233,8 +265,13 @@ class TVDB(object):
             series_file = series_info_zip.extractall(xml_dir)
             series_info_zip.close()
         try:
-            tree = ETree.parse(xml_file)
-            series_node = tree.find("Series")
+            dom = QtXml.QDomDocument()
+            xml_data = open(xml_file, 'r')
+            dom.setContent(xml_data.read())
+            xml_data.close()
+#            print dom.toString(4).toUtf8()
+            data = dom.firstChildElement("Data") 
+            series_node = data.firstChildElement("Series")
             series_info = self.Series(series_node)
         except SyntaxError:
             print "Error"
@@ -257,11 +294,17 @@ class TVDB(object):
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
             series_info_zip.extract(xml_file_in_zip, xml_path)
         #Parse it up and put the info into a list of Episode objects
-        tree = ETree.parse(xml_file)
-        episode_node = tree.findall("Episode")
+        dom = QtXml.QDomDocument()
+        xml_data = open(xml_file, 'r')
+        dom.setContent(xml_data.read())
+        xml_data.close()
+        data = dom.firstChildElement("Data")
         episode_info = []
-        for episode in episode_node:
-            episode_info.append(self.Episode(episode, self.tvdb_banner_url))
+        episode_node = data.firstChildElement("Episode")
+        while not episode_node.isNull():
+            episode_info.append(\
+              self.Episode(episode_node, self.tvdb_banner_url))
+            episode_node = episode_node.nextSiblingElement("Episode")
         return episode_info
 
     def get_actors_by_id(self, series_id):
@@ -280,12 +323,17 @@ class TVDB(object):
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
             series_info_zip.extract('actors.xml', xml_path)
         #Parse it up and put the info into a list of Actor objects
-        tree = ETree.parse(xml_file)
-        actor_node = tree.findall("Actor")
+        dom = QtXml.QDomDocument()
+        xml_data = open(xml_file, 'r')
+        dom.setContent(xml_data.read())
+        xml_data.close()
         actor_info_list = []
-        for actor in actor_node:
-            actor_info_list.append(self.Actor(actor, \
+        actors = dom.firstChildElement("Actors")
+        actor_node = actors.firstChildElement("Actor")
+        while not actor_node.isNull():
+            actor_info_list.append(self.Actor(actor_node, \
                 series_id, self.tvdb_banner_url))
+            actor_node = actor_node.nextSiblingElement("Actor") 
         return actor_info_list
 
     def get_banners_by_id(self, series_id):
@@ -304,24 +352,31 @@ class TVDB(object):
             series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
             series_info_zip.extract('banners.xml', xml_path)
         #Parse it up and put the info into a list of Banner objects
-        tree = ETree.parse(xml_file)
-        banner_node = tree.findall("Banner")
+        dom = QtXml.QDomDocument()
+        xml_data = open(xml_file, 'r')
+        dom.setContent(xml_data.read())
+        xml_data.close()
         banner_info_list = []
-        for banner in banner_node:
-            banner_info_list.append(self.Banner(banner, series_id, \
-             self.tvdb_banner_url))
+        banners = dom.firstChildElement("Banners")
+        banner_node = banners.firstChildElement("Banner")
+        while not banner_node.isNull():
+            banner_info_list.append(self.Banner(banner_node, series_id, \
+              self.tvdb_banner_url))
+            banner_node = banner_node.nextSiblingElement("Banner")
         return banner_info_list
 
     def get_series_by_id(self, series_id):
-        """Parse the <lang>.xml file for episode information"""
+        """Parse the <lang>.xml file for series information"""
         series_info_url = "%s/series/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, self.lang)
         try:
             series_info = urllib2.urlopen(series_info_url)
         except urllib2.HTTPError, e:
             return None
-        tree = ETree.parse(series_info)
-        series_node = tree.find("Series")
+        dom = QtXml.QDomDocument()
+        dom.setContent(series_info.read())
+        data = dom.firstChildElement("Data")
+        series_node = data.firstChildElement("Series")
         series_info = self.Series(series_node)
         return series_info
 
@@ -333,22 +388,26 @@ class TVDB(object):
             episode_info = urllib2.urlopen(episode_info_url)
         except urllib2.HTTPError, e:
             return None
-        tree = ETree.parse(episode_info)
-        episode_node = tree.find("Episode")
+        dom = QtXml.QDomDocument()
+        dom.setContent(episode_info.read())
+        data = dom.firstChildElement("Data")
+        episode_node = data.firstChildElement("Episode")
         episode_info = self.Episode(episode_node, self.tvdb_banner_url)
         return episode_info
 
     def get_episode_by_season_episode(self, series_id, season, episode):
         """Parse the <lang>.xml file for episode information"""
         episode_info_url = "%s/series/%s/default/%s/%s/%s.xml" % \
-            (self.tvdb_apikey_url, series_id, season, episode, self.lang)
+            (self.tvdb_apikey_url, series_id, season.lstrip('0'), \
+               episode.lstrip('0'), self.lang)
         try:
-            ep_info = urllib2.urlopen(episode_info_url)
+            episode_info = urllib2.urlopen(episode_info_url)
         except urllib2.HTTPError, e:
             return None
-        episode_info = urllib.urlretrieve(episode_info_url)
-        tree = ETree.parse(episode_info[0])
-        episode_node = tree.find("Episode")
+        dom = QtXml.QDomDocument()
+        dom.setContent(episode_info.read())
+        data = dom.firstChildElement("Data")
+        episode_node = data.firstChildElement("Episode")
         episode_info = self.Episode(episode_node, self.tvdb_banner_url)
         return episode_info
 

@@ -6,14 +6,18 @@
 __author__="jmeans"
 __date__ ="$Feb 10, 2010 3:15:02 PM$"
 
-import mediainfo
 from PyQt4 import QtXml
+from pymetadatamanager.tvdb_qt import TVDB
+from pymetadatamanager.tvdb_et import TVDB as TVDB_ET
+TVDB_ET = TVDB_ET()
 
-MI = mediainfo.MediaInfo()
-dom = MI.make_info_dom('30_Rock_01x01.dvdrip.mkv')
-root = dom.documentElement()
-elem_file = root.firstChildElement('File')
-elem_track = elem_file.firstChildElement('track')
-while not elem_track.isNull():
-    print elem_track.attribute('type')
-    elem_track = elem_track.nextSiblingElement('track')
+TVDB = TVDB()
+time = TVDB.get_server_time()
+old_time = int(time) - 10000
+updates = TVDB.get_series_update_list(old_time)
+
+series = TVDB.find_series("Alias")
+print series
+
+series_et = TVDB_ET.find_series("Alias")
+print series_et

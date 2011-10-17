@@ -37,7 +37,7 @@ class FileParser(object):
                         season_ep = ssxeee.group(0)
                         season = season_ep.split('x')[0]
                         episode = season_ep.split('x')[1]
-                        show = file.split(season_ep)[0].rstrip()
+                        show = file.split(season_ep)[0].rstrip().rstrip('_')
                         show_name = re.sub('_', ' ', show)
                         show_tuple = (directory, file, show_name, season, \
                           episode)
@@ -46,7 +46,7 @@ class FileParser(object):
                         season_ep = ssxee.group(0)
                         season = season_ep.split('x')[0]
                         episode = season_ep.split('x')[1]
-                        show = file.split(season_ep)[0].rstrip()
+                        show = file.split(season_ep)[0].rstrip().rstrip('_')
                         show_name = re.sub('_', ' ', show)
                         show_tuple = (directory, file, show_name, season, \
                           episode)
