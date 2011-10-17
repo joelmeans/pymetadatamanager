@@ -7,9 +7,7 @@ __author__="jmeans"
 __date__ ="$Feb 10, 2010 3:15:02 PM$"
 
 from PyQt4 import QtXml
-from pymetadatamanager.tvdb_qt import TVDB
-from pymetadatamanager.tvdb_et import TVDB as TVDB_ET
-TVDB_ET = TVDB_ET()
+from pymetadatamanager.tvdb import TVDB
 
 TVDB = TVDB()
 time = TVDB.get_server_time()
@@ -19,5 +17,5 @@ updates = TVDB.get_series_update_list(old_time)
 series = TVDB.find_series("Alias")
 print series
 
-series_et = TVDB_ET.find_series("Alias")
-print series_et
+ssxee = TVDB.get_ssxee_by_seriesname_episodename("Parenthood (2010)", "Nora")
+print ssxee

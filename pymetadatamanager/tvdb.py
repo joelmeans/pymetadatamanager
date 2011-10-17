@@ -18,11 +18,13 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ############################################################################
 
+import string
 import urllib
 import urllib2
 import zipfile
 import cStringIO
 import os
+import re
 from PyQt4 import QtXml
 from configuration import Config
 
@@ -392,3 +394,40 @@ class TVDB(object):
             return filename
         else:
             return None
+
+    def massage_episode_name(self, episode_name):
+        regex = re.compile('[%s]' % re.escape(string.punctuation))
+        episode_name = episode_name.lower()
+        episode_name = " ".join(episode_name.split('/'))
+        episode_name = regex.sub('', episode_name)
+        # This one is especially for Austin City Limits
+        episode_name = re.sub('followed by', ' ', episode_name)
+        episode_name = " ".join(episode_name.split())
+        return episode_name
+
+    def get_ssxee_by_seriesname_episodename(self, series_name, episode_name):
+        """Lookup and return season and episode number from episode name."""
+        episode_name_in = self.massage_episode_name(episode_name)
+        match_list = self.find_series(series_name)
+        if len(match_list) == 0:
+            series_id = raw_input("Please input the ID for the correct series:")
+        elif len(match_list) == 1:
+            print "Found match for '%s'." % (series_name)
+            series_id = match_list[0][0]
+        else:
+            for i in range(0,len(match_list)):
+                if match_list[i][1] == series_name:
+                    print "Found match for '%s'." % (series_name)
+                    series_id = match_list[i][0]
+        episodes = self.get_episodes_by_series_id(series_id)
+        for episode in episodes:
+            episode_name_to_match = self.massage_episode_name(episode.episode_name)
+            print "'%s' == '%s'" % (episode_name_to_match, episode_name_in)
+            if episode_name_to_match == episode_name_in:
+                season_num = episode.season_number
+                episode_num = episode.episode_number
+                return (season_num, episode_num)
+            else:
+                season_num = 00
+                episode_num = 00
+        return (season_num, episode_num)

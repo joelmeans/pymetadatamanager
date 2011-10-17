@@ -718,7 +718,7 @@ class TVShowDB(object):
     def get_actor_thumb(self, actorname):
         """Returns the url of the thumbnail for a given actor"""
         self.sqlTV.execute('SELECT thumb FROM actors WHERE name=(?)', \
-         (str(actorname), ))
+         (unicode(actorname, "latin-1"), ))
         value_db = self.sqlTV.fetchall()
         if len(value_db):
              for x in value_db[0]: thumburl = x
