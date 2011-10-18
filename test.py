@@ -17,5 +17,7 @@ updates = TVDB.get_series_update_list(old_time)
 series = TVDB.find_series("Alias")
 print series
 
-ssxee = TVDB.get_ssxee_by_seriesname_episodename("Parenthood (2010)", "Nora")
+ssxee = TVDB.get_ssxee_by_seriesname_episodename("30 Rock", "I Do Do")
+print ssxee
+ssxee = TVDB.get_ssxee_by_seriesname_episodename("30 Rock", "Seinfeld Vision")
 print ssxee

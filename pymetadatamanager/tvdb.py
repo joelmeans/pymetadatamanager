@@ -402,6 +402,7 @@ class TVDB(object):
         episode_name = regex.sub('', episode_name)
         # This one is especially for Austin City Limits
         episode_name = re.sub('followed by', ' ', episode_name)
+        episode_name = re.sub('and', ' ', episode_name)
         episode_name = " ".join(episode_name.split())
         return episode_name
 
@@ -409,6 +410,7 @@ class TVDB(object):
         """Lookup and return season and episode number from episode name."""
         episode_name_in = self.massage_episode_name(episode_name)
         match_list = self.find_series(series_name)
+        series_id = 0
         if len(match_list) == 0:
             series_id = raw_input("Please input the ID for the correct series:")
         elif len(match_list) == 1:
@@ -419,10 +421,13 @@ class TVDB(object):
                 if match_list[i][1] == series_name:
                     print "Found match for '%s'." % (series_name)
                     series_id = match_list[i][0]
+        if not series_id:
+            print "Cannot find series."
+            return 0
         episodes = self.get_episodes_by_series_id(series_id)
         for episode in episodes:
             episode_name_to_match = self.massage_episode_name(episode.episode_name)
-            print "'%s' == '%s'" % (episode_name_to_match, episode_name_in)
+            #print "'%s' == '%s'" % (episode_name_to_match, episode_name_in)
             if episode_name_to_match == episode_name_in:
                 season_num = episode.season_number
                 episode_num = episode.episode_number
