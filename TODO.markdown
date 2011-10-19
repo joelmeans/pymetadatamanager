@@ -9,9 +9,9 @@ Development of this project is slow and there is a lot to do to make this a work
 
 01. <del>Learn how to organize a proper python program.</del>
 
-02. Add a "copying" file for GPL info.
+02. <del>Add a "copying" file for GPL info.</del>
 
-03. Standardize the header placed in the files.
+03. <del>Standardize the header placed in the files.</del>
 
 ## Technical TODO
 

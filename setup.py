@@ -13,9 +13,10 @@ setup (
   author_email = 'means.joel@gmail.com',
   url = 'http://github.com/joelmeans/pymetadatamanager',
   packages = ['pymetadatamanager'],
+  package_dir = {'': 'lib'},
   provides = ['pymetadatamanager'],
   requires = ['PyQt4'],
-  scripts = ['metadatamanager'],
+  scripts = ['pymetadatamanager'],
   license = 'GPLv2',
   long_description= 'This program will scan directories for video files and lookup metadata information from themoviedb.com and thetvdb.org.  It will write out xbmc-compatible nfo files and save artwork.  It is a very rough work in progress.'
 )
