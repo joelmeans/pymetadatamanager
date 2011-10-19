@@ -63,7 +63,6 @@ reply = sql.fetchall()
 
 #determine the output name and do the conversion
 episode = reply[0]
-print episode
 series_name = episode[0]
 episode_name = episode[1]
 cutlist = episode[2]
@@ -73,8 +72,8 @@ if cutlist:
         series_name = subs[series_name]
     season_ep = TVDB.get_ssxee_by_seriesname_episodename(series_name, episode_name)
     ep = (basename, series_name, str(season_ep[0]).zfill(2), str(season_ep[1]).zfill(2))
-    print ep
-    outfile = os.path.join(output_dir, "%s %sx%s" % (ep[1], ep[2], ep[3]))
+    output_name = "%s %sx%s" %(ep[1], ep[2], ep[3])
+    outfile = os.path.join(output_dir, output_name)
     mythtranscode_inout = ["-c", chanid, "-s", starttime, "-o", "%s.mpg" % outfile]
     for arg in mythtranscode_inout:
         mythtranscode_command.append(arg)
@@ -83,11 +82,16 @@ if cutlist:
     hb_inout = ["-i", "%s.mpg" % outfile, "-o", "%s.m4v" % outfile]
     for arg in hb_inout:
         hb_command.append(arg)
-    print mythtranscode_command
-    print hb_command
-#    subprocess.Popen(mythtranscode_command, stderr=subprocess.STDOUT,\
-#                     stdout=subprocess.PIPE).communicate()
-#    subprocess.Popen(hb_command, stderr=subprocess.STDOUT,\
-#                     stdout=subprocess.PIPE).communicate()
+    print "Transcoding %s.mpg." % (output_name,)
+    subprocess.Popen(mythtranscode_command, stderr=subprocess.STDOUT,\
+                     stdout=subprocess.PIPE).communicate()
+    print "Converting %s.mpg to %s.m4v." % (output_name, output_name)
+    subprocess.Popen(hb_command, stderr=subprocess.STDOUT,\
+                     stdout=subprocess.PIPE).communicate()
+    os.remove("%s.mpg" % (outfile,))
+    os.remove("%s.mpg.map" % (outfile,))
+    cmd = ['sudo', '/bin/chown', '1000:1000', '%s.m4v' % outfile]
+    subprocess.Popen(cmd, stderr=subprocess.STDOUT, \
+                     stdout=subprocess.PIPE).communicate()
 else:
     print "Cutlist doesn't exist for recording %s" % (basename)
