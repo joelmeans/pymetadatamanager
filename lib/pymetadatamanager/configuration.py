@@ -45,10 +45,10 @@ class Config(object):
         if platform == 'linux2' or platform == 'linux':
             config = '.pymetadatamanager'
         elif platform == 'darwin':
-            config = os.poth.join('Library', 'Application Support', \
+            config = os.path.join('Library', 'Application Support', \
                                   'PyMetadataManager')
         elif platform == 'win32':
-            config = os.poth.join('AppData', 'Local')
+            config = os.path.join('AppData', 'Local')
         config_dir = os.path.join(self.home_dir, config)
         if os.path.exists(config_dir):
             if not os.path.isdir(config_dir):
