@@ -15,7 +15,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 ## Technical TODO
 
-01. Add a settings file and GUI interface for the settings.
+01. Add <del>a settings file and</del> GUI interface for the settings.
 
 02. <del>Add a button to the GUI to scan the media collection.</del>
 

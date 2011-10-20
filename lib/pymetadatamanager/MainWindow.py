@@ -646,7 +646,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.tableView_season_banners_wide.setModel(empty_model)
         
     def scan_files(self):
-        for video_dir in config.video_dirs:
+        for video_dir in config.tv_dirs:
             self.progress.setLabelText("Scanning Files from %s into DB..." \
                                        %  (video_dir))
             print "Scanning Files"

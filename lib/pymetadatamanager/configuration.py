@@ -23,6 +23,7 @@ __date__ ="$Oct 13, 2011 12:46:59 PM$"
 
 import os
 import sys
+from PyQt4 import QtXml
 
 class Config(object):
     """
@@ -31,8 +32,13 @@ class Config(object):
     def __init__(self):
         self.home_dir = os.environ['HOME']
         self.config_dir = self.get_config_dir()
-        self.video_dirs = ['/var/media/videos/TV/The Office (US)']
+	self.config_file = os.path.join(self.config_dir, 'config.xml')
+	if not os.path.isfile(self.config_file):
+            self.create_config_file()
         self.tvshowdb = os.path.join(self.config_dir, 'TV.db')
+        self.tv_dirs = []
+	self.movie_dirs = []
+        self.read_config_file()
 
     def __del__(self):
         try:
@@ -58,3 +64,49 @@ class Config(object):
             os.mkdir(config_dir)
 
         return config_dir
+
+    def create_config_file(self):
+        platform = sys.platform
+        if platform == 'linux2' or platform == 'linux':
+            default_tv_dir = os.path.join(self.home_dir, 'Videos', 'TV')
+            default_movie_dir = os.path.join(self.home_dir, 'Videos', 'Movies')
+        elif platform == 'darwin':
+            default_tv_dir = os.path.join(self.home_dir, 'Movies', 'TV')
+            default_movie_dir = os.path.join(self.home_dir, 'Movies', 'Movies')
+        elif platform == 'win32':
+            default_tv_dir = os.path.join(self.home_dir, 'My Videos', 'TV')
+            default_movie_dir = os.path.join(self.home_dir, 'My Videos', 'Movies')
+        dom = QtXml.QDomDocument()
+        xml_header_pi = dom.createProcessingInstruction('xml', 'version="1.0"')
+	dom.appendChild(xml_header_pi)
+        root = dom.createElement("configuration")
+        dom.appendChild(root)
+        tv_dir = dom.createElement("video_dir")
+        tv_dir.setAttribute("type", "TV")
+	tv_dir_text = dom.createTextNode(default_tv_dir)
+	tv_dir.appendChild(tv_dir_text)
+        root.appendChild(tv_dir)
+        movie_dir = dom.createElement("video_dir")
+        movie_dir.setAttribute("type", "Movies")
+	movie_dir_text = dom.createTextNode(default_movie_dir)
+	movie_dir.appendChild(movie_dir_text)
+        root.appendChild(movie_dir)
+        config = open(self.config_file, 'w')
+        config.write(dom.toString(4))
+        config.close()
+
+    def read_config_file(self):
+        config_file = os.path.join(self.config_dir, 'config.xml')
+	dom = QtXml.QDomDocument()
+	data = open(config_file, 'r')
+	dom.setContent(data.read())
+	data.close()
+	config = dom.firstChildElement("configuration")
+	video_dir = config.firstChildElement("video_dir")
+	while not video_dir.isNull():
+            if video_dir.attribute('type') == "TV":
+                self.tv_dirs.append(str(video_dir.text()))
+            elif video_dir.attribute('type') == "Movies":
+                self.movie_dirs.append(str(video_dir.text()))
+	    video_dir = video_dir.nextSiblingElement("video_dir")
+
