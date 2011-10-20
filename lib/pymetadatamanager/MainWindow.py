@@ -29,6 +29,7 @@ from scanner import Scanner
 from models import AbstractShowModel, AbstractBannerModel, EmptyTableModel, \
     AbstractBannerWideModel
 from configuration import Config
+from configuration_dialog import ConfigDialog
 
 #Get configuration information
 config = Config()
@@ -91,6 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
         
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
+        self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.tableView_series_banners.clicked.connect(self.series_banner_selected)
         self.ui.tableView_series_banners_wide.clicked.connect(self.series_banner_wide_selected)
         self.ui.tableView_series_fanart.clicked.connect(self.series_fanart_selected)
@@ -116,6 +118,9 @@ class MainWindow(QtGui.QMainWindow):
         self.series_fanart_banners_url = []
         self.season_banners_url = []
         self.season_banners_wide_url = []
+
+        #Initialize the configuration dialog
+        self.config_dialog = ConfigDialog()
 
     def column_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -698,6 +703,9 @@ class MainWindow(QtGui.QMainWindow):
         self.clear_season_artwork()
         self.clear_episode_info()
         self.clear_series_artwork()
+
+    def edit_preferences(self):
+        self.config_dialog.show()
 
     def series_banner_selected(self, index):
         self.series_banner = self.ui.tableView_series_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
