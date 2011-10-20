@@ -30,7 +30,7 @@ class Config(object):
     Provides configuration information for pymetadatamanager
     """
     def __init__(self):
-        self.home_dir = os.environ['HOME']
+        self.home_dir = os.path.expanduser('~')
         self.config_dir = self.get_config_dir()
 	self.config_file = os.path.join(self.config_dir, 'config.xml')
 	if not os.path.isfile(self.config_file):
@@ -54,7 +54,7 @@ class Config(object):
             config = os.path.join('Library', 'Application Support', \
                                   'PyMetadataManager')
         elif platform == 'win32':
-            config = os.path.join('AppData', 'Local')
+            config = os.path.join('AppData', 'Local', 'PyMetadataManager')
         config_dir = os.path.join(self.home_dir, config)
         if os.path.exists(config_dir):
             if not os.path.isdir(config_dir):
