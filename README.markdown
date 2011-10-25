@@ -33,15 +33,7 @@ to install it and run
 
 	pymetadatamanager
 
-<<<<<<< HEAD
-to run the program.
-
-This is written in PyQt4, which I am also learning as I go.
-=======
 to run the program.  The main thing that is not working (which makes the program rather useless as it is) is the ability to save the artwork and nfo files.  This will take a bit to add, and I will get to it when I can.  I also have some plans to rearrange the GUI a bit.
-
->>>>>>> 94da8b0... Added a way to clear the cache.
-
 
 ## Updates
 
