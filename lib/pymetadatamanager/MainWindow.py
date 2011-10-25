@@ -21,6 +21,7 @@
 __author__="jlmeans"
 __date__ ="$Jan 15, 2010 3:59:23 PM$"
 
+import os.path
 from PyQt4 import QtGui, QtCore
 from scraper_ui import Ui_MainWindow
 from tvshowdb import TVShowDB
@@ -93,6 +94,7 @@ class MainWindow(QtGui.QMainWindow):
         
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
+        self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
         self.ui.tableView_series_banners.clicked.connect(self.series_banner_selected)
         self.ui.tableView_series_banners_wide.clicked.connect(self.series_banner_wide_selected)
         self.ui.tableView_series_fanart.clicked.connect(self.series_fanart_selected)
@@ -706,6 +708,14 @@ class MainWindow(QtGui.QMainWindow):
 
     def edit_preferences(self):
         self.config_dialog.show()
+
+    def clear_cache(self):
+        top = os.path.join(config.config_dir, "cache")
+        for root, dirs, files in os.walk(top, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
 
     def series_banner_selected(self, index):
         self.series_banner = self.ui.tableView_series_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()

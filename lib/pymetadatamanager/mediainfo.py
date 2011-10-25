@@ -50,6 +50,8 @@ class MediaInfo(object):
         try:
             if os.path.exists(self.temp_file):
                 os.remove(self.temp_file)
+            if os.path.isdir(self.temp_dir):
+                os.remove(self.temp_dir)
         except AttributeError:
 	    pass
         

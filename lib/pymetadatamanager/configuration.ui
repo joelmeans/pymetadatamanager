@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
-    <height>277</height>
+    <width>554</width>
+    <height>240</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>240</y>
+     <x>200</x>
+     <y>190</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -46,9 +46,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>69</y>
-     <width>391</width>
-     <height>91</height>
+     <y>70</y>
+     <width>531</width>
+     <height>102</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -71,7 +71,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>MediaInfo Location</string>
+         <string>MediaInfo Path</string>
         </property>
        </widget>
       </item>
@@ -79,16 +79,6 @@
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLineEdit" name="lineEdit_movie_dirs">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QLineEdit" name="lineEdit_tv_dirs">
         <property name="sizePolicy">
@@ -100,7 +90,17 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_mediainfo_location">
+       <widget class="QLineEdit" name="lineEdit_movie_dirs">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit_mediainfo_path">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -111,26 +111,33 @@
       </item>
      </layout>
     </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QPushButton" name="pushButton_tv_browse">
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_movie_browse">
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_mediainfo_browse">
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
-  <zorder>buttonBox</zorder>
-  <zorder>lineEdit_tv_dirs</zorder>
-  <zorder>lineEdit_movie_dirs</zorder>
-  <zorder>label</zorder>
-  <zorder>label_2</zorder>
-  <zorder>label</zorder>
-  <zorder>label_2</zorder>
-  <zorder>label_3</zorder>
-  <zorder>lineEdit_mediainfo_location</zorder>
-  <zorder>label_4</zorder>
-  <zorder>label_3</zorder>
-  <zorder>label_4</zorder>
-  <zorder>lineEdit_mediainfo_location</zorder>
-  <zorder>label</zorder>
-  <zorder>label_2</zorder>
-  <zorder>lineEdit_tv_dirs</zorder>
-  <zorder>lineEdit_movie_dirs</zorder>
-  <zorder>label_3</zorder>
  </widget>
  <resources/>
  <connections>

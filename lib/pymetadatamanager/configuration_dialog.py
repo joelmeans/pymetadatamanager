@@ -21,6 +21,8 @@
 __author__="jlmeans"
 __date__ ="$Oct 20, 2011 4:59:23 PM$"
 
+import os.path
+from configuration import Config
 from configuration_ui import Ui_ConfigDialog
 from PyQt4 import QtGui
 
@@ -31,3 +33,50 @@ class ConfigDialog(QtGui.QDialog):
         self.ui = Ui_ConfigDialog()
         self.ui.setupUi(self)
 
+        self.config = Config()
+        self.ui.lineEdit_tv_dirs.setText(",".join(self.config.tv_dirs))
+        self.ui.lineEdit_movie_dirs.setText(",".join(self.config.movie_dirs))
+        self.ui.lineEdit_mediainfo_path.setText(self.config.mediainfo_path)
+        self.ui.pushButton_tv_browse.clicked.connect(self.tv_browser)
+        self.ui.pushButton_movie_browse.clicked.connect(self.movie_browser)
+        self.ui.pushButton_mediainfo_browse.clicked.connect(self.mediainfo_browser)
+        self.ui.buttonBox.accepted.connect(self.save_values)
+
+    def tv_browser(self):
+        old_filename = self.ui.lineEdit_tv_dirs.text()
+        filename = QtGui.QFileDialog.getExistingDirectory(self, "TV Directory", \
+                                                          old_filename)
+        if not filename == '':
+            self.ui.lineEdit_tv_dirs.setText(filename)
+        else:
+            self.ui.lineEdit_tv_dirs.setText(old_filename)
+
+    def movie_browser(self):
+        old_filename = self.ui.lineEdit_movie_dirs.text()
+        filename = QtGui.QFileDialog.getExistingDirectory(self, "Movie Directory", \
+                                                          old_filename)
+        if not filename == '':
+            self.ui.lineEdit_movie_dirs.setText(filename)
+        else:
+            self.ui.lineEdit_movie_dirs.setText(old_filename)
+
+
+    def mediainfo_browser(self):
+        old_path = self.ui.lineEdit_mediainfo_path.text()
+        path = QtGui.QFileDialog.getOpenFileName(self, \
+                                             "MediaInfo Path", \
+                                             os.path.expanduser("~"))
+        if not path == '':
+            self.ui.lineEdit_mediainfo_path.setText(path)
+        else:
+            self.ui.lineEdit_mediainfo_path.setText(old_path)
+
+    def save_values(self):
+        del self.config.tv_dirs[:]
+        for dir in str(self.ui.lineEdit_tv_dirs.text()).split(","):
+            self.config.tv_dirs.append(dir)
+        del self.config.movie_dirs[:]
+        for dir in str(self.ui.lineEdit_movie_dirs.text()).split(","):
+            self.config.movie_dirs.append(dir)
+        self.config.mediainfo_path = self.ui.lineEdit_mediainfo_path.text()
+        self.config.write_config_file()

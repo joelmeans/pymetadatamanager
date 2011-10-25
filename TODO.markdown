@@ -15,7 +15,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 ## Technical TODO
 
-01. Add <del>a settings file and</del> GUI interface for the settings.
+01. <del>Add a settings file and GUI interface for the settings.</del>
 
 02. <del>Add a button to the GUI to scan the media collection.</del>
 
@@ -39,7 +39,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 07. <del>Find a better way to display artwork.</del>
 
-08. Clear the cache on exiting (maybe not, just add GUI option to clear).
+08. <del>Clear the cache on exiting (maybe not, just add GUI option to clear).</del>
 
 09. Add a way to save the nfo file.
 
