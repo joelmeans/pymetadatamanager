@@ -732,6 +732,16 @@ class TVShowDB(object):
         result = self.sqlTV.fetchall()
         return result
 
+    def make_shows_list(self):
+        """Creates a list of shows in the database"""
+        show_list = []
+        self.sqlTV.execute('SELECT name FROM shows')
+        shows = self.sqlTV.fetchall()
+        for show in shows:
+            show_list.append(show[0])
+        show_list.sort()
+        return show_list
+
     def make_shows_dom(self):
         """Creates a QDomDocument for the shows in the database"""
         dom = QtXml.QDomDocument()
@@ -766,6 +776,40 @@ class TVShowDB(object):
                 season_done.append((series, season))
             elem_episode = dom.createElement("episode")
             text_episode = dom.createTextNode(str(number))
+            elem_episode.appendChild(text_episode)
+            elem_season.appendChild(elem_episode)
+        return dom
+
+    def make_seasons_episodes_dom(self, show):
+        """Creates a QDomDocument for the shows in the database"""
+        dom = QtXml.QDomDocument()
+        root = dom.createElement("show")
+        dom.appendChild(root)
+        showname = "%s%s%s" % ("%", show, "%")
+        self.sqlTV.execute('SELECT episodes.season_number, \
+         episodes.episode_number, episodes.name \
+         FROM filelinkepisode JOIN episodes \
+         ON filelinkepisode.idEpisode=episodes.id JOIN episodelinkshow \
+         ON episodelinkshow.idEpisode=episodes.id JOIN shows \
+         ON shows.id=episodelinkshow.idShow WHERE shows.name LIKE (?)', \
+         (showname,))
+        episodes = self.sqlTV.fetchall()
+        episodes.sort()
+        season_done = []
+        for episode in episodes:
+            season = episode[0]
+            number = episode[1]
+            name = episode[2]
+            if season_done.count(season):
+                pass
+            else:
+                elem_season = dom.createElement("season")
+                elem_season.setAttribute("number", season)
+                root.appendChild(elem_season)
+                season_done.append(season)
+            elem_episode = dom.createElement("episode")
+            elem_episode.setAttribute("number", number)
+            text_episode = dom.createTextNode(name)
             elem_episode.appendChild(text_episode)
             elem_season.appendChild(elem_episode)
         return dom
