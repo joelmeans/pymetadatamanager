@@ -338,9 +338,9 @@ class MainWindow(QtGui.QMainWindow):
         series_root = series_doc.firstChildElement('tvshow')
         #These are the lists we will populate from the series info
         season_banners_url = []
-	self.series_banners_url = []
+        self.series_banners_url = []
         self.series_banners_wide_url = []
-	self.series_fanart_banners_url = []
+        self.series_fanart_banners_url = []
         elem_series_banner = series_root.firstChildElement('thumb')
         while not elem_series_banner.isNull():
             try:
@@ -441,7 +441,7 @@ class MainWindow(QtGui.QMainWindow):
             filename = TVDB.retrieve_banner(str(banner_url).replace( \
              'banners/', 'banners/_cache/'))
             banner_pixmap = QtGui.QPixmap(filename)
-            series_banners.append(banner_pixmap)
+            series_banners.append((banner_pixmap, banner_url))
         banner_model_series = AbstractBannerModel(series_banners)
         self.ui.tableView_series_banners.setModel(banner_model_series)
         self.ui.tableView_series_banners.resizeColumnsToContents()
@@ -461,7 +461,7 @@ class MainWindow(QtGui.QMainWindow):
              self.series_banners_wide_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
-            series_banners_wide.append(banner_pixmap)
+            series_banners_wide.append((banner_pixmap, banner_url))
         banner_model_series_wide = AbstractBannerWideModel(series_banners_wide)
         self.ui.tableView_series_banners_wide.setModel(banner_model_series_wide)
         self.ui.tableView_series_banners_wide.resizeColumnsToContents()
@@ -481,7 +481,7 @@ class MainWindow(QtGui.QMainWindow):
              self.series_fanart_banners_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
-            series_fanart_banners.append(banner_pixmap)
+            series_fanart_banners.append((banner_pixmap, banner_url))
         banner_model_series_fanart = AbstractBannerModel(series_fanart_banners)
         self.ui.tableView_series_fanart.setModel(banner_model_series_fanart)
         self.ui.tableView_series_fanart.resizeColumnsToContents()
@@ -501,7 +501,7 @@ class MainWindow(QtGui.QMainWindow):
             filename = TVDB.retrieve_banner(str(banner_url).replace( \
              'banners/', 'banners/_cache/'))
             banner_pixmap = QtGui.QPixmap(filename)
-            season_banners.append(banner_pixmap)
+            season_banners.append((banner_pixmap, banner_url))
         banner_model_season = AbstractBannerModel(season_banners)
         self.ui.tableView_season_banners.setModel(banner_model_season)
         self.ui.tableView_season_banners.resizeColumnsToContents()
@@ -521,7 +521,7 @@ class MainWindow(QtGui.QMainWindow):
              self.season_banners_wide_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
-            season_banners_wide.append(banner_pixmap)
+            season_banners_wide.append((banner_pixmap, banner_url))
         banner_model_season_wide = AbstractBannerWideModel(season_banners_wide)
         self.ui.tableView_season_banners_wide.setModel(banner_model_season_wide)
         self.ui.tableView_season_banners_wide.resizeColumnsToContents()
@@ -718,17 +718,17 @@ class MainWindow(QtGui.QMainWindow):
                 os.rmdir(os.path.join(root, name))
 
     def series_banner_selected(self, index):
-        self.series_banner = self.ui.tableView_series_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+        self.series_banner = self.ui.tableView_series_banners.model().data(index, QtCore.Qt.UserRole)
 
     def series_banner_wide_selected(self, index):
-        self.series_banner_wide = self.ui.tableView_series_banners_wide.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+        self.series_banner_wide = self.ui.tableView_series_banners_wide.model().data(index, QtCore.Qt.UserRole)
 
     def series_fanart_selected(self, index):
-        self.series_fanart = self.ui.tableView_series_fanart.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+        self.series_fanart = self.ui.tableView_series_fanart.model().data(index, QtCore.Qt.UserRole)
 
     def season_banner_selected(self, index):
-        self.season_banner = self.ui.tableView_season_banners.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+        self.season_banner = self.ui.tableView_season_banners.model().data(index, QtCore.Qt.UserRole)
 
     def season_banner_wide_selected(self, index):
-        self.season_banner_wide = self.ui.tableView_season_banners_wide.model().data(index, QtCore.Qt.DecorationRole).toPyObject()
+        self.season_banner_wide = self.ui.tableView_season_banners_wide.model().data(index, QtCore.Qt.UserRole)
 

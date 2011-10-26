@@ -178,10 +178,12 @@ class AbstractBannerModel(QtCore.QAbstractTableModel):
     def data(self, index, role):
         if not index.isValid():
             return QtCore.QVariant()
+        if role == QtCore.Qt.UserRole:
+            return self.list[index.row()][index.column()][1]
         elif role != QtCore.Qt.DecorationRole:
             return QtCore.QVariant()
         return QtCore.QVariant( \
-         self.list[index.row()][index.column()])
+         self.list[index.row()][index.column()][0])
 
     def columnCount(self, parent):
         try:    
@@ -207,9 +209,11 @@ class AbstractBannerWideModel(QtCore.QAbstractTableModel):
     def data(self, index, role):
         if not index.isValid():
             return QtCore.QVariant()
+        if role == QtCore.Qt.UserRole:
+            return self.list[index.row()][1]
         elif role != QtCore.Qt.DecorationRole:
             return QtCore.QVariant()
-        return QtCore.QVariant(self.list[index.row()])
+        return QtCore.QVariant(self.list[index.row()][0])
 
     def columnCount(self, parent):
         return 1
