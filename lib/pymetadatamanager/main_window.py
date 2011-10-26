@@ -75,6 +75,7 @@ class MainWindow(QtGui.QMainWindow):
 
         # Connect sockets to slots
         self.ui.listView_shows.clicked.connect(self.list_view_clicked)
+        self.ui.columnView_season_episode.clicked.connect(self.column_view_clicked)
 #        self.ui.combo_actors.currentIndexChanged.connect(self.set_actor_thumb)
 #        self.ui.tabWidget_series_artwork.currentChanged.connect(self.set_series_artwork)
 #        self.ui.tabWidget_season_artwork.currentChanged.connect(self.set_season_artwork)
@@ -145,33 +146,17 @@ class MainWindow(QtGui.QMainWindow):
         this_node_data = index.data().toString()
         parent = index.parent()
         parent_data = parent.data().toString()
-        grandparent = parent.parent()
-        grandparent_data = grandparent.data().toString()
 
-        if parent_data == "":           #we are at the series level
-            self.series_name = this_node_data
-            self.season_number = -1
-            self.episode_number = -1
-            self.clear_season_artwork()
-            self.clear_episode_info()
-            self.clear_series_artwork()
-            self.set_series_info()
-            self.get_series_artwork_list()
-            self.ui.pushButton_save_series_changes.setEnabled(0)
-            self.ui.pushButton_revert_series_changes.setEnabled(0)
-        elif grandparent_data == "":    #we are at the season level
-            self.series_name = parent_data
+        if parent_data == "":    #we are at the season level
             self.season_number = int(this_node_data)
-            self.episode_number = -1
-            self.clear_episode_info()
-            self.get_season_artwork_list()
+#            self.clear_episode_info()
+#            self.get_season_artwork_list()
         else:                           #we are at the episode level
-            self.series_name = grandparent_data
             self.season_number = int(parent_data)
-            self.episode_number = int(this_node_data)
-            self.set_episode_info()
-            self.ui.pushButton_save_episode_changes.setEnabled(0)
-            self.ui.pushButton_revert_episode_changes.setEnabled(0)
+            self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
+#            self.set_episode_info()
+#            self.ui.pushButton_save_episode_changes.setEnabled(0)
+#            self.ui.pushButton_revert_episode_changes.setEnabled(0)
 
 #    def set_series_name_updated(self, text):
 #        self.series_name_updated = 1
