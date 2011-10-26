@@ -59,6 +59,10 @@ class MainWindow(QtGui.QMainWindow):
         #Set that as the model for the listView
         self.ui.listView_shows.setModel(model)
 
+        #Set the initial tabs to be shown
+        self.ui.tabWidget_main.setCurrentIndex(0)
+        self.ui.tabWidget_tv_info.setCurrentIndex(0)
+
         #Create a progress dialog for downloading images
         self.progress = QtGui.QProgressDialog()
         self.progress.setCancelButtonText(QtCore.QString())
