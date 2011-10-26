@@ -36,7 +36,7 @@ class TVShowDB(object):
     def __init__(self, db_name):
         self.dbTV = sqlite.connect(db_name)
         self.sqlTV = self.dbTV.cursor()
-        self.new_version = 3
+        self.new_version = 4
         self.tvdb = TVDB()
         self.MediaInfo = MediaInfo()
 
@@ -129,6 +129,9 @@ class TVShowDB(object):
              (idAudioFormat INTEGER, idFile INTEGER)')
             self.sqlTV.execute('CREATE TABLE sublinkfile \
              (idSubtitleFormat INTEGER, idFile INTEGER)')
+        if current_version < 4:
+            self.sqlTV.execute('CREATE TABLE selectedbannerlinkshow \
+             (idBanner INTEGER, idShow INTEGER, type VARCHAR(50))')
         if not current_version == 1:
             self.sqlTV.execute('UPDATE version SET idVersion=(?)', \
              (self.new_version, ))
