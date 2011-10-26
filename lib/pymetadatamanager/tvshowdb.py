@@ -131,7 +131,7 @@ class TVShowDB(object):
              (idSubtitleFormat INTEGER, idFile INTEGER)')
         if current_version < 4:
             self.sqlTV.execute('CREATE TABLE selectedbannerlinkshow \
-             (idBanner INTEGER, idShow INTEGER, type VARCHAR(50))')
+             (idBanner INTEGER, idShow INTEGER, type VARCHAR(50), season INTEGER)')
         if not current_version == 1:
             self.sqlTV.execute('UPDATE version SET idVersion=(?)', \
              (self.new_version, ))
@@ -1272,7 +1272,7 @@ class TVShowDB(object):
         self.sqlTV.execute('SELECT filepath, filename FROM files')
         files = self.sqlTV.fetchall()
         for file in files:
-            fullpath = str(file[0]) + "/" + str(file[1])
+            fullpath = os.path.join(str(file[0]), str(file[1]))
             if not os.path.exists(fullpath):
                 print "  Removing %s" % (str(file[1]),)
                 self.sqlTV.execute('DELETE FROM files WHERE filename=(?)', \
@@ -1285,4 +1285,36 @@ class TVShowDB(object):
             if not len(self.sqlTV.fetchall()):
                 self.sqlTV.execute('DELETE FROM filelinkepisode \
                  WHERE idFile=(?)', (int(link[0]),))
+        self.dbTV.commit()
+
+    def link_selected_banner_show(self, show, url):
+        """Links selected banner to specific show"""
+        self.sqlTV.execute('SELECT url FROM banners')
+        base_url_results = self.sqlTV.fetchall()
+        base_urls = []
+        for base_url in base_url_results:
+            base_urls.append(str(base_url[0]))
+        for base_url in base_urls:
+            url = url.lstrip(base_url).lstrip("/")
+        search_url = "%s%s%s" % ("%", url, "%")
+        self.sqlTV.execute( \
+          'SELECT id, type, season FROM banners WHERE path LIKE (?)', (search_url,))
+        banner_id, banner_type, banner_season = self.sqlTV.fetchall()[0]
+        search_name = "%s%s%s" % ("%", show, "%")
+        self.sqlTV.execute('SELECT id FROM shows WHERE name LIKE (?)', \
+                           (search_name,))
+        show_id = self.sqlTV.fetchall()[0][0]
+        self.sqlTV.execute('SELECT idBanner FROM selectedbannerlinkshow \
+                            WHERE idShow LIKE (?) \
+                            AND type LIKE (?) \
+                            AND season LIKE (?)', \
+                           (show_id, banner_type, banner_season))
+        result = self.sqlTV.fetchall()
+        for link in result:
+            banner_id_del = link[0]
+            self.sqlTV.execute('DELETE FROM selectedbannerlinkshow \
+                                WHERE idBanner=(?)', (int(banner_id_del),))
+        self.sqlTV.execute('INSERT INTO selectedbannerlinkshow ("idBanner", \
+                 "idShow", "type", "season") VALUES (?, ?, ?, ?)', \
+                 (banner_id, show_id, banner_type, banner_season))
         self.dbTV.commit()
