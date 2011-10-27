@@ -380,7 +380,7 @@ class TVDB(object):
 
     def retrieve_banner(self, url):
         """Retrieves a banner from <url> and saves it as <filename>"""
-        if not str(url) == 'none':
+        if not str(url) == 'none' and not str(url) == '':
             banner_name = url.split("/")[-1]
             banner_type = url.split("/")[-2]
             if banner_type == "original":
