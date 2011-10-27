@@ -35,6 +35,7 @@ from models import ShowListModel,\
                    AbstractBannerWideModel
 from configuration import Config
 from configuration_dialog import ConfigDialog
+from banner_dialog import BannerDialog
 
 #Get configuration information
 config = Config()
@@ -98,6 +99,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.line_tvdb_rating.textEdited.connect(self.set_episode_tvdb_rating_updated)
         self.ui.pushButton_save_episode_changes.pressed.connect(self.update_episode)
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
+        self.ui.pushButton_new_poster.pressed.connect(self.select_banner)
+        self.ui.pushButton_new_wide_banner.pressed.connect(self.select_banner)
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
@@ -128,6 +131,14 @@ class MainWindow(QtGui.QMainWindow):
 
         #Initialize the configuration dialog
         self.config_dialog = ConfigDialog()
+        self.banner_dialog = BannerDialog()
+        
+        self.ui.pushButton_save_series_changes.setEnabled(0)
+        self.ui.pushButton_revert_series_changes.setEnabled(0)
+        self.ui.pushButton_save_episode_changes.setEnabled(0)
+        self.ui.pushButton_revert_episode_changes.setEnabled(0)
+        self.ui.pushButton_new_poster.setEnabled(0)
+        self.ui.pushButton_new_wide_banner.setEnabled(0)
 
     def list_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -139,6 +150,8 @@ class MainWindow(QtGui.QMainWindow):
         self.set_series_info()
         self.ui.pushButton_save_series_changes.setEnabled(0)
         self.ui.pushButton_revert_series_changes.setEnabled(0)
+        self.ui.pushButton_new_poster.setEnabled(1)
+        self.ui.pushButton_new_wide_banner.setEnabled(1)
 
     def column_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -708,6 +721,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def edit_preferences(self):
         self.config_dialog.show()
+
+    def select_banner(self):
+        self.banner_dialog.show()
 
     def clear_cache(self):
         top = os.path.join(config.config_dir, "cache")
