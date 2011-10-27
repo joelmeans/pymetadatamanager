@@ -109,9 +109,9 @@ class TVDB(object):
             self.writers = [writer.strip() for writer in \
               unicode(node.firstChildElement("Writer").text(), \
                       "latin-1").split("|") if writer]
-            if not node.firstChildElement("filename").isNull():
-                self.thumb = "%s/%s" % (tvdb_banner_url, \
-                 str(node.firstChildElement("filename").text()))
+            thumb_path = str(node.firstChildElement("filename").text())
+            if not thumb_path == "":
+                self.thumb = "%s/%s" % (tvdb_banner_url, thumb_path)
             else:
                 self.thumb = ""
             self.last_updated = node.firstChildElement("lastupdated").text()
