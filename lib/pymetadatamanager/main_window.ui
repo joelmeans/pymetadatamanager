@@ -231,7 +231,7 @@
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QPushButton" name="pushButton_new_poster">
+                     <widget class="QPushButton" name="pushButton_new_series_poster">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -275,7 +275,7 @@
                      </widget>
                     </item>
                     <item row="1" column="1">
-                     <widget class="QPushButton" name="pushButton_new_wide_banner">
+                     <widget class="QPushButton" name="pushButton_new_series_wide_banner">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                         <horstretch>0</horstretch>

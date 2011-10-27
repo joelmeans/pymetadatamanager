@@ -1289,13 +1289,13 @@ class TVShowDB(object):
 
     def link_selected_banner_show(self, show, url):
         """Links selected banner to specific show"""
-        self.sqlTV.execute('SELECT url FROM banners')
+        self.sqlTV.execute('SELECT DISTINCT url FROM banners')
         base_url_results = self.sqlTV.fetchall()
         base_urls = []
         for base_url in base_url_results:
-            base_urls.append(str(base_url[0]))
+            base_urls.append("%s/" % str(base_url[0]))
         for base_url in base_urls:
-            url = url.lstrip(base_url).lstrip("/")
+            url = url.replace(base_url, '')
         search_url = "%s%s%s" % ("%", url, "%")
         self.sqlTV.execute( \
           'SELECT id, type, season FROM banners WHERE path LIKE (?)', (search_url,))
