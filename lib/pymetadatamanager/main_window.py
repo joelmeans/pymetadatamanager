@@ -99,8 +99,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.line_tvdb_rating.textEdited.connect(self.set_episode_tvdb_rating_updated)
         self.ui.pushButton_save_episode_changes.pressed.connect(self.update_episode)
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
-        self.ui.pushButton_new_poster.pressed.connect(self.select_banner)
-        self.ui.pushButton_new_wide_banner.pressed.connect(self.select_banner)
+        self.ui.pushButton_new_poster.pressed.connect(self.select_poster)
+        self.ui.pushButton_new_wide_banner.pressed.connect(self.select_wide_banner)
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
@@ -722,8 +722,19 @@ class MainWindow(QtGui.QMainWindow):
     def edit_preferences(self):
         self.config_dialog.show()
 
-    def select_banner(self):
-        self.banner_dialog.show()
+    def select_poster(self):
+        accepted = self.banner_dialog.exec_()
+        if accepted:
+            #Do something with the new banner url.  Figure out how to get it.
+            pass
+        self.ui.pushButton_new_poster.setDown(False)
+
+    def select_wide_banner(self):
+        accepted = self.banner_dialog.exec_()
+        if accepted:
+            #Do something with the new banner url.  Figure out how to get it.
+            pass
+        self.ui.pushButton_new_wide_banner.setDown(False)
 
     def clear_cache(self):
         top = os.path.join(config.config_dir, "cache")
