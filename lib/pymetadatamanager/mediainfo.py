@@ -22,7 +22,7 @@ __author__="jmeans"
 __date__ ="$Feb 12, 2010 9:26:59 AM$"
 
 import os
-from subprocess import Popen
+import subprocess
 from PyQt4 import QtXml, QtCore
 from configuration import Config
 
@@ -37,6 +37,7 @@ class MediaInfo(object):
     """
     def __init__(self):
         config = Config()
+	self.mediainfo_cmd = config.mediainfo_path
         self.temp_dir = os.path.join(config.config_dir, "temp")
         if os.path.exists(self.temp_dir):
             if not os.path.isdir(self.temp_dir):
@@ -47,21 +48,22 @@ class MediaInfo(object):
         self.temp_file = os.path.join(self.temp_dir, "info.xml")
 
     def __del__(self):
-        try:
-            if os.path.exists(self.temp_file):
-                os.remove(self.temp_file)
-        except AttributeError:
+#        try:
+#            if os.path.exists(self.temp_file):
+#                os.remove(self.temp_file)
+#        except AttributeError:
             pass
         
-    def make_info_xml_native(self, infile, outfile="none"):
+    def make_info_xml_native(self, infile):
         """Calls 'mediainfo' to output an xml file with metadata for infile"""
-        output = open(self.temp_file, 'w')
-        info = Popen(["/usr/bin/mediainfo", "--Output=xml", infile], \
-         stdout=output)
-        info.wait()
+        output = open(self.temp_file, 'wb')
+	mediainfo_cmd_list = [self.mediainfo_cmd, "--Output=xml", infile]
+	try:
+            subprocess.Popen(mediainfo_cmd_list, stderr=subprocess.STDOUT, \
+                             stdout=output).communicate()
+        except OSError:
+            output.write("<MediaInfo />")
         output.close()
-        if not outfile == "none":
-            os.system ("cp %s %s" % (self.temp_file, outfile))
 
     def make_info_dom(self, infile):
         """Creates a QDomDocument from the 'mediainfo' output on infile"""

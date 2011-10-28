@@ -1319,9 +1319,11 @@ class TVShowDB(object):
                  (banner_id, show_id, banner_type, banner_season))
         self.dbTV.commit()
 
-    def get_selected_banner_url(self, show, type, season):
-        series_id = self.get_series_id(show)
+    def get_selected_banner_url(self, series_id, type, season):
         self.sqlTV.execute('SELECT banners.url, banners.path FROM selectedbannerlinkshow JOIN banners ON selectedbannerlinkshow.idBanner=banners.id JOIN shows ON selectedbannerlinkshow.idShow=shows.id WHERE shows.seriesid=(?) AND selectedbannerlinkshow.type=(?) AND selectedbannerlinkshow.season=(?)', (series_id, type, season))
-        base_url, path = self.sqlTV.fetchall()[0]
-        url = "%s/%s" % (base_url, path)
+        try:
+            base_url, path = self.sqlTV.fetchall()[0]
+            url = "%s/%s" % (base_url, path)
+        except IndexError:
+            url = ""
         return url

@@ -332,6 +332,20 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ui.lineEdit_tvdb_series_id.setText(str(series_id))        
 
+        self.selected_series_poster = dbTV.get_selected_banner_url(series_id, 'poster', '')
+        if not self.selected_series_poster == "":
+            filename = TVDB.retrieve_banner(self.selected_series_poster)
+            series_poster_pixmap = QtGui.QPixmap(filename)
+            self.ui.label_series_banner.setPixmap(series_poster_pixmap)
+        else:
+            self.ui.label_series_banner.clear()
+        self.selected_series_wide_banner = dbTV.get_selected_banner_url(series_id, 'series', '')
+        if not self.selected_series_wide_banner == "":
+            filename = TVDB.retrieve_banner(self.selected_series_wide_banner)
+            series_wide_pixmap = QtGui.QPixmap(filename)
+            self.ui.label_banner_wide.setPixmap(series_wide_pixmap)
+        else:
+            self.ui.label_banner_wide.clear()
         self.ui.tabWidget_tv_info.setCurrentIndex(0)
 
     def set_episode_info(self):
@@ -435,14 +449,14 @@ class MainWindow(QtGui.QMainWindow):
         banner_dialog = BannerDialog(self.series_name, "series_posters")
         accepted = banner_dialog.exec_()
         if accepted:
-            pass
+            self.set_series_info()
         self.ui.pushButton_new_series_poster.setDown(False)
 
     def select_series_wide_banner(self):
         banner_dialog = BannerDialog(self.series_name, "series_wide")
         accepted = banner_dialog.exec_()
         if accepted:
-            pass
+            self.set_series_info()
         self.ui.pushButton_new_series_wide_banner.setDown(False)
 
     def scan_files(self):

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1370</width>
-    <height>1166</height>
+    <height>994</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,7 +52,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_tv_info">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_series_info">
              <attribute name="title">
@@ -96,8 +96,8 @@
                    <widget class="QPlainTextEdit" name="plainTextEdit_overview">
                     <property name="minimumSize">
                      <size>
-                      <width>0</width>
-                      <height>100</height>
+                      <width>300</width>
+                      <height>50</height>
                      </size>
                     </property>
                     <property name="maximumSize">
@@ -190,7 +190,14 @@
                    </widget>
                   </item>
                   <item row="6" column="0">
-                   <widget class="QLineEdit" name="lineEdit_tvdb_series_id"/>
+                   <widget class="QLineEdit" name="lineEdit_tvdb_series_id">
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
                   </item>
                   <item row="6" column="1">
                    <widget class="QLabel" name="label_tvdb_series_id">
@@ -200,7 +207,14 @@
                    </widget>
                   </item>
                   <item row="7" column="0">
-                   <widget class="QComboBox" name="combo_actors"/>
+                   <widget class="QComboBox" name="combo_actors">
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
                   </item>
                   <item row="7" column="1">
                    <widget class="QLabel" name="label_actors">
@@ -337,6 +351,41 @@
              <attribute name="title">
               <string>Season Info</string>
              </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QListView" name="listView_season_episode_full"/>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_season_poster">
+                  <property name="minimumSize">
+                   <size>
+                    <width>300</width>
+                    <height>450</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>No Season Poster Available</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_season_banner_wide">
+                <property name="minimumSize">
+                 <size>
+                  <width>760</width>
+                  <height>140</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>No Season Wide Banner Available</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
             <widget class="QWidget" name="tab_episode_info">
              <attribute name="title">
@@ -385,7 +434,7 @@
                   <property name="minimumSize">
                    <size>
                     <width>400</width>
-                    <height>300</height>
+                    <height>100</height>
                    </size>
                   </property>
                  </widget>
@@ -398,7 +447,14 @@
                  </widget>
                 </item>
                 <item row="3" column="0">
-                 <widget class="QLineEdit" name="line_airdate"/>
+                 <widget class="QLineEdit" name="line_airdate">
+                  <property name="minimumSize">
+                   <size>
+                    <width>400</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
                 </item>
                 <item row="3" column="1">
                  <widget class="QLabel" name="label_airdate">
@@ -408,7 +464,14 @@
                  </widget>
                 </item>
                 <item row="4" column="0">
-                 <widget class="QLineEdit" name="line_tvdb_id"/>
+                 <widget class="QLineEdit" name="line_tvdb_id">
+                  <property name="minimumSize">
+                   <size>
+                    <width>400</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
                 </item>
                 <item row="4" column="1">
                  <widget class="QLabel" name="label_tvdb_id">
@@ -418,7 +481,14 @@
                  </widget>
                 </item>
                 <item row="5" column="0">
-                 <widget class="QLineEdit" name="line_tvdb_rating"/>
+                 <widget class="QLineEdit" name="line_tvdb_rating">
+                  <property name="minimumSize">
+                   <size>
+                    <width>400</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
                 </item>
                 <item row="5" column="1">
                  <widget class="QLabel" name="label_tvdb_rating">
@@ -554,7 +624,7 @@
           <item>
            <widget class="QColumnView" name="columnView_season_episode">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -562,13 +632,13 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>360</height>
+              <height>200</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>360</height>
+              <height>400</height>
              </size>
             </property>
            </widget>

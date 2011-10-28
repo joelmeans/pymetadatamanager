@@ -257,6 +257,5 @@ class BannerDialog(QtGui.QDialog):
 
     def accept(self):
         if not self.banner_url == '':
-            print "writing link"
             dbTV.link_selected_banner_show(self.series_name, self.banner_url)
         QtGui.QDialog.accept(self)
