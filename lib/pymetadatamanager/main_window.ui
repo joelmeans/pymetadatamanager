@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1370</width>
-    <height>994</height>
+    <width>1394</width>
+    <height>996</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -351,7 +351,7 @@
              <attribute name="title">
               <string>Season Info</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
@@ -373,17 +373,63 @@
                </layout>
               </item>
               <item>
-               <widget class="QLabel" name="label_season_banner_wide">
-                <property name="minimumSize">
-                 <size>
-                  <width>760</width>
-                  <height>140</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>No Season Wide Banner Available</string>
-                </property>
-               </widget>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QLabel" name="label_season_banner_wide">
+                  <property name="minimumSize">
+                   <size>
+                    <width>760</width>
+                    <height>140</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>No Season Wide Banner Available</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <widget class="QPushButton" name="pushButton_new_season_poster">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Select New Poster</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButton_new_season_wide">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Select New Wide Banner</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -661,7 +707,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1370</width>
+     <width>1394</width>
      <height>22</height>
     </rect>
    </property>

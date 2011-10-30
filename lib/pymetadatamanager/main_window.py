@@ -28,6 +28,7 @@ from tvshowdb import TVShowDB
 from tvdb import TVDB
 from scanner import Scanner
 from models import ShowListModel,\
+                   SeasonListModel,\
                    AbstractShowModel,\
                    AbstractSeasonEpisodeModel,\
                    AbstractBannerModel,\
@@ -99,6 +100,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
         self.ui.pushButton_new_series_poster.pressed.connect(self.select_series_poster)
         self.ui.pushButton_new_series_wide_banner.pressed.connect(self.select_series_wide_banner)
+        self.ui.pushButton_new_season_poster.pressed.connect(self.select_season_poster)
+        self.ui.pushButton_new_season_wide.pressed.connect(self.select_season_wide_banner)
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
@@ -157,10 +160,12 @@ class MainWindow(QtGui.QMainWindow):
         if parent_data == "":    #we are at the season level
             self.season_number = int(this_node_data)
             self.clear_episode_info()
+            self.set_season_info()
 #            self.get_season_artwork_list()
         else:                           #we are at the episode level
             self.season_number = int(parent_data)
             self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
+            self.set_season_info()
             self.set_episode_info()
             self.ui.pushButton_save_episode_changes.setEnabled(0)
             self.ui.pushButton_revert_episode_changes.setEnabled(0)
@@ -277,6 +282,22 @@ class MainWindow(QtGui.QMainWindow):
         model = AbstractSeasonEpisodeModel(dom)
         self.ui.columnView_season_episode.setModel(model)
         self.ui.columnView_season_episode.setColumnWidths([300,550,50])
+
+    def set_season_info(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        """Sets the info for the current season in the display window"""
+        season_list = dbTV.make_episodes_list(series_id, self.season_number)
+        #Turn that into a model
+        model = SeasonListModel(season_list)
+        #Set that as the model for the listView
+        self.ui.listView_season_episode_full.setModel(model)
+        self.selected_season_poster = dbTV.get_selected_banner_url(series_id, 'season', self.season_number)
+        if not self.selected_season_poster == "":
+            filename = TVDB.retrieve_banner(self.selected_season_poster)
+            season_poster_pixmap = QtGui.QPixmap(filename)
+            self.ui.label_season_poster.setPixmap(season_poster_pixmap)
+        else:
+            self.ui.label_season_poster.clear()
 
     def set_series_info(self):
         """Sets the info for the current series in the display window"""
@@ -446,18 +467,32 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.label_episode_thumb.clear()
 
     def select_series_poster(self):
-        banner_dialog = BannerDialog(self.series_name, "series_posters")
+        banner_dialog = BannerDialog(self.series_name, "series_posters", 0)
         accepted = banner_dialog.exec_()
         if accepted:
             self.set_series_info()
         self.ui.pushButton_new_series_poster.setDown(False)
 
     def select_series_wide_banner(self):
-        banner_dialog = BannerDialog(self.series_name, "series_wide")
+        banner_dialog = BannerDialog(self.series_name, "series_wide", 0)
         accepted = banner_dialog.exec_()
         if accepted:
             self.set_series_info()
         self.ui.pushButton_new_series_wide_banner.setDown(False)
+
+    def select_season_poster(self):
+        banner_dialog = BannerDialog(self.series_name, "season_posters", self.season_number)
+        accepted = banner_dialog.exec_()
+        if accepted:
+            self.set_season_info()
+        self.ui.pushButton_new_season_poster.setDown(False)
+
+    def select_season_wide_banner(self):
+        banner_dialog = BannerDialog(self.series_name, "season_wide", self.season_number)
+        accepted = banner_dialog.exec_()
+        if accepted:
+            self.set_season_info()
+        self.ui.pushButton_new_season_wide.setDown(False)
 
     def scan_files(self):
         for video_dir in config.tv_dirs:

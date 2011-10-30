@@ -34,12 +34,13 @@ dbTV = TVShowDB(config.tvshowdb)
 dbTV.init_db()
 
 class BannerDialog(QtGui.QDialog):
-    def __init__(self, series_name, banner_type, parent=None):
+    def __init__(self, series_name, banner_type, season_number, parent=None):
         """Initializes the Dialog"""
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_BannerDialog()
         self.ui.setupUi(self)
         self.series_name = series_name
+        self.season_number = season_number
         self.banner_url = ''
 
         #Create a progress dialog for downloading images

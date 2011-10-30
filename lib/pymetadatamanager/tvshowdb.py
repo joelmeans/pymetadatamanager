@@ -817,6 +817,16 @@ class TVShowDB(object):
             elem_season.appendChild(elem_episode)
         return dom
 
+    def make_episodes_list(self, series_id, season_number):
+        """Get a list of all episodes in a give season"""
+        self.sqlTV.execute("SELECT episodes.episode_number, episodes.name \
+         FROM shows JOIN episodelinkshow ON episodelinkshow.idShow=shows.id \
+         JOIN episodes ON episodelinkshow.idEpisode=episodes.id WHERE \
+         shows.seriesid=(?) AND episodes.season_number=(?)", \
+         (series_id, season_number))
+        reply = self.sqlTV.fetchall()
+        return reply
+
     def make_episode_dom(self, episode_id):
         """Get info for an episode from the db and put in into a QDomDocument"""
         #separator for lists with multiple items (writers, directors, etc)

@@ -112,6 +112,22 @@ class ShowListModel(QtCore.QAbstractListModel):
         else: 
             return QtCore.QVariant()
 
+class SeasonListModel(QtCore.QAbstractListModel): 
+    def __init__(self, list, parent=None): 
+        """Create a list model from the input list"""
+        super(SeasonListModel, self).__init__(parent) 
+        self.listdata = list
+ 
+    def rowCount(self, parent): 
+        return len(self.listdata) 
+ 
+    def data(self, index, role): 
+        if index.isValid() and role == QtCore.Qt.DisplayRole:
+            return QtCore.QVariant("%s - %s" % (self.listdata[index.row()][0], \
+                                                self.listdata[index.row()][1]))
+        else: 
+            return QtCore.QVariant()
+
 class AbstractSeasonEpisodeModel(QtCore.QAbstractItemModel):
     """Create a model of shows from a DomDocument containing show information"""
     def __init__(self, document, parent=None):

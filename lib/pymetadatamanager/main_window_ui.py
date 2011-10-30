@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Thu Oct 27 20:59:15 2011
+# Created: Sun Oct 30 10:31:28 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1370, 994)
+        MainWindow.resize(1394, 996)
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
@@ -180,8 +180,8 @@ class Ui_MainWindow(object):
         self.tabWidget_tv_info.addTab(self.tab_series_info, _fromUtf8(""))
         self.tab_season_info = QtGui.QWidget()
         self.tab_season_info.setObjectName(_fromUtf8("tab_season_info"))
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.tab_season_info)
-        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.verticalLayout_5 = QtGui.QVBoxLayout(self.tab_season_info)
+        self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.listView_season_episode_full = QtGui.QListView(self.tab_season_info)
@@ -192,12 +192,30 @@ class Ui_MainWindow(object):
         self.label_season_poster.setText(QtGui.QApplication.translate("MainWindow", "No Season Poster Available", None, QtGui.QApplication.UnicodeUTF8))
         self.label_season_poster.setObjectName(_fromUtf8("label_season_poster"))
         self.horizontalLayout_4.addWidget(self.label_season_poster)
-        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_5 = QtGui.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
         self.label_season_banner_wide = QtGui.QLabel(self.tab_season_info)
         self.label_season_banner_wide.setMinimumSize(QtCore.QSize(760, 140))
         self.label_season_banner_wide.setText(QtGui.QApplication.translate("MainWindow", "No Season Wide Banner Available", None, QtGui.QApplication.UnicodeUTF8))
         self.label_season_banner_wide.setObjectName(_fromUtf8("label_season_banner_wide"))
-        self.verticalLayout_4.addWidget(self.label_season_banner_wide)
+        self.horizontalLayout_5.addWidget(self.label_season_banner_wide)
+        self.verticalLayout_4 = QtGui.QVBoxLayout()
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.pushButton_new_season_poster = QtGui.QPushButton(self.tab_season_info)
+        self.pushButton_new_season_poster.setMinimumSize(QtCore.QSize(200, 0))
+        self.pushButton_new_season_poster.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.pushButton_new_season_poster.setText(QtGui.QApplication.translate("MainWindow", "Select New Poster", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_new_season_poster.setObjectName(_fromUtf8("pushButton_new_season_poster"))
+        self.verticalLayout_4.addWidget(self.pushButton_new_season_poster)
+        self.pushButton_new_season_wide = QtGui.QPushButton(self.tab_season_info)
+        self.pushButton_new_season_wide.setMinimumSize(QtCore.QSize(200, 0))
+        self.pushButton_new_season_wide.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.pushButton_new_season_wide.setText(QtGui.QApplication.translate("MainWindow", "Select New Wide Banner", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_new_season_wide.setObjectName(_fromUtf8("pushButton_new_season_wide"))
+        self.verticalLayout_4.addWidget(self.pushButton_new_season_wide)
+        self.horizontalLayout_5.addLayout(self.verticalLayout_4)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_5)
         self.tabWidget_tv_info.addTab(self.tab_season_info, _fromUtf8(""))
         self.tab_episode_info = QtGui.QWidget()
         self.tab_episode_info.setObjectName(_fromUtf8("tab_episode_info"))
@@ -329,7 +347,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget_main, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1370, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1394, 22))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuTools = QtGui.QMenu(self.menubar)
         self.menuTools.setTitle(QtGui.QApplication.translate("MainWindow", "Tools", None, QtGui.QApplication.UnicodeUTF8))
