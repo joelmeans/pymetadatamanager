@@ -54,7 +54,8 @@ class TVDB(object):
 
     class Series(object):
         """Class to hold info about a series"""
-        def __init__(self, node):
+        def __init__(self, node, url):
+            self.episodeguide = url
             self.seriesid = int(node.firstChildElement("id").text())
             self.actors = [actor.strip() for actor in \
               unicode(node.firstChildElement("Actors").text(), \
@@ -260,7 +261,7 @@ class TVDB(object):
             dom.setContent(series_info_zip.read(xml_file_in_zip))
             data = dom.firstChildElement("Data") 
             series_node = data.firstChildElement("Series")
-            series_info = self.Series(series_node)
+            series_info = self.Series(series_node, series_info_url)
         except SyntaxError:
             print "Error"
         return series_info
@@ -336,6 +337,8 @@ class TVDB(object):
         """Parse the <lang>.xml file for series information"""
         series_info_url = "%s/series/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, self.lang)
+        series_info_zip_url = "%s/series/%s/all/en.zip" % \
+          (self.tvdb_apikey_url, series_id)
         try:
             series_info = urllib2.urlopen(series_info_url)
         except urllib2.HTTPError, e:
@@ -344,7 +347,7 @@ class TVDB(object):
         dom.setContent(series_info.read())
         data = dom.firstChildElement("Data")
         series_node = data.firstChildElement("Series")
-        series_info = self.Series(series_node)
+        series_info = self.Series(series_node, series_info_zip_url)
         return series_info
 
     def get_episode_by_id(self, episode_id):

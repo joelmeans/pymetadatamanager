@@ -300,6 +300,13 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_season_poster.setPixmap(season_poster_pixmap)
         else:
             self.ui.label_season_poster.clear()
+        self.selected_season_banner_wide = dbTV.get_selected_banner_url(series_id, 'seasonwide', self.season_number)
+        if not self.selected_season_banner_wide == "":
+            filename = TVDB.retrieve_banner(self.selected_season_banner_wide)
+            season_banner_wide_pixmap = QtGui.QPixmap(filename)
+            self.ui.label_season_banner_wide.setPixmap(season_banner_wide_pixmap)
+        else:   
+            self.ui.label_season_banner_wide.clear()
 
     def set_series_info(self):
         """Sets the info for the current series in the display window"""
@@ -447,14 +454,6 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.combo_guests.addItem(episode_actor)
 
         self.ui.tabWidget_tv_info.setCurrentIndex(2)
-
-#        episode_xml = episode_doc.toString(4)
-#        outfile = "output_tests/%s_%sx%s.nfo" % (self.series_name, \
-#         str(self.season_number).zfill(2), str(self.episode_number).zfill(2))
-#        output = QtCore.QFile(outfile)
-#        output.open(QtCore.QIODevice.WriteOnly)
-#        output.writeData(episode_xml)
-#        output.close()
 
     def clear_episode_info(self):
         """Clears the episode info from the display window"""

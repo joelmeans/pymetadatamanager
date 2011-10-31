@@ -36,7 +36,7 @@ class TVShowDB(object):
     def __init__(self, db_name):
         self.dbTV = sqlite.connect(db_name)
         self.sqlTV = self.dbTV.cursor()
-        self.new_version = 4
+        self.new_version = 5
         self.tvdb = TVDB()
         self.MediaInfo = MediaInfo()
 
@@ -132,6 +132,9 @@ class TVShowDB(object):
         if current_version < 4:
             self.sqlTV.execute('CREATE TABLE selectedbannerlinkshow \
              (idBanner INTEGER, idShow INTEGER, type VARCHAR(50), season INTEGER)')
+        if current_version < 5:
+            self.sqlTV.execute('ALTER TABLE shows ADD COLUMN \
+             episodeguide VARCHAR(200)')
         if not current_version == 1:
             self.sqlTV.execute('UPDATE version SET idVersion=(?)', \
              (self.new_version, ))
@@ -348,7 +351,7 @@ class TVShowDB(object):
             self.sqlTV.execute('INSERT INTO shows \
              ("seriesid", "name", "overview", "content_rating", "runtime", \
              "status", "language", "first_aired", "airs_day", "airs_time", \
-             "rating") VALUES (?,?,?,?,?,?,?,?,?,?,?)', \
+             "rating", "episodeguide") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', \
              (series.seriesid, \
               series.name, \
               series.overview, \
@@ -359,7 +362,8 @@ class TVShowDB(object):
               series.first_aired, \
               series.airs_day, \
               series.airs_time, \
-              series.rating))
+              series.rating, \
+              series.episodeguide))
             #Add the genres if they aren't already there and link them up
             for genre in series.genre:
                 self.sqlTV.execute('SELECT * FROM genres WHERE name=(?)', \
@@ -991,8 +995,14 @@ class TVShowDB(object):
                 root.appendChild(elem_thumb)
         root.appendChild(elem_fanart)
 
-#        episodeguide = ET.SubElement(tvshow, "episodeguide") #url for zip file
-#
+        elem_episodeguide = dom.createElement("episodeguide")
+        self.sqlTV.execute('SELECT episodeguide FROM shows WHERE seriesid=(?)', \
+         (series_id, ))
+        value_db = self.sqlTV.fetchall()
+        for x in value_db[0]: text_episodeguide = dom.createTextNode(x)
+        elem_episodeguide.appendChild(text_episodeguide)
+        root.appendChild(elem_episodeguide)
+
         elem_seriesid = dom.createElement("id")
         text_seriesid = dom.createTextNode(str(series_id))
         elem_seriesid.appendChild(text_seriesid)
@@ -1307,8 +1317,12 @@ class TVShowDB(object):
             url = url.replace(base_url, '')
         search_url = "%s%s%s" % ("%", url, "%")
         self.sqlTV.execute( \
-          'SELECT id, type, season FROM banners WHERE path LIKE (?)', (search_url,))
-        banner_id, banner_type, banner_season = self.sqlTV.fetchall()[0]
+          'SELECT id, type, type2, season FROM banners WHERE path LIKE (?)', \
+           (search_url,))
+        banner_id, banner_type, banner_type2, banner_season = \
+          self.sqlTV.fetchall()[0]
+        if banner_type == 'season':
+            banner_type = banner_type2
         search_name = "%s%s%s" % ("%", show, "%")
         self.sqlTV.execute('SELECT id FROM shows WHERE name LIKE (?)', \
                            (search_name,))
@@ -1336,3 +1350,40 @@ class TVShowDB(object):
         except IndexError:
             url = ""
         return url
+
+    def write_episode_nfo(self, episode_id):
+        self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
+          filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
+          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
+          episodes.episodeid=(?)", (episode_id,))
+        filename, filepath = self.sqlTV.fetchall()[0]
+        filename = os.path.splitext(filename)[0]
+        dom = self.make_episode_dom(episode_id)
+        nfo_file = os.path.join(filepath, "%s.nfo" % filename)
+        nfo = open(nfo_file, "w")
+        nfo.write(dom.toString(4))
+        nfo.close()
+
+    def write_series_nfo(self, series_id):
+        self.sqlTV.execute('SELECT DISTINCT files.filepath FROM \
+          filelinkepisode JOIN files ON filelinkepisode.idFile=files.id JOIN \
+          episodelinkshow ON filelinkepisode.idEpisode=episodelinkshow.idEpisode \
+          JOIN shows ON episodelinkshow.idShow=shows.id WHERE shows.seriesid=(?)', \
+          (series_id,))
+        filepaths = self.sqlTV.fetchall()
+        paths = []
+        for filepath in filepaths:
+            path = re.sub('[S|s]eason[ |_][0-9]?', '', str(filepath[0]))
+            if path not in paths:
+                paths.append(path)
+        path = paths[0]
+        dom = self.make_series_dom(series_id)
+        nfo_file = os.path.join(path, "tvshow.nfo")
+        nfo = open(nfo_file, "w")
+        nfo.write(dom.toString(4))
+        nfo.close()
+
+    def write_series_posters(self, series_id):
+        self.sqlTV.execute('SELECT banners.url, banners.path FROM selectedbannerlinkshow JOIN banners ON selectedbannerlinkshow.idBanner=banners.id JOIN shows on selectedbannerlinkshow.idShow=shows.id WHERE shows.seriesid=(?)', (series_id,))
+        banners = self.sqlTV.fetchall()
+        print banners
