@@ -128,10 +128,10 @@ class SeasonListModel(QtCore.QAbstractListModel):
         else: 
             return QtCore.QVariant()
 
-class AbstractSeasonEpisodeModel(QtCore.QAbstractItemModel):
+class SeasonEpisodeModel(QtCore.QAbstractItemModel):
     """Create a model of shows from a DomDocument containing show information"""
     def __init__(self, document, parent=None):
-        super(AbstractSeasonEpisodeModel, self).__init__(parent)
+        super(SeasonEpisodeModel, self).__init__(parent)
         self.treeView = parent
         self.headers = ['Season','Episode']
         self.columns = 3
@@ -220,10 +220,10 @@ class AbstractSeasonEpisodeModel(QtCore.QAbstractItemModel):
     def nodeFromIndex(self, index):
         return index.internalPointer() if index.isValid() else self.rootItem
 
-class AbstractShowModel(QtCore.QAbstractItemModel):
+class ShowModel(QtCore.QAbstractItemModel):
     """Create a model of shows from a DomDocument containing show information"""
     def __init__(self, document, parent=None):
-        super(AbstractShowModel, self).__init__(parent)
+        super(ShowModel, self).__init__(parent)
         self.treeView = parent
         self.headers = ['Series', 'Season','Episode']
         self.columns = 4
@@ -314,10 +314,10 @@ class AbstractShowModel(QtCore.QAbstractItemModel):
     def nodeFromIndex(self, index):
         return index.internalPointer() if index.isValid() else self.rootItem
 
-class AbstractBannerModel(QtCore.QAbstractTableModel):
+class BannerModel(QtCore.QAbstractTableModel):
     """Create a table model of banners from a list of banner files"""
     def __init__(self, banners, parent=None):
-        super(AbstractBannerModel, self).__init__(parent)
+        super(BannerModel, self).__init__(parent)
         banners_col_0 = []
         banners_col_1 = []
         banners_col_2 = []
@@ -360,10 +360,10 @@ class AbstractBannerModel(QtCore.QAbstractTableModel):
             newlist.append([list[0][x], list[1][x], list[2][x]])
         return newlist
 
-class AbstractBannerWideModel(QtCore.QAbstractTableModel):
+class BannerWideModel(QtCore.QAbstractTableModel):
     """Create a table model of banners from a list of banner files"""
     def __init__(self, banners, parent=None):
-        super(AbstractBannerWideModel, self).__init__(parent)
+        super(BannerWideModel, self).__init__(parent)
         self.list = banners
 
     def data(self, index, role):

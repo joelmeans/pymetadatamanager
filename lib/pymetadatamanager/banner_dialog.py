@@ -26,7 +26,7 @@ from banner_ui import Ui_BannerDialog
 from tvshowdb import TVShowDB
 from tvdb import TVDB
 from configuration import Config
-from models import AbstractBannerModel, AbstractBannerWideModel
+from models import BannerModel, BannerWideModel
 
 config = Config()
 TVDB = TVDB()
@@ -165,7 +165,7 @@ class BannerDialog(QtGui.QDialog):
              'banners/', 'banners/_cache/'))
             banner_pixmap = QtGui.QPixmap(filename)
             series_banners.append((banner_pixmap, banner_url))
-        banner_model_series = AbstractBannerModel(series_banners)
+        banner_model_series = BannerModel(series_banners)
         self.ui.tableView.setModel(banner_model_series)
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.resizeRowsToContents()
@@ -185,7 +185,7 @@ class BannerDialog(QtGui.QDialog):
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
             series_banners_wide.append((banner_pixmap, banner_url))
-        banner_model_series_wide = AbstractBannerWideModel(series_banners_wide)
+        banner_model_series_wide = BannerWideModel(series_banners_wide)
         self.ui.tableView.setModel(banner_model_series_wide)
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.resizeRowsToContents()
@@ -205,7 +205,7 @@ class BannerDialog(QtGui.QDialog):
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
             series_fanart_banners.append((banner_pixmap, banner_url))
-        banner_model_series_fanart = AbstractBannerModel(series_fanart_banners)
+        banner_model_series_fanart = BannerModel(series_fanart_banners)
         self.ui.tableView.setModel(banner_model_series_fanart)
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.resizeRowsToContents()
@@ -225,7 +225,7 @@ class BannerDialog(QtGui.QDialog):
              'banners/', 'banners/_cache/'))
             banner_pixmap = QtGui.QPixmap(filename)
             season_banners.append((banner_pixmap, banner_url))
-        banner_model_season = AbstractBannerModel(season_banners)
+        banner_model_season = BannerModel(season_banners)
         self.ui.tableView.setModel(banner_model_season)
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.resizeRowsToContents()
@@ -245,7 +245,7 @@ class BannerDialog(QtGui.QDialog):
             filename = TVDB.retrieve_banner(str(banner_url))
             banner_pixmap = QtGui.QPixmap(filename)
             season_banners_wide.append((banner_pixmap, banner_url))
-        banner_model_season_wide = AbstractBannerWideModel(season_banners_wide)
+        banner_model_season_wide = BannerWideModel(season_banners_wide)
         self.ui.tableView.setModel(banner_model_season_wide)
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.resizeRowsToContents()

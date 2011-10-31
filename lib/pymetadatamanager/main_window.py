@@ -29,11 +29,11 @@ from tvdb import TVDB
 from scanner import Scanner
 from models import ShowListModel,\
                    SeasonListModel,\
-                   AbstractShowModel,\
-                   AbstractSeasonEpisodeModel,\
-                   AbstractBannerModel,\
+                   ShowModel,\
+                   SeasonEpisodeModel,\
+                   BannerModel,\
                    EmptyTableModel,\
-                   AbstractBannerWideModel
+                   BannerWideModel
 from configuration import Config
 from configuration_dialog import ConfigDialog
 from banner_dialog import BannerDialog
@@ -161,7 +161,6 @@ class MainWindow(QtGui.QMainWindow):
             self.season_number = int(this_node_data)
             self.clear_episode_info()
             self.set_season_info()
-#            self.get_season_artwork_list()
         else:                           #we are at the episode level
             self.season_number = int(parent_data)
             self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
@@ -279,7 +278,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def set_column_view(self):
         dom = dbTV.make_seasons_episodes_dom(self.series_name)
-        model = AbstractSeasonEpisodeModel(dom)
+        model = SeasonEpisodeModel(dom)
         self.ui.columnView_season_episode.setModel(model)
         self.ui.columnView_season_episode.setColumnWidths([300,550,50])
 
