@@ -57,8 +57,8 @@ class MediaInfo(object):
     def make_info_xml_native(self, infile):
         """Calls 'mediainfo' to output an xml file with metadata for infile"""
         output = open(self.temp_file, 'wb')
-	mediainfo_cmd_list = [self.mediainfo_cmd, "--Output=xml", infile]
-	try:
+        mediainfo_cmd_list = [self.mediainfo_cmd, "--Output=xml", infile]
+        try:
             subprocess.Popen(mediainfo_cmd_list, stderr=subprocess.STDOUT, \
                              stdout=output).communicate()
         except OSError:

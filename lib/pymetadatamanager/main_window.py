@@ -33,6 +33,7 @@ from models import ShowListModel,\
                    SeasonEpisodeModel,\
                    BannerModel,\
                    EmptyTableModel,\
+                   EmptyListModel,\
                    BannerWideModel
 from configuration import Config
 from configuration_dialog import ConfigDialog
@@ -141,6 +142,8 @@ class MainWindow(QtGui.QMainWindow):
         self.index = index
         #Find the series we are working with
         self.series_name = index.data().toString()
+        self.clear_season_info()
+        self.clear_episode_info()
         self.set_column_view()
         self.set_series_info()
         self.ui.pushButton_save_series_changes.setEnabled(0)
@@ -464,6 +467,12 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.combo_writers.clear()
         self.ui.combo_guests.clear()
         self.ui.label_episode_thumb.clear()
+        
+    def clear_season_info(self):
+        model = EmptyListModel()
+        self.ui.listView_season_episode_full.setModel(model)
+        self.ui.label_season_poster.clear()
+        self.ui.label_season_banner_wide.clear()
 
     def select_series_poster(self):
         banner_dialog = BannerDialog(self.series_name, "series_posters", 0)

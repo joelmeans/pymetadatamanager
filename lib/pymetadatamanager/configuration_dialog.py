@@ -60,7 +60,6 @@ class ConfigDialog(QtGui.QDialog):
         else:
             self.ui.lineEdit_movie_dirs.setText(old_filename)
 
-
     def mediainfo_browser(self):
         old_path = self.ui.lineEdit_mediainfo_path.text()
         path = QtGui.QFileDialog.getOpenFileName(self, \

@@ -336,7 +336,6 @@ class TVShowDB(object):
                  ("idBanner", "idShow") VALUES (?,?)', (id_banner, id_show, ))
         self.dbTV.commit()
 
-
     def write_series_to_db(self, series):
         """Writes info for a series to the database"""
         #Check to see if the series is already in the db
@@ -396,142 +395,6 @@ class TVShowDB(object):
             for y in id_show_list[0]: id_show = y
             self.sqlTV.execute('INSERT INTO networklinkshow \
              ("idNetwork", "idShow") VALUES (?, ?)', (id_network, id_show))
-        self.dbTV.commit()
-
-    def update_series_to_db(self, series):
-        """Updates info for a series in the database"""
-        self.sqlTV.execute('UPDATE shows SET name=?, overview=?, \
-         content_rating=?, runtime=?, status=?, language=?, first_aired=?, \
-         airs_day=?, airs_time=?, rating=? WHERE seriesid=?', \
-         (series.name, series.overview, series.content_rating, \
-         int(series.runtime), series.status, series.language, \
-         series.first_aired, series.airs_day, series.airs_time, \
-         series.rating, int(series.seriesid)))
-        for genre in series.genre:
-            self.sqlTV.execute('SELECT * FROM genres WHERE name=(?)', (genre, ))
-            if len (self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO genres ("name") VALUES (?)', \
-                 (genre, ))
-            self.sqlTV.execute('SELECT id FROM genres WHERE name=(?)', \
-             (genre, ))
-            id_genre_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-             (series.seriesid, ))
-            id_show_list = self.sqlTV.fetchall()
-            for x in id_genre_list[0]: id_genre = x
-            for y in id_show_list[0]: id_show = y
-            self.sqlTV.execute('SELECT * FROM genrelinkshow WHERE idGenre=(?) \
-             AND idShow=(?)', (id_genre, id_show))
-            if len (self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO genrelinkshow \
-                 ("idGenre", "idShow") VALUES (?, ?)', (id_genre, id_show))
-        self.sqlTV.execute('SELECT * FROM networks WHERE name=(?)', \
-         (series.network, ))
-        if len (self.sqlTV.fetchall()):
-            pass
-        else:
-            self.sqlTV.execute('INSERT INTO networks ("name") VALUES (?)', \
-             (series.network, ))
-        self.sqlTV.execute('SELECT id FROM networks WHERE name=(?)', \
-         (series.network, ))
-        id_network_list = self.sqlTV.fetchall()
-        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-         (series.seriesid, ))
-        id_show_list = self.sqlTV.fetchall()
-        for x in id_network_list[0]: id_network = x
-        for y in id_show_list[0]: id_show = y
-        self.sqlTV.execute('SELECT * FROM networklinkshow WHERE idNetwork=(?) \
-         AND idShow=(?)', (id_network, id_show))
-        if len (self.sqlTV.fetchall()):
-            pass
-        else:
-            self.sqlTV.execute('INSERT INTO networklinkshow \
-             ("idNetwork", "idShow") VALUES (?, ?)', (id_network, id_show))
-        self.dbTV.commit()
-
-    def update_episode_to_db(self, episode):
-        """Updates info for a single episode in the database"""
-        self.sqlTV.execute('UPDATE episodes SET name=?, overview=?, \
-         season_number=?, episode_number=?, language=?, prod_code=?, \
-         rating=?, first_aired=? WHERE episodeid=(?)', \
-         (episode.episode_name, episode.overview, episode.season_number, \
-         episode.episode_number, episode.language, episode.production_code, \
-         episode.rating, episode.first_aired, episode.episodeid))
-        for guest in episode.guest_stars:
-            self.sqlTV.execute('SELECT * FROM actors WHERE name=(?)', (guest, ))
-            if len (self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO actors ("name") VALUES (?)', \
-                 (guest, ))
-            self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
-             (guest, ))
-            id_guest_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
-             (episode.episodeid, ))
-            id_episode_list = self.sqlTV.fetchall()
-            for x in id_guest_list[0]: id_guest = x
-            for y in id_episode_list[0]: id_episode = y
-            self.sqlTV.execute('SELECT * FROM actorlinkepisode WHERE \
-             idActor=(?) AND idEpisode=(?)', (id_guest, id_episode))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO actorlinkepisode \
-                 ("idActor", "idEpisode") VALUES (?, ?)', \
-                 (id_guest, id_episode))
-        for director in episode.directors:
-            self.sqlTV.execute('SELECT * FROM directors WHERE name=(?)', \
-             (director, ))
-            if len (self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO directors ("name") \
-                 VALUES (?)', (director, ))
-            self.sqlTV.execute('SELECT id FROM directors WHERE name=(?)', \
-             (director, ))
-            id_director_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
-             (episode.episodeid, ))
-            id_episode_list = self.sqlTV.fetchall()
-            for x in id_director_list[0]: id_director = x
-            for y in id_episode_list[0]: id_episode = y
-            self.sqlTV.execute('SELECT * FROM directorlinkepisode WHERE \
-             idDirector=(?) AND idEpisode=(?)', (id_director, id_episode))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO directorlinkepisode \
-                 ("idDirector", "idEpisode") VALUES (?, ?)', \
-                 (id_director, id_episode))
-        for writer in episode.writers:
-            self.sqlTV.execute('SELECT * FROM writers WHERE name=(?)', \
-             (writer, ))
-            if len (self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO writers ("name") \
-                 VALUES (?)', (writer, ))
-            self.sqlTV.execute('SELECT id FROM writers WHERE name=(?)', \
-             (writer, ))
-            id_writer_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
-             (episode.episodeid, ))
-            id_episode_list = self.sqlTV.fetchall()
-            for x in id_writer_list[0]: id_writer = x
-            for y in id_episode_list[0]: id_episode = y
-            self.sqlTV.execute('SELECT * FROM writerlinkepisode WHERE \
-             idWriter=(?) AND idEpisode=(?)', (id_writer, id_episode))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO writerlinkepisode \
-                 ("idWriter", "idEpisode") VALUES (?, ?)', \
-                 (id_writer, id_episode))
         self.dbTV.commit()
 
     def write_files_to_db(self, file_list, series_id):
@@ -735,16 +598,6 @@ class TVShowDB(object):
         result = self.sqlTV.fetchall()
         return result
 
-    def make_shows_list(self):
-        """Creates a list of shows in the database"""
-        show_list = []
-        self.sqlTV.execute('SELECT name FROM shows')
-        shows = self.sqlTV.fetchall()
-        for show in shows:
-            show_list.append(show[0])
-        show_list.sort()
-        return show_list
-
     def make_shows_dom(self):
         """Creates a QDomDocument for the shows in the database"""
         dom = QtXml.QDomDocument()
@@ -816,16 +669,6 @@ class TVShowDB(object):
             elem_episode.appendChild(text_episode)
             elem_season.appendChild(elem_episode)
         return dom
-
-    def make_episodes_list(self, series_id, season_number):
-        """Get a list of all episodes in a give season"""
-        self.sqlTV.execute("SELECT episodes.episode_number, episodes.name \
-         FROM shows JOIN episodelinkshow ON episodelinkshow.idShow=shows.id \
-         JOIN episodes ON episodelinkshow.idEpisode=episodes.id WHERE \
-         shows.seriesid=(?) AND episodes.season_number=(?)", \
-         (series_id, season_number))
-        reply = self.sqlTV.fetchall()
-        return reply
 
     def make_episode_dom(self, episode_id):
         """Get info for an episode from the db and put in into a QDomDocument"""
@@ -1215,6 +1058,162 @@ class TVShowDB(object):
             root.appendChild(elem_actor)
 
         return dom
+
+    def make_episodes_list(self, series_id, season_number):
+        """Get a list of all episodes in a give season"""
+        self.sqlTV.execute("SELECT episodes.episode_number, episodes.name \
+         FROM shows JOIN episodelinkshow ON episodelinkshow.idShow=shows.id \
+         JOIN episodes ON episodelinkshow.idEpisode=episodes.id WHERE \
+         shows.seriesid=(?) AND episodes.season_number=(?)", \
+         (series_id, season_number))
+        reply = self.sqlTV.fetchall()
+        return reply
+
+    def make_shows_list(self):
+        """Creates a list of shows in the database"""
+        show_list = []
+        self.sqlTV.execute('SELECT name FROM shows')
+        shows = self.sqlTV.fetchall()
+        for show in shows:
+            show_list.append(show[0])
+        show_list.sort()
+        return show_list
+
+    def update_series_to_db(self, series):
+        """Updates info for a series in the database"""
+        self.sqlTV.execute('UPDATE shows SET name=?, overview=?, \
+         content_rating=?, runtime=?, status=?, language=?, first_aired=?, \
+         airs_day=?, airs_time=?, rating=? WHERE seriesid=?', \
+         (series.name, series.overview, series.content_rating, \
+         int(series.runtime), series.status, series.language, \
+         series.first_aired, series.airs_day, series.airs_time, \
+         series.rating, int(series.seriesid)))
+        for genre in series.genre:
+            self.sqlTV.execute('SELECT * FROM genres WHERE name=(?)', (genre, ))
+            if len (self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO genres ("name") VALUES (?)', \
+                 (genre, ))
+            self.sqlTV.execute('SELECT id FROM genres WHERE name=(?)', \
+             (genre, ))
+            id_genre_list = self.sqlTV.fetchall()
+            self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+             (series.seriesid, ))
+            id_show_list = self.sqlTV.fetchall()
+            for x in id_genre_list[0]: id_genre = x
+            for y in id_show_list[0]: id_show = y
+            self.sqlTV.execute('SELECT * FROM genrelinkshow WHERE idGenre=(?) \
+             AND idShow=(?)', (id_genre, id_show))
+            if len (self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO genrelinkshow \
+                 ("idGenre", "idShow") VALUES (?, ?)', (id_genre, id_show))
+        self.sqlTV.execute('SELECT * FROM networks WHERE name=(?)', \
+         (series.network, ))
+        if len (self.sqlTV.fetchall()):
+            pass
+        else:
+            self.sqlTV.execute('INSERT INTO networks ("name") VALUES (?)', \
+             (series.network, ))
+        self.sqlTV.execute('SELECT id FROM networks WHERE name=(?)', \
+         (series.network, ))
+        id_network_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+         (series.seriesid, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_network_list[0]: id_network = x
+        for y in id_show_list[0]: id_show = y
+        self.sqlTV.execute('SELECT * FROM networklinkshow WHERE idNetwork=(?) \
+         AND idShow=(?)', (id_network, id_show))
+        if len (self.sqlTV.fetchall()):
+            pass
+        else:
+            self.sqlTV.execute('INSERT INTO networklinkshow \
+             ("idNetwork", "idShow") VALUES (?, ?)', (id_network, id_show))
+        self.dbTV.commit()
+
+    def update_episode_to_db(self, episode):
+        """Updates info for a single episode in the database"""
+        self.sqlTV.execute('UPDATE episodes SET name=?, overview=?, \
+         season_number=?, episode_number=?, language=?, prod_code=?, \
+         rating=?, first_aired=? WHERE episodeid=(?)', \
+         (episode.episode_name, episode.overview, episode.season_number, \
+         episode.episode_number, episode.language, episode.production_code, \
+         episode.rating, episode.first_aired, episode.episodeid))
+        for guest in episode.guest_stars:
+            self.sqlTV.execute('SELECT * FROM actors WHERE name=(?)', (guest, ))
+            if len (self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO actors ("name") VALUES (?)', \
+                 (guest, ))
+            self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
+             (guest, ))
+            id_guest_list = self.sqlTV.fetchall()
+            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
+             (episode.episodeid, ))
+            id_episode_list = self.sqlTV.fetchall()
+            for x in id_guest_list[0]: id_guest = x
+            for y in id_episode_list[0]: id_episode = y
+            self.sqlTV.execute('SELECT * FROM actorlinkepisode WHERE \
+             idActor=(?) AND idEpisode=(?)', (id_guest, id_episode))
+            if len(self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO actorlinkepisode \
+                 ("idActor", "idEpisode") VALUES (?, ?)', \
+                 (id_guest, id_episode))
+        for director in episode.directors:
+            self.sqlTV.execute('SELECT * FROM directors WHERE name=(?)', \
+             (director, ))
+            if len (self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO directors ("name") \
+                 VALUES (?)', (director, ))
+            self.sqlTV.execute('SELECT id FROM directors WHERE name=(?)', \
+             (director, ))
+            id_director_list = self.sqlTV.fetchall()
+            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
+             (episode.episodeid, ))
+            id_episode_list = self.sqlTV.fetchall()
+            for x in id_director_list[0]: id_director = x
+            for y in id_episode_list[0]: id_episode = y
+            self.sqlTV.execute('SELECT * FROM directorlinkepisode WHERE \
+             idDirector=(?) AND idEpisode=(?)', (id_director, id_episode))
+            if len(self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO directorlinkepisode \
+                 ("idDirector", "idEpisode") VALUES (?, ?)', \
+                 (id_director, id_episode))
+        for writer in episode.writers:
+            self.sqlTV.execute('SELECT * FROM writers WHERE name=(?)', \
+             (writer, ))
+            if len (self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO writers ("name") \
+                 VALUES (?)', (writer, ))
+            self.sqlTV.execute('SELECT id FROM writers WHERE name=(?)', \
+             (writer, ))
+            id_writer_list = self.sqlTV.fetchall()
+            self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
+             (episode.episodeid, ))
+            id_episode_list = self.sqlTV.fetchall()
+            for x in id_writer_list[0]: id_writer = x
+            for y in id_episode_list[0]: id_episode = y
+            self.sqlTV.execute('SELECT * FROM writerlinkepisode WHERE \
+             idWriter=(?) AND idEpisode=(?)', (id_writer, id_episode))
+            if len(self.sqlTV.fetchall()):
+                pass
+            else:
+                self.sqlTV.execute('INSERT INTO writerlinkepisode \
+                 ("idWriter", "idEpisode") VALUES (?, ?)', \
+                 (id_writer, id_episode))
+        self.dbTV.commit()
 
     def update_series_field(self, field, value, seriesid):
         sql = "UPDATE shows SET %s=(?) WHERE seriesid=(?)" % (field,)

@@ -395,3 +395,14 @@ class EmptyTableModel(QtCore.QAbstractTableModel):
 
     def rowCount(self, parent):
         return 0
+
+class EmptyListModel(QtCore.QAbstractListModel):
+    """Create an empty list model to clear a display"""
+    def __init__(self, parent=None):
+        super(EmptyListModel, self).__init__(parent)
+
+    def data(self, index, role):
+        return QtCore.QVariant()
+
+    def rowCount(self, parent):
+        return 0
