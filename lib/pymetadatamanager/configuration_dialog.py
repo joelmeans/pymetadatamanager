@@ -80,3 +80,4 @@ class ConfigDialog(QtGui.QDialog):
             self.config.movie_dirs.append(dir)
         self.config.mediainfo_path = self.ui.lineEdit_mediainfo_path.text()
         self.config.write_config_file()
+        self.config.read_config_file()
