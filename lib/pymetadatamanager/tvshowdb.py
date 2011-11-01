@@ -1402,7 +1402,10 @@ class TVShowDB(object):
                 outfile = "folder.jpg"
             elif banner[1] == 'season':
                 if banner[2] == 'season':
-                    outfile = "%s%s.tbn" % ("season", str(banner[3]).zfill(2))
+                    if str(banner[3]) == '0':
+                        outfile = "season-specials.tbn"
+                    else:
+                        outfile = "%s%s.tbn" % ("season", str(banner[3]).zfill(2))
                 elif banner[2] == 'seasonwide':
                     outfile = None
             if outfile is not None:

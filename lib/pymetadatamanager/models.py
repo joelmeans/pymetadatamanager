@@ -63,7 +63,10 @@ class ShowNode(object):
 class SeasonNode(object):
     """A node for information about a season"""
     def __init__(self, season_num, parent=None):
-        self.name = QtCore.QString(season_num)
+        if str(season_num) == '0':
+            self.name = QtCore.QString("Specials")
+        else:
+            self.name = QtCore.QString(season_num)
         self.parent = parent
         self.children = []
         self.setParent(parent)
@@ -141,7 +144,7 @@ class SeasonEpisodeModel(QtCore.QAbstractItemModel):
         root = self.domDocument.firstChildElement('show')
         season_elem = root.firstChildElement('season')
         while not season_elem.isNull():
-            seasonItem = ShowNode(season_elem.attribute('number'), \
+            seasonItem = SeasonNode(season_elem.attribute('number'), \
                                   self.rootItem)
             episode_elem = season_elem.firstChildElement('episode')
             while not episode_elem.isNull():

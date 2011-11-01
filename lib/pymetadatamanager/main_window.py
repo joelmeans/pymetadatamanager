@@ -172,7 +172,11 @@ class MainWindow(QtGui.QMainWindow):
         parent_data = parent.data().toString()
 
         if parent_data == "":    #we are at the season level
-            self.season_number = int(this_node_data)
+            season_number = this_node_data
+            if str(season_number) == 'Specials':
+                self.season_number = 0 
+            else:
+                self.season_number = int(season_number)
             self.clear_episode_info()
             self.set_season_info()
             self.ui.pushButton_new_season_poster.setEnabled(1)
@@ -346,10 +350,11 @@ class MainWindow(QtGui.QMainWindow):
         while not elem_series_actor.isNull():
             elem_series_actor_name = elem_series_actor.firstChildElement('name')
             series_actor_name = elem_series_actor_name.text()
-            series_actors.append(series_actor_name)
+            if not series_actor_name in series_actors:
+                series_actors.append(series_actor_name)
             elem_series_actor = elem_series_actor.nextSiblingElement('actor')
 
-        series_actors = set(series_actors)
+        series_actors.sort()
         for series_actor in series_actors:
             self.ui.combo_actors.addItem(series_actor)
 

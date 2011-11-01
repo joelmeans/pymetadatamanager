@@ -30,5 +30,5 @@ class Ui_BannerDialog(object):
         QtCore.QMetaObject.connectSlotsByName(BannerDialog)
 
     def retranslateUi(self, BannerDialog):
-        BannerDialog.setWindowTitle(QtGui.QApplication.translate("BannerDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        BannerDialog.setWindowTitle(QtGui.QApplication.translate("BannerDialog", "Select a Banner", None, QtGui.QApplication.UnicodeUTF8))
 
