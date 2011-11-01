@@ -13,6 +13,12 @@ Development of this project is slow and there is a lot to do to make this a work
 
 03. <del>Standardize the header placed in the files.</del>
 
+04.  Learn how to use py2app to make a Mac app bundle.
+
+05.  Learn how to use py2exe to make a Windows exe.
+
+06.  Learn how to package a nice deb.
+
 ## Technical TODO
 
 01. <del>Add a settings file and GUI interface for the settings.</del>
@@ -41,9 +47,9 @@ Development of this project is slow and there is a lot to do to make this a work
 
 08. <del>Clear the cache on exiting (maybe not, just add GUI option to clear).</del>
 
-09. Add a way to save the nfo file.
+09. <del>Add a way to save the nfo file.</del>
 
-10. Add a way to save selected artworks.
+10. <del>Add a way to save selected artworks.</del>
 
 11. Fix sorting to ignore "A", "An", "The".
 
@@ -56,3 +62,17 @@ Development of this project is slow and there is a lot to do to make this a work
 15. <del>Fix filename parsing to ignore extra stuff in the name after '_' or between '.'.</del>
 
 16. <del>Fix problem with having an apostrope in a show name (e.g. "Blue's Clues").</del>
+
+17. Add fanart capability.
+
+18. Add the ability to add artwork from the local system, not just thetvdb.org.
+
+19. Add hilighting of missing episodes in season info tab.
+
+20. Add the ability to load local .nfo files.
+
+21. Add dialog about saving files (right now it just won't respond, but it doesn't let you know why).
+
+22. Add logging capability.
+
+23. Add movie capability with themoviedb.com.
