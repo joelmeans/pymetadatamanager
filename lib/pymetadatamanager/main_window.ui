@@ -297,7 +297,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>No Series Poster Available</string>
+                   <string>No series poster selected</string>
                   </property>
                  </widget>
                 </item>
@@ -339,7 +339,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>No Wide Banner Available</string>
+                   <string>No series wide banner selected</string>
                   </property>
                  </widget>
                 </item>
@@ -465,7 +465,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>No Season Poster Available</string>
+                   <string>No season poster selected</string>
                   </property>
                  </widget>
                 </item>
@@ -507,7 +507,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>No Season Wide Banner Available</string>
+                   <string>No season wide banner selected</string>
                   </property>
                  </widget>
                 </item>
@@ -816,7 +816,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>No Episode Thumb Available</string>
+                   <string>No episode thumb selected</string>
                   </property>
                  </widget>
                 </item>

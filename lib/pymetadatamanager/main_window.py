@@ -313,6 +313,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_season_poster.setPixmap(season_poster_pixmap)
         else:
             self.ui.label_season_poster.clear()
+            self.ui.label_season_poster.setText("No season poster selected")
         self.selected_season_banner_wide = dbTV.get_selected_banner_url(series_id, 'seasonwide', self.season_number)
         if not self.selected_season_banner_wide == "":
             filename = TVDB.retrieve_banner(self.selected_season_banner_wide)
@@ -320,6 +321,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_season_banner_wide.setPixmap(season_banner_wide_pixmap)
         else:   
             self.ui.label_season_banner_wide.clear()
+            self.ui.label_season_banner_wide.setText("No season wide banner selected")
 
     def set_series_info(self):
         """Sets the info for the current series in the display window"""
@@ -382,6 +384,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_series_banner.setPixmap(series_poster_pixmap)
         else:
             self.ui.label_series_banner.clear()
+            self.ui.label_series_banner.setText("No series poster selected")
         self.selected_series_wide_banner = dbTV.get_selected_banner_url(series_id, 'series', '')
         if not self.selected_series_wide_banner == "":
             filename = TVDB.retrieve_banner(self.selected_series_wide_banner)
@@ -389,6 +392,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_banner_wide.setPixmap(series_wide_pixmap)
         else:
             self.ui.label_banner_wide.clear()
+            self.ui.label_banner_wide.setText("No series wide banner selected")
         self.ui.tabWidget_tv_info.setCurrentIndex(0)
 
     def set_episode_info(self):
