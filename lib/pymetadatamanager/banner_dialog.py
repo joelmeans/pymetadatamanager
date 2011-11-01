@@ -163,7 +163,7 @@ class BannerDialog(QtGui.QDialog):
             self.progress.setValue(self.series_banners_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url).replace( \
              'banners/', 'banners/_cache/'))
-            banner_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
+            banner_pixmap = QtGui.QPixmap(filename)
             series_banners.append((banner_pixmap, banner_url))
         banner_model_series = BannerModel(series_banners)
         self.ui.tableView.setModel(banner_model_series)
@@ -183,7 +183,7 @@ class BannerDialog(QtGui.QDialog):
             self.progress.setValue( \
              self.series_banners_wide_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
-            banner_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
+            banner_pixmap = QtGui.QPixmap(filename)
             series_banners_wide.append((banner_pixmap, banner_url))
         banner_model_series_wide = BannerWideModel(series_banners_wide)
         self.ui.tableView.setModel(banner_model_series_wide)
@@ -203,7 +203,7 @@ class BannerDialog(QtGui.QDialog):
             self.progress.setValue( \
              self.series_fanart_banners_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
-            banner_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
+            banner_pixmap = QtGui.QPixmap(filename)
             series_fanart_banners.append((banner_pixmap, banner_url))
         banner_model_series_fanart = BannerModel(series_fanart_banners)
         self.ui.tableView.setModel(banner_model_series_fanart)
@@ -223,7 +223,7 @@ class BannerDialog(QtGui.QDialog):
             self.progress.setValue(self.season_banners_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url).replace( \
              'banners/', 'banners/_cache/'))
-            banner_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
+            banner_pixmap = QtGui.QPixmap(filename)
             season_banners.append((banner_pixmap, banner_url))
         banner_model_season = BannerModel(season_banners)
         self.ui.tableView.setModel(banner_model_season)
@@ -243,7 +243,7 @@ class BannerDialog(QtGui.QDialog):
             self.progress.setValue( \
              self.season_banners_wide_url.index(banner_url))
             filename = TVDB.retrieve_banner(str(banner_url))
-            banner_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
+            banner_pixmap = QtGui.QPixmap(filename)
             season_banners_wide.append((banner_pixmap, banner_url))
         banner_model_season_wide = BannerWideModel(season_banners_wide)
         self.ui.tableView.setModel(banner_model_season_wide)
