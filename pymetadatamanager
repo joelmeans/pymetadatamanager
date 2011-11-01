@@ -32,6 +32,6 @@ if __name__ == "__main__":
 
     app = QtGui.QApplication(sys.argv)
     mainWin = MainWindow()
-    mainWin.show()
+    mainWin.showMaximized()
     sys.exit(app.exec_())
 
