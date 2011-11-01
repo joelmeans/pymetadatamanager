@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Tue Nov  1 13:08:27 2011
+# Created: Tue Nov  1 13:20:56 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1344, 938)
+        MainWindow.resize(1340, 924)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -179,6 +179,8 @@ class Ui_MainWindow(object):
         self.pushButton_new_series_wide_banner.setObjectName(_fromUtf8("pushButton_new_series_wide_banner"))
         self.verticalLayout_7.addWidget(self.pushButton_new_series_wide_banner)
         self.horizontalLayout_6.addLayout(self.verticalLayout_7)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem2)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
         self.tabWidget_tv_info.addTab(self.tab_series_info, _fromUtf8(""))
         self.tab_season_info = QtGui.QWidget()
@@ -207,8 +209,8 @@ class Ui_MainWindow(object):
         self.label_season_poster.setMaximumSize(QtCore.QSize(300, 450))
         self.label_season_poster.setObjectName(_fromUtf8("label_season_poster"))
         self.horizontalLayout_4.addWidget(self.label_season_poster)
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem2)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem3)
         self.verticalLayout_5.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_5 = QtGui.QHBoxLayout()
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
@@ -224,8 +226,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.label_season_banner_wide)
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_4.addItem(spacerItem3)
+        spacerItem4 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem4)
         self.pushButton_new_season_poster = QtGui.QPushButton(self.tab_season_info)
         self.pushButton_new_season_poster.setMinimumSize(QtCore.QSize(200, 0))
         self.pushButton_new_season_poster.setMaximumSize(QtCore.QSize(200, 16777215))
@@ -237,6 +239,8 @@ class Ui_MainWindow(object):
         self.pushButton_new_season_wide.setObjectName(_fromUtf8("pushButton_new_season_wide"))
         self.verticalLayout_4.addWidget(self.pushButton_new_season_wide)
         self.horizontalLayout_5.addLayout(self.verticalLayout_4)
+        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem5)
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
         self.tabWidget_tv_info.addTab(self.tab_season_info, _fromUtf8(""))
         self.tab_episode_info = QtGui.QWidget()
@@ -340,8 +344,8 @@ class Ui_MainWindow(object):
         self.label_episode_thumb.setObjectName(_fromUtf8("label_episode_thumb"))
         self.verticalLayout_3.addWidget(self.label_episode_thumb)
         self.horizontalLayout_3.addLayout(self.verticalLayout_3)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem4)
+        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem6)
         self.tabWidget_tv_info.addTab(self.tab_episode_info, _fromUtf8(""))
         self.verticalLayout.addWidget(self.tabWidget_tv_info)
         self.columnView_season_episode = QtGui.QColumnView(self.tab_tv)
@@ -351,7 +355,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.columnView_season_episode.sizePolicy().hasHeightForWidth())
         self.columnView_season_episode.setSizePolicy(sizePolicy)
         self.columnView_season_episode.setMinimumSize(QtCore.QSize(0, 100))
-        self.columnView_season_episode.setMaximumSize(QtCore.QSize(16777215, 400))
+        self.columnView_season_episode.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.columnView_season_episode.setObjectName(_fromUtf8("columnView_season_episode"))
         self.verticalLayout.addWidget(self.columnView_season_episode)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -362,7 +366,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget_main, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1344, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1340, 22))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuTools = QtGui.QMenu(self.menubar)
         self.menuTools.setObjectName(_fromUtf8("menuTools"))
@@ -424,7 +428,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget_main.setCurrentIndex(0)
-        self.tabWidget_tv_info.setCurrentIndex(0)
+        self.tabWidget_tv_info.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
