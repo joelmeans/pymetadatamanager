@@ -309,14 +309,14 @@ class MainWindow(QtGui.QMainWindow):
         self.selected_season_poster = dbTV.get_selected_banner_url(series_id, 'season', self.season_number)
         if not self.selected_season_poster == "":
             filename = TVDB.retrieve_banner(self.selected_season_poster)
-            season_poster_pixmap = QtGui.QPixmap(filename)
+            season_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
             self.ui.label_season_poster.setPixmap(season_poster_pixmap)
         else:
             self.ui.label_season_poster.clear()
         self.selected_season_banner_wide = dbTV.get_selected_banner_url(series_id, 'seasonwide', self.season_number)
         if not self.selected_season_banner_wide == "":
             filename = TVDB.retrieve_banner(self.selected_season_banner_wide)
-            season_banner_wide_pixmap = QtGui.QPixmap(filename)
+            season_banner_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
             self.ui.label_season_banner_wide.setPixmap(season_banner_wide_pixmap)
         else:   
             self.ui.label_season_banner_wide.clear()
@@ -378,14 +378,14 @@ class MainWindow(QtGui.QMainWindow):
         self.selected_series_poster = dbTV.get_selected_banner_url(series_id, 'poster', '')
         if not self.selected_series_poster == "":
             filename = TVDB.retrieve_banner(self.selected_series_poster)
-            series_poster_pixmap = QtGui.QPixmap(filename)
+            series_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
             self.ui.label_series_banner.setPixmap(series_poster_pixmap)
         else:
             self.ui.label_series_banner.clear()
         self.selected_series_wide_banner = dbTV.get_selected_banner_url(series_id, 'series', '')
         if not self.selected_series_wide_banner == "":
             filename = TVDB.retrieve_banner(self.selected_series_wide_banner)
-            series_wide_pixmap = QtGui.QPixmap(filename)
+            series_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
             self.ui.label_banner_wide.setPixmap(series_wide_pixmap)
         else:
             self.ui.label_banner_wide.clear()
