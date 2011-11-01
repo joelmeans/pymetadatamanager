@@ -56,9 +56,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         #Create a dom representing the shows in the database
-        shows = dbTV.make_shows_list()
+        self.shows = dbTV.make_shows_list()
         #Turn that into a model
-        model = ShowListModel(shows)
+        model = ShowListModel(self.shows)
         #Set that as the model for the listView
         self.ui.listView_shows.setModel(model)
 
@@ -106,6 +106,13 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
+        self.ui.actionSave_all.triggered.connect(self.save_all)
+        self.ui.actionSave_series_artwork.triggered.connect(self.save_series_artwork)
+        self.ui.actionSave_series_nfo.triggered.connect(self.save_series_nfo)
+        self.ui.actionSave_series_both.triggered.connect(self.save_series_both)
+        self.ui.actionSave_episode_artwork.triggered.connect(self.save_episode_artwork)
+        self.ui.actionSave_episode_nfo.triggered.connect(self.save_episode_nfo)
+        self.ui.actionSave_episode_both.triggered.connect(self.save_episode_both)
 
         #Initialize some variables
         self.series_name_updated = 0
@@ -135,6 +142,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_episode_changes.setEnabled(0)
         self.ui.pushButton_new_series_poster.setEnabled(0)
         self.ui.pushButton_new_series_wide_banner.setEnabled(0)
+        self.ui.pushButton_new_season_poster.setEnabled(0)
+        self.ui.pushButton_new_season_wide.setEnabled(0)
 
     def list_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -150,6 +159,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_series_changes.setEnabled(0)
         self.ui.pushButton_new_series_poster.setEnabled(1)
         self.ui.pushButton_new_series_wide_banner.setEnabled(1)
+        self.ui.pushButton_new_season_poster.setEnabled(0)
+        self.ui.pushButton_new_season_wide.setEnabled(0)
 
     def column_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -164,6 +175,8 @@ class MainWindow(QtGui.QMainWindow):
             self.season_number = int(this_node_data)
             self.clear_episode_info()
             self.set_season_info()
+            self.ui.pushButton_new_season_poster.setEnabled(1)
+            self.ui.pushButton_new_season_wide.setEnabled(1)
         else:                           #we are at the episode level
             self.season_number = int(parent_data)
             self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
@@ -561,3 +574,44 @@ class MainWindow(QtGui.QMainWindow):
                 os.remove(os.path.join(root, name))
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
+
+    def save_all(self):
+        for show in self.shows:
+            series_id = dbTV.get_series_id(show)
+            dbTV.write_series_nfo(series_id)
+            dbTV.write_series_posters(series_id)
+            dbTV.write_all_episode_nfos(series_id)
+            dbTV.write_all_episode_thumbs(series_id)
+
+    def save_series_artwork(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        dbTV.write_series_posters(series_id)
+        dbTV.write_all_episode_thumbs(series_id)
+
+    def save_series_nfo(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        dbTV.write_series_nfo(series_id)
+        dbTV.write_all_episode_nfos(series_id)
+
+    def save_series_both(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        dbTV.write_series_nfo(series_id)
+        dbTV.write_series_posters(series_id)
+        dbTV.write_all_episode_nfos(series_id)
+        dbTV.write_all_episode_thumbs(series_id)
+
+    def save_episode_artwork(self):
+        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
+         self.episode_number)
+        dbTV.write_episode_thumb(episode_id)
+
+    def save_episode_nfo(self):
+        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
+         self.episode_number)
+        dbTV.write_episode_nfo(episode_id)
+
+    def save_episode_both(self):
+        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
+         self.episode_number)
+        dbTV.write_episode_nfo(episode_id)
+        dbTV.write_episode_thumb(episode_id)

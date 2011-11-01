@@ -20,6 +20,7 @@
 
 import os
 import re
+import urllib
 from sqlite3 import dbapi2 as sqlite
 from tvdb import TVDB
 from PyQt4 import QtCore
@@ -999,9 +1000,11 @@ class TVShowDB(object):
         self.sqlTV.execute('SELECT episodeguide FROM shows WHERE seriesid=(?)', \
          (series_id, ))
         value_db = self.sqlTV.fetchall()
-        for x in value_db[0]: text_episodeguide = dom.createTextNode(x)
-        elem_episodeguide.appendChild(text_episodeguide)
-        root.appendChild(elem_episodeguide)
+        for x in value_db[0]:
+            if x is not None:
+                text_episodeguide = dom.createTextNode(x)
+                elem_episodeguide.appendChild(text_episodeguide)
+                root.appendChild(elem_episodeguide)
 
         elem_seriesid = dom.createElement("id")
         text_seriesid = dom.createTextNode(str(series_id))
@@ -1343,7 +1346,12 @@ class TVShowDB(object):
         self.dbTV.commit()
 
     def get_selected_banner_url(self, series_id, type, season):
-        self.sqlTV.execute('SELECT banners.url, banners.path FROM selectedbannerlinkshow JOIN banners ON selectedbannerlinkshow.idBanner=banners.id JOIN shows ON selectedbannerlinkshow.idShow=shows.id WHERE shows.seriesid=(?) AND selectedbannerlinkshow.type=(?) AND selectedbannerlinkshow.season=(?)', (series_id, type, season))
+        self.sqlTV.execute('SELECT banners.url, banners.path \
+          FROM selectedbannerlinkshow JOIN banners \
+          ON selectedbannerlinkshow.idBanner=banners.id JOIN shows \
+          ON selectedbannerlinkshow.idShow=shows.id \
+          WHERE shows.seriesid=(?) AND selectedbannerlinkshow.type=(?) \
+          AND selectedbannerlinkshow.season=(?)', (series_id, type, season))
         try:
             base_url, path = self.sqlTV.fetchall()[0]
             url = "%s/%s" % (base_url, path)
@@ -1351,20 +1359,7 @@ class TVShowDB(object):
             url = ""
         return url
 
-    def write_episode_nfo(self, episode_id):
-        self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
-          filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
-          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
-          episodes.episodeid=(?)", (episode_id,))
-        filename, filepath = self.sqlTV.fetchall()[0]
-        filename = os.path.splitext(filename)[0]
-        dom = self.make_episode_dom(episode_id)
-        nfo_file = os.path.join(filepath, "%s.nfo" % filename)
-        nfo = open(nfo_file, "w")
-        nfo.write(dom.toString(4))
-        nfo.close()
-
-    def write_series_nfo(self, series_id):
+    def get_series_nfo_path(self, series_id):
         self.sqlTV.execute('SELECT DISTINCT files.filepath FROM \
           filelinkepisode JOIN files ON filelinkepisode.idFile=files.id JOIN \
           episodelinkshow ON filelinkepisode.idEpisode=episodelinkshow.idEpisode \
@@ -1377,6 +1372,10 @@ class TVShowDB(object):
             if path not in paths:
                 paths.append(path)
         path = paths[0]
+        return path
+
+    def write_series_nfo(self, series_id):
+        path = self.get_series_nfo_path(series_id)
         dom = self.make_series_dom(series_id)
         nfo_file = os.path.join(path, "tvshow.nfo")
         nfo = open(nfo_file, "w")
@@ -1384,6 +1383,80 @@ class TVShowDB(object):
         nfo.close()
 
     def write_series_posters(self, series_id):
-        self.sqlTV.execute('SELECT banners.url, banners.path FROM selectedbannerlinkshow JOIN banners ON selectedbannerlinkshow.idBanner=banners.id JOIN shows on selectedbannerlinkshow.idShow=shows.id WHERE shows.seriesid=(?)', (series_id,))
+        path = self.get_series_nfo_path(series_id)
+        self.sqlTV.execute('SELECT banners.url, banners.path, \
+          banners.type, banners.type2, banners.season \
+          FROM selectedbannerlinkshow JOIN banners ON \
+          selectedbannerlinkshow.idBanner=banners.id JOIN shows ON \
+          selectedbannerlinkshow.idShow=shows.id WHERE shows.seriesid=(?)', \
+          (series_id,))
         banners = self.sqlTV.fetchall()
-        print banners
+        banner_urls = []
+        for banner in banners:
+            banner_urls.append(("%s/%s" % (str(banner[0]), str(banner[1])), \
+                                str(banner[2]), str(banner[3]), str(banner[4])))
+        for banner in banner_urls:
+            if banner[1] == 'poster':
+                outfile = "season-all.tbn"
+            elif banner[1] == 'series':
+                outfile = "folder.jpg"
+            elif banner[1] == 'season':
+                if banner[2] == 'season':
+                    outfile = "%s%s.tbn" % ("season", str(banner[3]).zfill(2))
+                elif banner[2] == 'seasonwide':
+                    outfile = None
+            if outfile is not None:
+                filename = os.path.join(path, outfile)
+                urllib.urlretrieve(banner[0], filename)
+
+    def write_episode_nfo(self, episode_id):
+        self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
+          filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
+          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
+          episodes.episodeid=(?)", (episode_id,))
+        try:
+            filename, filepath = self.sqlTV.fetchall()[0]
+            filename = os.path.splitext(filename)[0]
+            dom = self.make_episode_dom(episode_id)
+            nfo_file = os.path.join(filepath, "%s.nfo" % filename)
+            nfo = open(nfo_file, "w")
+            nfo.write(dom.toString(4))
+            nfo.close()
+        except IndexError:
+            print "Error processing episode %s." % (episode_id,)
+
+    def write_all_episode_nfos(self, series_id):
+        self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
+          JOIN shows ON episodelinkshow.idShow=shows.id \
+          JOIN episodes ON episodelinkshow.idEpisode=episodes.id \
+          JOIN filelinkepisode ON episodes.id=filelinkepisode.idEpisode \
+          WHERE shows.seriesid=(?)', (series_id,))
+        episodes = self.sqlTV.fetchall()
+        for episode in episodes:
+            episode_id = episode[0]
+            self.write_episode_nfo(episode_id)
+
+    def write_episode_thumb(self, episode_id):
+        self.sqlTV.execute("SELECT files.filename, files.filepath, episodes.thumb \
+          FROM filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
+          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
+          episodes.episodeid=(?)", (episode_id,))
+        try:
+            filename, filepath, url = self.sqlTV.fetchall()[0]
+            filename = os.path.splitext(filename)[0]
+            dom = self.make_episode_dom(episode_id)
+            thumb_file = os.path.join(filepath, "%s.tbn" % filename)
+            urllib.urlretrieve(url, thumb_file)
+        except IndexError:
+            print "Error processing episode %s." % (episode_id,)
+
+    def write_all_episode_thumbs(self, series_id):
+        self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
+          JOIN shows ON episodelinkshow.idShow=shows.id \
+          JOIN episodes ON episodelinkshow.idEpisode=episodes.id \
+          JOIN filelinkepisode ON episodes.id=filelinkepisode.idEpisode \
+          WHERE shows.seriesid=(?)', (series_id,))
+        episodes = self.sqlTV.fetchall()
+        for episode in episodes:
+            episode_id = episode[0]
+            self.write_episode_thumb(episode_id)

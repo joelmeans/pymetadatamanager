@@ -52,7 +52,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_tv_info">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_series_info">
              <attribute name="title">
@@ -719,6 +719,37 @@
     <addaction name="actionEdit_Preferences"/>
     <addaction name="actionClear_Cache"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuSave">
+     <property name="title">
+      <string>Save</string>
+     </property>
+     <widget class="QMenu" name="menuSeries">
+      <property name="title">
+       <string>Series</string>
+      </property>
+      <addaction name="actionSave_series_artwork"/>
+      <addaction name="actionSave_series_nfo"/>
+      <addaction name="actionSave_series_both"/>
+     </widget>
+     <widget class="QMenu" name="menuEpisode">
+      <property name="title">
+       <string>Episode</string>
+      </property>
+      <addaction name="actionSave_episode_artwork"/>
+      <addaction name="actionSave_episode_nfo"/>
+      <addaction name="actionSave_episode_both"/>
+     </widget>
+     <addaction name="actionSave_all"/>
+     <addaction name="menuSeries"/>
+     <addaction name="menuEpisode"/>
+    </widget>
+    <addaction name="menuSave"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -735,6 +766,61 @@
   <action name="actionClear_Cache">
    <property name="text">
     <string>Clear Cache</string>
+   </property>
+  </action>
+  <action name="actionSave_Series_Artwork">
+   <property name="text">
+    <string>Save Series Artwork</string>
+   </property>
+  </action>
+  <action name="actionSave_Series_nfo_Files">
+   <property name="text">
+    <string>Save Series .nfo Files</string>
+   </property>
+  </action>
+  <action name="actionSelected_Series_nfo_Files">
+   <property name="text">
+    <string>Selected Series .nfo Files</string>
+   </property>
+  </action>
+  <action name="actionSelected_Series_Artwork">
+   <property name="text">
+    <string>Selected Series Artwork</string>
+   </property>
+  </action>
+  <action name="actionSave_all">
+   <property name="text">
+    <string>All (Artwork and .nfo)</string>
+   </property>
+  </action>
+  <action name="actionSave_series_artwork">
+   <property name="text">
+    <string>Artwork</string>
+   </property>
+  </action>
+  <action name="actionSave_series_nfo">
+   <property name="text">
+    <string>.nfo</string>
+   </property>
+  </action>
+  <action name="actionSave_episode_artwork">
+   <property name="text">
+    <string>Artwork</string>
+   </property>
+  </action>
+  <action name="actionSave_episode_nfo">
+   <property name="text">
+    <string>.nfo</string>
+   </property>
+  </action>
+  <action name="actionSave_series_both">
+   <property name="text">
+    <string>Both</string>
+   </property>
+  </action>
+  <action name="actionSave_episode_both">
+   <property name="text">
+    <string>Both</string>
    </property>
   </action>
  </widget>
