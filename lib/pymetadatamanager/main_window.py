@@ -182,7 +182,11 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.pushButton_new_season_poster.setEnabled(1)
             self.ui.pushButton_new_season_wide.setEnabled(1)
         else:                           #we are at the episode level
-            self.season_number = int(parent_data)
+            season_number = parent_data
+            if str(season_number) == 'Specials':
+                self.season_number = 0 
+            else:
+                self.season_number = int(season_number)
             self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
             self.set_season_info()
             self.set_episode_info()

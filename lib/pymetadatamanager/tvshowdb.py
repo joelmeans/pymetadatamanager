@@ -1368,7 +1368,7 @@ class TVShowDB(object):
         filepaths = self.sqlTV.fetchall()
         paths = []
         for filepath in filepaths:
-            path = re.sub('[S|s]eason[ |_][0-9]?', '', str(filepath[0]))
+            path = re.sub('[S|s]eason[ |_][0-9]*', '', str(filepath[0]))
             if path not in paths:
                 paths.append(path)
         path = paths[0]
@@ -1449,8 +1449,9 @@ class TVShowDB(object):
             filename = os.path.splitext(filename)[0]
             dom = self.make_episode_dom(episode_id)
             thumb_file = os.path.join(filepath, "%s.tbn" % filename)
-            urllib.urlretrieve(url, thumb_file)
-        except IndexError:
+            if not url == '':
+                urllib.urlretrieve(url, thumb_file)
+        except (IndexError, IOError):
             print "Error processing episode %s." % (episode_id,)
 
     def write_all_episode_thumbs(self, series_id):
