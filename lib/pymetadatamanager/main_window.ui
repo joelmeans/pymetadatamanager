@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1340</width>
-    <height>924</height>
+    <width>1590</width>
+    <height>950</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tab_series_info">
              <attribute name="title">
@@ -79,6 +79,13 @@
                    <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
                   </property>
                   <item row="0" column="0">
+                   <widget class="QLabel" name="label_series_name">
+                    <property name="text">
+                     <string>Series Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
                    <widget class="QLineEdit" name="lineEdit_series_name">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -94,14 +101,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_series_name">
-                    <property name="text">
-                     <string>Series Name</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
+                  <item row="1" column="1">
                    <widget class="QPlainTextEdit" name="plainTextEdit_overview">
                     <property name="minimumSize">
                      <size>
@@ -117,14 +117,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
+                  <item row="1" column="0">
                    <widget class="QLabel" name="label_overview">
                     <property name="text">
                      <string>Overview</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="0">
+                  <item row="2" column="1">
                    <widget class="QLineEdit" name="lineEdit_network">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -140,14 +140,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="1">
+                  <item row="2" column="0">
                    <widget class="QLabel" name="label_network">
                     <property name="text">
                      <string>Network</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="0">
+                  <item row="3" column="1">
                    <widget class="QLineEdit" name="lineEdit_airtime">
                     <property name="minimumSize">
                      <size>
@@ -157,14 +157,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1">
+                  <item row="3" column="0">
                    <widget class="QLabel" name="label_airtime">
                     <property name="text">
                      <string>Airtime</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="0">
+                  <item row="4" column="1">
                    <widget class="QLineEdit" name="lineEdit_runtime">
                     <property name="minimumSize">
                      <size>
@@ -174,14 +174,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="1">
+                  <item row="4" column="0">
                    <widget class="QLabel" name="label_runtime">
                     <property name="text">
                      <string>Runtime</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="0">
+                  <item row="5" column="1">
                    <widget class="QLineEdit" name="lineEdit_status">
                     <property name="minimumSize">
                      <size>
@@ -191,14 +191,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="1">
+                  <item row="5" column="0">
                    <widget class="QLabel" name="label_status">
                     <property name="text">
                      <string>Status</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="6" column="0">
+                  <item row="6" column="1">
                    <widget class="QLineEdit" name="lineEdit_tvdb_series_id">
                     <property name="minimumSize">
                      <size>
@@ -208,14 +208,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="6" column="1">
+                  <item row="6" column="0">
                    <widget class="QLabel" name="label_tvdb_series_id">
                     <property name="text">
                      <string>thetvdb.com ID</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="0">
+                  <item row="7" column="1">
                    <widget class="QComboBox" name="combo_actors">
                     <property name="minimumSize">
                      <size>
@@ -225,34 +225,15 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="1">
+                  <item row="7" column="0">
                    <widget class="QLabel" name="label_actors">
                     <property name="text">
                      <string>Actors</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="8" column="0">
+                  <item row="8" column="1">
                    <layout class="QGridLayout" name="gridLayout_4">
-                    <item row="0" column="0">
-                     <widget class="QPushButton" name="pushButton_save_series_changes">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Apply Changes</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="1" column="0">
                      <widget class="QPushButton" name="pushButton_revert_series_changes">
                       <property name="minimumSize">
@@ -269,6 +250,25 @@
                       </property>
                       <property name="text">
                        <string>Revert Changes</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QPushButton" name="pushButton_save_series_changes">
+                      <property name="minimumSize">
+                       <size>
+                        <width>200</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>200</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Apply Changes</string>
                       </property>
                      </widget>
                     </item>
@@ -589,20 +589,24 @@
              </attribute>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <layout class="QFormLayout" name="formLayout_3">
+               <layout class="QFormLayout" name="formLayout_2">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
                 </property>
                 <property name="fieldGrowthPolicy">
                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
                 </property>
-                <property name="labelAlignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
                 <property name="formAlignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
                 </property>
-                <item row="1" column="0">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_episode_name">
+                  <property name="text">
+                   <string>Episode Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
                  <widget class="QLineEdit" name="line_episode_name">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -612,197 +616,183 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
+                    <width>300</width>
                     <height>0</height>
                    </size>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLabel" name="label_episode_name">
-                  <property name="text">
-                   <string>Episode Name</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
                  <widget class="QPlainTextEdit" name="text_episode_plot">
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
-                    <height>100</height>
+                    <width>300</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
+                <item row="1" column="0">
                  <widget class="QLabel" name="label_plot">
                   <property name="text">
                    <string>Plot</string>
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="0">
+                <item row="2" column="1">
                  <widget class="QLineEdit" name="line_airdate">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
+                    <width>300</width>
                     <height>0</height>
                    </size>
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="1">
+                <item row="2" column="0">
                  <widget class="QLabel" name="label_airdate">
                   <property name="text">
                    <string>Original Airdate</string>
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="0">
+                <item row="3" column="1">
                  <widget class="QLineEdit" name="line_tvdb_id">
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
+                    <width>300</width>
                     <height>0</height>
                    </size>
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="1">
+                <item row="3" column="0">
                  <widget class="QLabel" name="label_tvdb_id">
                   <property name="text">
                    <string>thetvdb.com ID</string>
                   </property>
                  </widget>
                 </item>
-                <item row="5" column="0">
+                <item row="4" column="1">
                  <widget class="QLineEdit" name="line_tvdb_rating">
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
+                    <width>300</width>
                     <height>0</height>
                    </size>
                   </property>
                  </widget>
                 </item>
-                <item row="5" column="1">
+                <item row="4" column="0">
                  <widget class="QLabel" name="label_tvdb_rating">
                   <property name="text">
                    <string>thetvdb.com Rating</string>
                   </property>
                  </widget>
                 </item>
-                <item row="6" column="0">
-                 <widget class="QComboBox" name="combo_writers">
-                  <property name="minimumSize">
-                   <size>
-                    <width>400</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item row="6" column="1">
+                <item row="5" column="0">
                  <widget class="QLabel" name="label_writers">
                   <property name="text">
                    <string>Writer(s)</string>
                   </property>
                  </widget>
                 </item>
-                <item row="7" column="0">
-                 <widget class="QComboBox" name="combo_directors">
-                  <property name="minimumSize">
-                   <size>
-                    <width>400</width>
-                    <height>0</height>
-                   </size>
+                <item row="6" column="0">
+                 <widget class="QLabel" name="label_directors">
+                  <property name="text">
+                   <string>Directors(s)</string>
                   </property>
                  </widget>
                 </item>
                 <item row="7" column="1">
-                 <widget class="QLabel" name="label_director">
-                  <property name="text">
-                   <string>Director(s)</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="8" column="0">
                  <widget class="QComboBox" name="combo_guests">
                   <property name="minimumSize">
                    <size>
-                    <width>400</width>
+                    <width>300</width>
                     <height>0</height>
                    </size>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="0">
+                 <widget class="QLabel" name="label_guests">
+                  <property name="text">
+                   <string>Guest Star(s)</string>
                   </property>
                  </widget>
                 </item>
                 <item row="8" column="1">
-                 <widget class="QLabel" name="label_guests">
-                  <property name="text">
-                   <string>Guest Stars</string>
-                  </property>
-                 </widget>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="pushButton_revert_episode_changes">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Revert Changes</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QPushButton" name="pushButton_save_episode_changes">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Apply Changes</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
-                <item row="9" column="0">
-                 <widget class="QPushButton" name="pushButton_save_episode_changes">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Apply Changes</string>
-                  </property>
-                 </widget>
+                <item row="5" column="1">
+                 <widget class="QComboBox" name="combo_writers"/>
                 </item>
-                <item row="10" column="0">
-                 <widget class="QPushButton" name="pushButton_revert_episode_changes">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Revert Changes</string>
-                  </property>
-                 </widget>
+                <item row="6" column="1">
+                 <widget class="QComboBox" name="combo_directors"/>
                 </item>
                </layout>
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_3">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetFixedSize</enum>
-                </property>
                 <item>
                  <widget class="QLabel" name="label_episode_thumb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>400</width>
@@ -820,6 +810,19 @@
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </item>
               <item>
@@ -829,7 +832,7 @@
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>347</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -879,7 +882,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1340</width>
+     <width>1590</width>
      <height>22</height>
     </rect>
    </property>

@@ -432,8 +432,8 @@ class MainWindow(QtGui.QMainWindow):
         image_file = TVDB.retrieve_banner(str(episode_thumb))
         if image_file is not None:
             image = QtGui.QPixmap(image_file)
-            self.ui.label_episode_thumb.setGeometry(0, 0, \
-             image.width(), image.height())
+#            self.ui.label_episode_thumb.setGeometry(0, 0, \
+#             image.width(), image.height())
             self.ui.label_episode_thumb.setPixmap(image)
 
         elem_episode_airdate = episode_root.firstChildElement('aired')
