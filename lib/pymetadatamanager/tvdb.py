@@ -386,8 +386,12 @@ class TVDB(object):
         if not str(url) == 'none' and not str(url) == '':
             banner_name = url.split("/")[-1]
             banner_type = url.split("/")[-2]
+            banner_cache = url.split("/")[-4]
             if banner_type == "original":
-                banner_type = "fanart-original"
+                if banner_cache == "_cache":
+                    banner_type = "fanart-cache"
+                else:
+                    banner_type = "fanart-original"
             filedir = os.path.join(self.cache_dir, banner_type)
             filename = os.path.join(filedir, banner_name)
             if not os.path.isdir(filedir):

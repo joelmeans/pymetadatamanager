@@ -103,6 +103,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_new_series_wide_banner.pressed.connect(self.select_series_wide_banner)
         self.ui.pushButton_new_season_poster.pressed.connect(self.select_season_poster)
         self.ui.pushButton_new_season_wide.pressed.connect(self.select_season_wide_banner)
+        self.ui.pushButton_new_series_fanart.pressed.connect(self.select_series_fanart)
         self.ui.actionScan_Files.triggered.connect(self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
@@ -154,7 +155,7 @@ class MainWindow(QtGui.QMainWindow):
         self.clear_season_info()
         self.clear_episode_info()
         self.set_column_view()
-        self.set_series_info()
+        self.set_series_info(0)
         self.ui.pushButton_save_series_changes.setEnabled(0)
         self.ui.pushButton_revert_series_changes.setEnabled(0)
         self.ui.pushButton_new_series_poster.setEnabled(1)
@@ -252,7 +253,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_series_changes.setEnabled(0)
 
     def revert_series(self):
-        self.set_series_info()
+        self.set_series_info(0)
         self.ui.pushButton_save_series_changes.setEnabled(0)
         self.ui.pushButton_revert_series_changes.setEnabled(0)
 
@@ -317,7 +318,7 @@ class MainWindow(QtGui.QMainWindow):
         self.selected_season_poster = dbTV.get_selected_banner_url(series_id, 'season', self.season_number)
         if not self.selected_season_poster == "":
             filename = TVDB.retrieve_banner(self.selected_season_poster)
-            season_poster_pixmap = QtGui.QPixmap(filename)
+            season_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
             self.ui.label_season_poster.setPixmap(season_poster_pixmap)
         else:
             self.ui.label_season_poster.clear()
@@ -325,13 +326,13 @@ class MainWindow(QtGui.QMainWindow):
         self.selected_season_banner_wide = dbTV.get_selected_banner_url(series_id, 'seasonwide', self.season_number)
         if not self.selected_season_banner_wide == "":
             filename = TVDB.retrieve_banner(self.selected_season_banner_wide)
-            season_banner_wide_pixmap = QtGui.QPixmap(filename)
+            season_banner_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
             self.ui.label_season_banner_wide.setPixmap(season_banner_wide_pixmap)
         else:   
             self.ui.label_season_banner_wide.clear()
             self.ui.label_season_banner_wide.setText("No season wide banner selected")
 
-    def set_series_info(self):
+    def set_series_info(self, tab_index):
         """Sets the info for the current series in the display window"""
         #Get the series id from the database
         series_id = dbTV.get_series_id(self.series_name)
@@ -389,20 +390,31 @@ class MainWindow(QtGui.QMainWindow):
         self.selected_series_poster = dbTV.get_selected_banner_url(series_id, 'poster', '')
         if not self.selected_series_poster == "":
             filename = TVDB.retrieve_banner(self.selected_series_poster)
-            series_poster_pixmap = QtGui.QPixmap(filename)
+            series_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
             self.ui.label_series_banner.setPixmap(series_poster_pixmap)
         else:
             self.ui.label_series_banner.clear()
             self.ui.label_series_banner.setText("No series poster selected")
+
         self.selected_series_wide_banner = dbTV.get_selected_banner_url(series_id, 'series', '')
         if not self.selected_series_wide_banner == "":
             filename = TVDB.retrieve_banner(self.selected_series_wide_banner)
-            series_wide_pixmap = QtGui.QPixmap(filename)
+            series_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
             self.ui.label_banner_wide.setPixmap(series_wide_pixmap)
         else:
             self.ui.label_banner_wide.clear()
             self.ui.label_banner_wide.setText("No series wide banner selected")
-        self.ui.tabWidget_tv_info.setCurrentIndex(0)
+
+        self.selected_series_fanart = dbTV.get_selected_banner_url(series_id, 'fanart', '')
+        if not self.selected_series_fanart == "":
+            filename = TVDB.retrieve_banner(self.selected_series_fanart)
+            series_fanart_pixmap = QtGui.QPixmap(filename).scaledToHeight(480)
+            self.ui.label_series_fanart.setPixmap(series_fanart_pixmap)
+        else:
+            self.ui.label_series_fanart.clear()
+            self.ui.label_series_fanart.setText("No fanart selected")
+
+        self.ui.tabWidget_tv_info.setCurrentIndex(tab_index)
 
     def set_episode_info(self):
         """Sets the info for the show in the display window"""
@@ -479,7 +491,7 @@ class MainWindow(QtGui.QMainWindow):
             if self.ui.combo_actors.findText(episode_actor) < 0:
                 self.ui.combo_guests.addItem(episode_actor)
 
-        self.ui.tabWidget_tv_info.setCurrentIndex(2)
+        self.ui.tabWidget_tv_info.setCurrentIndex(3)
 
     def clear_episode_info(self):
         """Clears the episode info from the display window"""
@@ -503,15 +515,22 @@ class MainWindow(QtGui.QMainWindow):
         banner_dialog = BannerDialog(self.series_name, "series_posters", 0)
         accepted = banner_dialog.exec_()
         if accepted:
-            self.set_series_info()
+            self.set_series_info(0)
         self.ui.pushButton_new_series_poster.setDown(False)
 
     def select_series_wide_banner(self):
         banner_dialog = BannerDialog(self.series_name, "series_wide", 0)
         accepted = banner_dialog.exec_()
         if accepted:
-            self.set_series_info()
+            self.set_series_info(0)
         self.ui.pushButton_new_series_wide_banner.setDown(False)
+
+    def select_series_fanart(self):
+        banner_dialog = BannerDialog(self.series_name, "series_fanart", 0)
+        accepted = banner_dialog.exec_()
+        if accepted:
+            self.set_series_info(1)
+        self.ui.pushButton_new_series_fanart.setDown(False)
 
     def select_season_poster(self):
         banner_dialog = BannerDialog(self.series_name, "season_posters", self.season_number)

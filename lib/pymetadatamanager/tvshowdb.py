@@ -1318,6 +1318,7 @@ class TVShowDB(object):
             base_urls.append("%s/" % str(base_url[0]))
         for base_url in base_urls:
             url = url.replace(base_url, '')
+        url = url.replace('/_cache/', '')
         search_url = "%s%s%s" % ("%", url, "%")
         self.sqlTV.execute( \
           'SELECT id, type, type2, season FROM banners WHERE path LIKE (?)', \
@@ -1408,6 +1409,8 @@ class TVShowDB(object):
                         outfile = "%s%s.tbn" % ("season", str(banner[3]).zfill(2))
                 elif banner[2] == 'seasonwide':
                     outfile = None
+            elif banner[1] == 'fanart':
+                outfile = "fanart.jpg"
             if outfile is not None:
                 filename = os.path.join(path, outfile)
                 urllib.urlretrieve(banner[0], filename)

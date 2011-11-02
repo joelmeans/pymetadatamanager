@@ -63,7 +63,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 16. <del>Fix problem with having an apostrope in a show name (e.g. "Blue's Clues").</del>
 
-17. Add fanart capability.
+17. <del>Add fanart capability.</del>
 
 18. Add the ability to add artwork from the local system, not just thetvdb.org.
 
