@@ -80,6 +80,8 @@ class MainWindow(QtGui.QMainWindow):
         self.input_dialog.setGeometry(1000, 1000, 50, 100)
         self.input_dialog.setWindowTitle("Multiple Matches")
 
+        self.save_files = SaveFiles()
+
         # Connect sockets to slots
         self.ui.listView_shows.clicked.connect(self.list_view_clicked)
         self.ui.columnView_season_episode.clicked.connect(self.column_view_clicked)
@@ -114,6 +116,12 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionSave_episode_artwork.triggered.connect(self.save_episode_artwork)
         self.ui.actionSave_episode_nfo.triggered.connect(self.save_episode_nfo)
         self.ui.actionSave_episode_both.triggered.connect(self.save_episode_both)
+        self.save_files.started.connect(self.started_status)
+        self.save_files.finished.connect(self.finished_status)
+        self.save_files.terminated.connect(self.terminated_status)
+        self.connect(self.save_files, QtCore.SIGNAL("updateStatus(QString)"), self.update_status)
+        self.connect(self.save_files, QtCore.SIGNAL("updateProgress(int)"), self.update_progress)
+        self.connect(self.save_files, QtCore.SIGNAL("setupProgress(int)"), self.setup_progress)
 
         #Initialize some variables
         self.series_name_updated = 0
@@ -145,6 +153,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_new_series_wide_banner.setEnabled(0)
         self.ui.pushButton_new_season_poster.setEnabled(0)
         self.ui.pushButton_new_season_wide.setEnabled(0)
+
+        #Put a progress bar on the status bar
+        self.pb = QtGui.QProgressBar()
+        self.statusBar().addPermanentWidget(self.pb)
 
     def list_view_clicked(self, index):
         """Determines what was clicked in the column view tree"""
@@ -444,8 +456,6 @@ class MainWindow(QtGui.QMainWindow):
         image_file = TVDB.retrieve_banner(str(episode_thumb))
         if image_file is not None:
             image = QtGui.QPixmap(image_file)
-#            self.ui.label_episode_thumb.setGeometry(0, 0, \
-#             image.width(), image.height())
             self.ui.label_episode_thumb.setPixmap(image)
 
         elem_episode_airdate = episode_root.firstChildElement('aired')
@@ -608,46 +618,19 @@ class MainWindow(QtGui.QMainWindow):
                 os.rmdir(os.path.join(root, name))
 
     def save_all(self):
-        self.progress.show()
-        self.progress.setMaximum(len(self.shows))
-        self.progress.setValue(1)
-        self.progress.repaint()
-        for show in self.shows:
-            self.progress.setLabelText("Saving info and art for %s..." \
-                                       %  (show,))
-            self.progress.setValue(self.shows.index(show))
-            self.progress.repaint()
-            series_id = dbTV.get_series_id(show)
-            dbTV.write_series_nfo(series_id)
-            dbTV.write_series_posters(series_id)
-            episode_ids = dbTV.get_all_episode_ids(series_id)
-            for episode_id in episode_ids:
-                dbTV.write_episode_nfo(episode_id)
-                dbTV.write_episode_thumb(episode_id)
-        self.progress.setValue(len(self.shows))
+        self.save_files.save_all(self.shows)
 
     def save_series_artwork(self):
         series_id = dbTV.get_series_id(self.series_name)
-        dbTV.write_series_posters(series_id)
-        episode_ids = dbTV.get_all_episode_ids(series_id)
-        for episode_id in episode_ids:
-            dbTV.write_episode_thumb(episode_id)
+        self.save_files.save_series_artwork(series_id)
 
     def save_series_nfo(self):
         series_id = dbTV.get_series_id(self.series_name)
-        dbTV.write_series_nfo(series_id)
-        episode_ids = dbTV.get_all_episode_ids(series_id)
-        for episode_id in episode_ids:
-            dbTV.write_episode_nfo(episode_id)
+        self.save_files.save_series_nfos(series_id)
 
     def save_series_both(self):
         series_id = dbTV.get_series_id(self.series_name)
-        dbTV.write_series_nfo(series_id)
-        dbTV.write_series_posters(series_id)
-        episode_ids = dbTV.get_all_episode_ids(series_id)
-        for episode_id in episode_ids:
-            dbTV.write_episode_nfo(episode_id)
-            dbTV.write_episode_thumb(episode_id)
+        self.save_files.save_series_both(series_id)
 
     def save_episode_artwork(self):
         episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
@@ -664,3 +647,103 @@ class MainWindow(QtGui.QMainWindow):
          self.episode_number)
         dbTV.write_episode_nfo(episode_id)
         dbTV.write_episode_thumb(episode_id)
+
+    def started_status(self):
+        self.statusBar().showMessage("Saving files.")
+        self.pb.show()
+
+    def finished_status(self):
+        self.pb.hide()
+        self.statusBar().showMessage("File saving finished.")
+
+    def terminated_status(self):
+        self.pb.hide()
+        self.statusBar().showMessage("File saving terminated.")
+
+    def update_status(self, show):
+        self.statusBar().showMessage("Saving info and artwork for %s" % (show,))
+
+    def update_progress(self, progress):
+        self.pb.setValue(progress)
+
+    def setup_progress(self, max):
+        self.pb.setRange(0, max)
+
+class SaveFiles(QtCore.QThread):
+    def __init__(self, parent = None):
+        QtCore.QThread.__init__(self, parent)
+        self.exiting = False
+        self.db = TVShowDB(config.tvshowdb)
+
+    def __del__(self):
+        self.exiting = True
+        self.wait()
+
+    def save_all(self, shows):
+        self.shows = shows
+        self.which = 'all'
+        self.start()
+
+    def save_series_artwork(self, series_id):
+        self.series_id = series_id
+        self.which = 'series_artwork'
+        self.start()
+
+    def save_series_nfos(self, series_id):
+        self.series_id = series_id
+        self.which = 'series_nfos'
+        self.start()
+
+    def save_series_both(self, series_id):
+        self.series_id = series_id
+        self.which = 'series_both'
+        self.start()
+
+    def run(self):
+        if self.which == 'all':
+            for show in self.shows:
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                series_id = self.db.get_series_id(show)
+                self.db.write_series_nfo(series_id)
+                self.db.write_series_posters(series_id)
+                episode_ids = self.db.get_all_episode_ids(series_id)
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                for episode_id in episode_ids:
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.db.write_episode_nfo(episode_id)
+                    self.db.write_episode_thumb(episode_id)
+
+        elif self.which == 'series_artwork': 
+            show = self.db.get_series_name(self.series_id)
+            if show is not None:
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.db.write_series_posters(self.series_id)
+                episode_ids = self.db.get_all_episode_ids(self.series_id)
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                for episode_id in episode_ids:
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.db.write_episode_thumb(episode_id)
+
+        elif self.which == 'series_nfos': 
+            show = self.db.get_series_name(self.series_id)
+            if show is not None:
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.db.write_series_nfo(self.series_id)
+                episode_ids = self.db.get_all_episode_ids(self.series_id)
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                for episode_id in episode_ids:
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.db.write_episode_nfo(episode_id)
+
+        elif self.which == 'series_both': 
+            show = self.db.get_series_name(self.series_id)
+            if show is not None:
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.db.write_series_nfo(self.series_id)
+                self.db.write_series_posters(self.series_id)
+                episode_ids = self.db.get_all_episode_ids(self.series_id)
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                for episode_id in episode_ids:
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.db.write_episode_nfo(episode_id)
+                    self.db.write_episode_thumb(episode_id)

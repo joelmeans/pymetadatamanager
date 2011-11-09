@@ -35,7 +35,7 @@ class TVShowDB(object):
     information about TV episodes which are being catalogued.
     """
     def __init__(self, db_name):
-        self.dbTV = sqlite.connect(db_name)
+        self.dbTV = sqlite.connect(db_name, check_same_thread = False)
         self.sqlTV = self.dbTV.cursor()
         self.new_version = 5
         self.tvdb = TVDB()
@@ -594,9 +594,20 @@ class TVShowDB(object):
         if len(value_db):
              for x in value_db[0]: thumburl = x
         else:
-            thumburl = "none"
+            thumburl = None 
         return thumburl
         
+    def get_series_name(self, series_id):
+        """Returns the series name for a given series_id"""
+        self.sqlTV.execute('SELECT name FROM shows WHERE seriesid=(?)', \
+         (series_id, ))
+        value_db = self.sqlTV.fetchall()
+        if len(value_db):
+            for x in value_db[0]: series_name = x
+        else:
+            series_name = None
+        return series_name
+
     def db_query(self, sql):
         """Perform any query on the db.  Used for testing purposes only"""
         self.sqlTV.execute(sql)

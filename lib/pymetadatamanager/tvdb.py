@@ -383,24 +383,27 @@ class TVDB(object):
 
     def retrieve_banner(self, url):
         """Retrieves a banner from <url> and saves it as <filename>"""
-        if not str(url) == 'none' and not str(url) == '':
-            banner_name = url.split("/")[-1]
-            banner_type = url.split("/")[-2]
-            banner_cache = url.split("/")[-4]
-            if banner_type == "original":
-                if banner_cache == "_cache":
-                    banner_type = "fanart-cache"
-                else:
-                    banner_type = "fanart-original"
-            filedir = os.path.join(self.cache_dir, banner_type)
-            filename = os.path.join(filedir, banner_name)
-            if not os.path.isdir(filedir):
-                os.mkdir(filedir)
-            if not os.path.isfile(filename):
-                urllib.urlretrieve(url, filename)
-            return filename
+        if url is not None:
+            if not str(url) == '':
+                banner_name = url.split("/")[-1]
+                banner_type = url.split("/")[-2]
+                banner_cache = url.split("/")[-4]
+                if banner_type == "original":
+                    if banner_cache == "_cache":
+                        banner_type = "fanart-cache"
+                    else:
+                        banner_type = "fanart-original"
+                filedir = os.path.join(self.cache_dir, banner_type)
+                filename = os.path.join(filedir, banner_name)
+                if not os.path.isdir(filedir):
+                    os.mkdir(filedir)
+                if not os.path.isfile(filename):
+                    urllib.urlretrieve(url, filename)
+            else:
+                filename = None
         else:
-            return None
+            filename = None
+        return filename
 
     def massage_episode_name(self, episode_name):
         regex = re.compile('[%s]' % re.escape(string.punctuation))
