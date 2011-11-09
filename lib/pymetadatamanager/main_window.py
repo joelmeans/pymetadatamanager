@@ -47,9 +47,12 @@ config = Config()
 #Set up the logging
 logger = logging.getLogger('pymetadatamanager')
 logger.setLevel(logging.DEBUG)
-fh = logging.handlers.TimedRotatingFileHandler(config.log_file, when='midnight',backupCount=2)
+fh = logging.handlers.TimedRotatingFileHandler(config.log_file, \
+                                               when='midnight',\
+                                               backupCount=2)
 fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s: %(levelname)-8s %(name)-38s\n    %(message)s')
+formatter = logging.Formatter('%(asctime)s: %(levelname)-8s %(name)-38s\n \
+  %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
@@ -99,50 +102,91 @@ class MainWindow(QtGui.QMainWindow):
 
         # Connect sockets to slots
         self.ui.listView_shows.clicked.connect(self.list_view_clicked)
-        self.ui.columnView_season_episode.clicked.connect(self.column_view_clicked)
+        self.ui.columnView_season_episode.clicked.connect(\
+          self.column_view_clicked)
 #        self.ui.combo_actors.currentIndexChanged.connect(self.set_actor_thumb)
-        self.ui.lineEdit_series_name.textEdited.connect(self.set_series_name_updated)
-        self.ui.plainTextEdit_overview.textChanged.connect(self.set_series_overview_updated)
-        self.ui.lineEdit_network.textEdited.connect(self.set_series_network_updated)
-        self.ui.lineEdit_airtime.textEdited.connect(self.set_series_airtime_updated)
-        self.ui.lineEdit_runtime.textEdited.connect(self.set_series_runtime_updated)
-        self.ui.lineEdit_status.textEdited.connect(self.set_series_status_updated)
-        self.ui.pushButton_save_series_changes.pressed.connect(self.update_series)
-        self.ui.pushButton_revert_series_changes.pressed.connect(self.revert_series)
-
-        self.ui.line_episode_name.textEdited.connect(self.set_episode_name_updated)
-        self.ui.text_episode_plot.textChanged.connect(self.set_episode_plot_updated)
-        self.ui.line_airdate.textEdited.connect(self.set_episode_airdate_updated)
-        self.ui.line_tvdb_rating.textEdited.connect(self.set_episode_tvdb_rating_updated)
-        self.ui.pushButton_save_episode_changes.pressed.connect(self.update_episode)
-        self.ui.pushButton_revert_episode_changes.pressed.connect(self.revert_episode)
-        self.ui.pushButton_new_series_poster.pressed.connect(self.select_series_poster)
-        self.ui.pushButton_new_series_wide_banner.pressed.connect(self.select_series_wide_banner)
-        self.ui.pushButton_new_season_poster.pressed.connect(self.select_season_poster)
-        self.ui.pushButton_new_season_wide.pressed.connect(self.select_season_wide_banner)
-        self.ui.pushButton_new_series_fanart.pressed.connect(self.select_series_fanart)
-        self.ui.actionScan_Files.triggered.connect(self.scan_all_files)
-        self.ui.actionEdit_Preferences.triggered.connect(self.edit_preferences)
-        self.ui.actionClear_Cache.triggered.connect(self.clear_cache)
-        self.ui.actionSave_all.triggered.connect(self.save_all)
-        self.ui.actionSave_series_artwork.triggered.connect(self.save_series_artwork)
-        self.ui.actionSave_series_nfo.triggered.connect(self.save_series_nfo)
-        self.ui.actionSave_series_both.triggered.connect(self.save_series_both)
-        self.ui.actionSave_episode_artwork.triggered.connect(self.save_episode_artwork)
-        self.ui.actionSave_episode_nfo.triggered.connect(self.save_episode_nfo)
-        self.ui.actionSave_episode_both.triggered.connect(self.save_episode_both)
+        self.ui.lineEdit_series_name.textEdited.connect(\
+          self.set_series_name_updated)
+        self.ui.plainTextEdit_overview.textChanged.connect(\
+          self.set_series_overview_updated)
+        self.ui.lineEdit_network.textEdited.connect(\
+          self.set_series_network_updated)
+        self.ui.lineEdit_airtime.textEdited.connect(\
+          self.set_series_airtime_updated)
+        self.ui.lineEdit_runtime.textEdited.connect(\
+          self.set_series_runtime_updated)
+        self.ui.lineEdit_status.textEdited.connect(\
+          self.set_series_status_updated)
+        self.ui.pushButton_save_series_changes.pressed.connect(\
+          self.update_series)
+        self.ui.pushButton_revert_series_changes.pressed.connect(\
+          self.revert_series)
+        self.ui.line_episode_name.textEdited.connect(\
+          self.set_episode_name_updated)
+        self.ui.text_episode_plot.textChanged.connect(\
+          self.set_episode_plot_updated)
+        self.ui.line_airdate.textEdited.connect(\
+          self.set_episode_airdate_updated)
+        self.ui.line_tvdb_rating.textEdited.connect(\
+          self.set_episode_tvdb_rating_updated)
+        self.ui.pushButton_save_episode_changes.pressed.connect(\
+          self.update_episode)
+        self.ui.pushButton_revert_episode_changes.pressed.connect(\
+          self.revert_episode)
+        self.ui.pushButton_new_series_poster.pressed.connect(\
+          self.select_series_poster)
+        self.ui.pushButton_new_series_wide_banner.pressed.connect(\
+          self.select_series_wide_banner)
+        self.ui.pushButton_new_season_poster.pressed.connect(\
+          self.select_season_poster)
+        self.ui.pushButton_new_season_wide.pressed.connect(\
+          self.select_season_wide_banner)
+        self.ui.pushButton_new_series_fanart.pressed.connect(\
+          self.select_series_fanart)
+        self.ui.actionScan_Files.triggered.connect(\
+          self.scan_all_files)
+        self.ui.actionEdit_Preferences.triggered.connect(\
+          self.edit_preferences)
+        self.ui.actionClear_Cache.triggered.connect(\
+          self.clear_cache)
+        self.ui.actionSave_all.triggered.connect(\
+          self.save_all)
+        self.ui.actionSave_series_artwork.triggered.connect(\
+          self.save_series_artwork)
+        self.ui.actionSave_series_nfo.triggered.connect(\
+          self.save_series_nfo)
+        self.ui.actionSave_series_both.triggered.connect(\
+          self.save_series_both)
+        self.ui.actionSave_episode_artwork.triggered.connect(\
+          self.save_episode_artwork)
+        self.ui.actionSave_episode_nfo.triggered.connect(\
+          self.save_episode_nfo)
+        self.ui.actionSave_episode_both.triggered.connect(\
+          self.save_episode_both)
         self.save_files.started.connect(self.saving_started_status)
         self.save_files.finished.connect(self.saving_finished_status)
         self.save_files.terminated.connect(self.saving_terminated_status)
-        self.connect(self.save_files, QtCore.SIGNAL("updateStatus(QString)"), self.saving_update_status)
-        self.connect(self.save_files, QtCore.SIGNAL("updateProgress(int)"), self.saving_update_progress)
-        self.connect(self.save_files, QtCore.SIGNAL("setupProgress(int)"), self.saving_setup_progress)
+        self.connect(self.save_files, \
+                     QtCore.SIGNAL("updateStatus(QString)"), \
+                     self.saving_update_status)
+        self.connect(self.save_files, \
+                     QtCore.SIGNAL("updateProgress(int)"), \
+                     self.saving_update_progress)
+        self.connect(self.save_files, \
+                     QtCore.SIGNAL("setupProgress(int)"), \
+                     self.saving_setup_progress)
         self.scan_files.started.connect(self.scanning_started_status)
         self.scan_files.finished.connect(self.scanning_finished_status)
         self.scan_files.terminated.connect(self.scanning_terminated_status)
-        self.connect(self.scan_files, QtCore.SIGNAL("updateStatus(QString)"), self.scanning_update_status)
-        self.connect(self.scan_files, QtCore.SIGNAL("updateProgress(int)"), self.scanning_update_progress)
-        self.connect(self.scan_files, QtCore.SIGNAL("setupProgress(int)"), self.scanning_setup_progress)
+        self.connect(self.scan_files, \
+                     QtCore.SIGNAL("updateStatus(QString)"), \
+                     self.scanning_update_status)
+        self.connect(self.scan_files, \
+                     QtCore.SIGNAL("updateProgress(int)"), \
+                     self.scanning_update_progress)
+        self.connect(self.scan_files, \
+                     QtCore.SIGNAL("setupProgress(int)"), \
+                     self.scanning_setup_progress)
 
         #Initialize some variables
         self.series_name_updated = 0
@@ -221,7 +265,8 @@ class MainWindow(QtGui.QMainWindow):
                 self.season_number = 0 
             else:
                 self.season_number = int(season_number)
-            self.episode_number = int(str(this_node_data.split("-")[0]).rstrip())
+            self.episode_number = \
+              int(str(this_node_data.split("-")[0]).rstrip())
             self.set_season_info()
             self.set_episode_info()
             self.ui.pushButton_save_episode_changes.setEnabled(0)
@@ -236,7 +281,7 @@ class MainWindow(QtGui.QMainWindow):
     def set_series_overview_updated(self):
         self.series_overview_updated = 1
         self.new_series_overview = \
-         unicode(self.ui.plainTextEdit_overview.toPlainText(), "latin-1")
+          unicode(self.ui.plainTextEdit_overview.toPlainText(), "latin-1")
         self.ui.pushButton_save_series_changes.setEnabled(1)
         self.ui.pushButton_revert_series_changes.setEnabled(1)
 
@@ -270,18 +315,23 @@ class MainWindow(QtGui.QMainWindow):
             dbTV.update_series_field('name', self.new_series_name, series_id)
             self.series_name=self.new_series_name
         if self.series_overview_updated == 1:
-            dbTV.update_series_field('overview', self.new_series_overview, series_id)
+            dbTV.update_series_field('overview', \
+                                     self.new_series_overview, series_id)
         if self.series_network_updated == 1:
             pass
         if self.series_airtime_updated == 1:
             new_series_airs_time = self.new_series_airtime.split(' at ')[1]
             new_series_airs_day = self.new_series_airtime.split(' at ')[0]
-            dbTV.update_series_field('airs_time', new_series_airs_time, series_id)
-            dbTV.update_series_field('airs_day', new_series_airs_day, series_id)
+            dbTV.update_series_field('airs_time', \
+                                     new_series_airs_time, series_id)
+            dbTV.update_series_field('airs_day', \
+                                     new_series_airs_day, series_id)
         if self.series_runtime_updated == 1:
-            dbTV.update_series_field('runtime', self.new_series_runtime, series_id)
+            dbTV.update_series_field('runtime', \
+                                     self.new_series_runtime, series_id)
         if self.series_status_updated == 1:
-            dbTV.update_series_field('status', self.new_series_status, series_id)
+            dbTV.update_series_field('status', \
+                                     self.new_series_status, series_id)
         self.ui.pushButton_save_series_changes.setEnabled(0)
         self.ui.pushButton_revert_series_changes.setEnabled(0)
 
@@ -299,7 +349,7 @@ class MainWindow(QtGui.QMainWindow):
     def set_episode_plot_updated(self):
         self.episode_plot_updated = 1
         self.new_episode_plot = \
-         str(self.ui.text_episode_plot.toPlainText().toUtf8())
+          str(self.ui.text_episode_plot.toPlainText().toUtf8())
         self.ui.pushButton_save_episode_changes.setEnabled(1)
         self.ui.pushButton_revert_episode_changes.setEnabled(1)
 
@@ -316,16 +366,21 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_revert_episode_changes.setEnabled(1)
 
     def update_episode(self):
-        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
-         self.episode_number)
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
         if self.episode_name_updated == 1:
-            dbTV.update_episode_field('name', self.new_episode_name, episode_id)
+            dbTV.update_episode_field('name', \
+                                      self.new_episode_name, episode_id)
         if self.episode_plot_updated == 1:
-            dbTV.update_episode_field('overview', self.new_episode_plot, episode_id)
+            dbTV.update_episode_field('overview', \
+                                      self.new_episode_plot, episode_id)
         if self.episode_airdate_updated == 1:
-            dbTV.update_episode_field('first_aired', self.new_episode_airdate, episode_id)
+            dbTV.update_episode_field('first_aired', \
+                                      self.new_episode_airdate, episode_id)
         if self.episode_tvdb_rating_updated == 1:
-            dbTV.update_episode_field('rating', self.new_episode_tvdb_rating, episode_id)
+            dbTV.update_episode_field('rating', \
+                                      self.new_episode_tvdb_rating, episode_id)
         self.ui.pushButton_save_episode_changes.setEnabled(0)
         self.ui.pushButton_revert_episode_changes.setEnabled(0)
 
@@ -341,14 +396,13 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.columnView_season_episode.setColumnWidths([300,550,50])
 
     def set_season_info(self):
-        series_id = dbTV.get_series_id(self.series_name)
         """Sets the info for the current season in the display window"""
+        series_id = dbTV.get_series_id(self.series_name)
         season_list = dbTV.make_episodes_list(series_id, self.season_number)
-        #Turn that into a model
         model = SeasonListModel(season_list)
-        #Set that as the model for the listView
         self.ui.listView_season_episode_full.setModel(model)
-        self.selected_season_poster = dbTV.get_selected_banner_url(series_id, 'season', self.season_number)
+        self.selected_season_poster = dbTV.get_selected_banner_url(\
+          series_id, 'season', self.season_number)
         if not self.selected_season_poster == "":
             filename = TVDB.retrieve_banner(self.selected_season_poster)
             season_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
@@ -356,14 +410,18 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.ui.label_season_poster.clear()
             self.ui.label_season_poster.setText("No season poster selected")
-        self.selected_season_banner_wide = dbTV.get_selected_banner_url(series_id, 'seasonwide', self.season_number)
+        self.selected_season_banner_wide = dbTV.get_selected_banner_url(\
+          series_id, 'seasonwide', self.season_number)
         if not self.selected_season_banner_wide == "":
             filename = TVDB.retrieve_banner(self.selected_season_banner_wide)
-            season_banner_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
-            self.ui.label_season_banner_wide.setPixmap(season_banner_wide_pixmap)
+            season_banner_wide_pixmap = \
+              QtGui.QPixmap(filename).scaledToHeight(140)
+            self.ui.label_season_banner_wide.setPixmap(\
+              season_banner_wide_pixmap)
         else:   
             self.ui.label_season_banner_wide.clear()
-            self.ui.label_season_banner_wide.setText("No season wide banner selected")
+            self.ui.label_season_banner_wide.setText(\
+              "No season wide banner selected")
 
     def set_series_info(self, tab_index):
         """Sets the info for the current series in the display window"""
@@ -386,7 +444,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.combo_actors.clear()
         elem_series_actor = series_root.firstChildElement('actor')
         while not elem_series_actor.isNull():
-            elem_series_actor_name = elem_series_actor.firstChildElement('name')
+            elem_series_actor_name = \
+              elem_series_actor.firstChildElement('name')
             series_actor_name = elem_series_actor_name.text()
             if not series_actor_name in series_actors:
                 series_actors.append(series_actor_name)
@@ -420,7 +479,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ui.lineEdit_tvdb_series_id.setText(str(series_id))        
 
-        self.selected_series_poster = dbTV.get_selected_banner_url(series_id, 'poster', '')
+        self.selected_series_poster = \
+          dbTV.get_selected_banner_url(series_id, 'poster', '')
         if not self.selected_series_poster == "":
             filename = TVDB.retrieve_banner(self.selected_series_poster)
             series_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
@@ -429,7 +489,8 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_series_banner.clear()
             self.ui.label_series_banner.setText("No series poster selected")
 
-        self.selected_series_wide_banner = dbTV.get_selected_banner_url(series_id, 'series', '')
+        self.selected_series_wide_banner = \
+          dbTV.get_selected_banner_url(series_id, 'series', '')
         if not self.selected_series_wide_banner == "":
             filename = TVDB.retrieve_banner(self.selected_series_wide_banner)
             series_wide_pixmap = QtGui.QPixmap(filename).scaledToHeight(140)
@@ -438,7 +499,8 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.label_banner_wide.clear()
             self.ui.label_banner_wide.setText("No series wide banner selected")
 
-        self.selected_series_fanart = dbTV.get_selected_banner_url(series_id, 'fanart', '')
+        self.selected_series_fanart = \
+          dbTV.get_selected_banner_url(series_id, 'fanart', '')
         if not self.selected_series_fanart == "":
             filename = TVDB.retrieve_banner(self.selected_series_fanart)
             series_fanart_pixmap = QtGui.QPixmap(filename).scaledToHeight(480)
@@ -452,8 +514,9 @@ class MainWindow(QtGui.QMainWindow):
     def set_episode_info(self):
         """Sets the info for the show in the display window"""
         #Get the episode_id from the database
-        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
-         self.episode_number)
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
 
         #Create a QDomDocument containing the episode details
         episode_doc = dbTV.make_episode_dom(episode_id)
@@ -512,7 +575,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.combo_guests.clear()
         while not elem_episode_actor.isNull():
             elem_episode_actor_name = \
-             elem_episode_actor.firstChildElement('name')
+              elem_episode_actor.firstChildElement('name')
             episode_actor_name = elem_episode_actor_name.text()
             episode_actors.append(episode_actor_name)
             elem_episode_actor = elem_episode_actor.nextSiblingElement('actor')
@@ -564,14 +627,18 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_new_series_fanart.setDown(False)
 
     def select_season_poster(self):
-        banner_dialog = BannerDialog(self.series_name, "season_posters", self.season_number)
+        banner_dialog = BannerDialog(self.series_name, \
+                                     "season_posters", \
+                                      self.season_number)
         accepted = banner_dialog.exec_()
         if accepted:
             self.set_season_info()
         self.ui.pushButton_new_season_poster.setDown(False)
 
     def select_season_wide_banner(self):
-        banner_dialog = BannerDialog(self.series_name, "season_wide", self.season_number)
+        banner_dialog = BannerDialog(self.series_name, \
+                                     "season_wide", \
+                                     self.season_number)
         accepted = banner_dialog.exec_()
         if accepted:
             self.set_season_info()
@@ -607,18 +674,21 @@ class MainWindow(QtGui.QMainWindow):
         self.save_files.save_series_both(series_id)
 
     def save_episode_artwork(self):
-        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
-         self.episode_number)
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
         dbTV.write_episode_thumb(episode_id)
 
     def save_episode_nfo(self):
-        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
-         self.episode_number)
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
         dbTV.write_episode_nfo(episode_id)
 
     def save_episode_both(self):
-        episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
-         self.episode_number)
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
         dbTV.write_episode_nfo(episode_id)
         dbTV.write_episode_thumb(episode_id)
 
@@ -635,7 +705,8 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar().showMessage("File saving terminated.")
 
     def saving_update_status(self, show):
-        self.statusBar().showMessage("Saving info and artwork for %s" % (show,))
+        self.statusBar().showMessage(\
+          "Saving info and artwork for %s" % (show,))
 
     def saving_update_progress(self, progress):
         self.pb.setValue(progress)
@@ -651,7 +722,7 @@ class MainWindow(QtGui.QMainWindow):
         self.pb.hide()
         self.statusBar().showMessage("File scanning finished.")
         #Create a dom representing the shows in the database
-        shows = self.db.make_shows_list()
+        shows = dbTV.make_shows_list()
         #Turn that into a model
         model = ShowListModel(shows)
         #Set that as the model for the listView
@@ -703,56 +774,69 @@ class SaveFiles(QtCore.QThread):
     def run(self):
         if self.which == 'all':
             for show in self.shows:
-                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
+                          QtCore.QString(show))
                 series_id = self.db.get_series_id(show)
                 self.db.write_series_nfo(series_id)
                 self.db.write_series_posters(series_id)
                 episode_ids = self.db.get_all_episode_ids(series_id)
-                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), \
+                          len(episode_ids))
                 for episode_id in episode_ids:
-                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), \
+                              episode_ids.index(episode_id))
                     self.db.write_episode_nfo(episode_id)
                     self.db.write_episode_thumb(episode_id)
 
         elif self.which == 'series_artwork': 
             show = self.db.get_series_name(self.series_id)
             if show is not None:
-                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
+                          QtCore.QString(show))
                 self.db.write_series_posters(self.series_id)
                 episode_ids = self.db.get_all_episode_ids(self.series_id)
-                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), \
+                          len(episode_ids))
                 for episode_id in episode_ids:
-                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), \
+                              episode_ids.index(episode_id))
                     self.db.write_episode_thumb(episode_id)
 
         elif self.which == 'series_nfos': 
             show = self.db.get_series_name(self.series_id)
             if show is not None:
-                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
+                          QtCore.QString(show))
                 self.db.write_series_nfo(self.series_id)
                 episode_ids = self.db.get_all_episode_ids(self.series_id)
-                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), \
+                          len(episode_ids))
                 for episode_id in episode_ids:
-                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), \
+                              episode_ids.index(episode_id))
                     self.db.write_episode_nfo(episode_id)
 
         elif self.which == 'series_both': 
             show = self.db.get_series_name(self.series_id)
             if show is not None:
-                self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(show))
+                self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
+                          QtCore.QString(show))
                 self.db.write_series_nfo(self.series_id)
                 self.db.write_series_posters(self.series_id)
                 episode_ids = self.db.get_all_episode_ids(self.series_id)
-                self.emit(QtCore.SIGNAL("setupProgress(int)"), len(episode_ids))
+                self.emit(QtCore.SIGNAL("setupProgress(int)"), \
+                          len(episode_ids))
                 for episode_id in episode_ids:
-                    self.emit(QtCore.SIGNAL("updateProgress(int)"), episode_ids.index(episode_id))
+                    self.emit(QtCore.SIGNAL("updateProgress(int)"), \
+                              episode_ids.index(episode_id))
                     self.db.write_episode_nfo(episode_id)
                     self.db.write_episode_thumb(episode_id)
 
 class ScanFiles(QtCore.QThread):
     def __init__(self, parent = None):
         QtCore.QThread.__init__(self, parent)
-        self.logger = logging.getLogger('pymetadatamanager.main_window.ScanFiles')
+        self.logger = logging.getLogger(\
+          'pymetadatamanager.main_window.ScanFiles')
         self.exiting = False
         self.db = TVShowDB(config.tvshowdb)
 
@@ -766,17 +850,22 @@ class ScanFiles(QtCore.QThread):
 
     def run(self):
         for video_dir in self.dirs:
-            self.emit(QtCore.SIGNAL("updateStatus(QString)"), QtCore.QString(video_dir))
+            self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
+                      QtCore.QString(video_dir))
             self.logger.info("Scanning files")
             scanner = Scanner(video_dir)
             scanner.set_series_list()
-            self.emit(QtCore.SIGNAL("setupProgress(int)"), len(scanner.series_list))
+            self.emit(QtCore.SIGNAL("setupProgress(int)"), \
+                      len(scanner.series_list))
             for series_name in scanner.series_list:
-                self.emit(QtCore.SIGNAL("updateProgress(int)"), scanner.series_list.index(series_name))
+                self.emit(QtCore.SIGNAL("updateProgress(int)"), \
+                          scanner.series_list.index(series_name))
                 match_list = scanner.get_series_id_list(series_name)
                 if len(match_list) == 0:
-                    self.logger.info("No matches found on thetvdb.com for '%s'." % (series_name))
-                    series_id = raw_input("Please input the ID for the correct series:")
+                    self.logger.info(\
+                      "No matches found on thetvdb.com for '%s'." \
+                      % (series_name))
+                    series_id = 0
                 elif len(match_list) == 1:
                     self.logger.info("Found match for '%s'." % (series_name))
                     series_id = match_list[0][0]
@@ -785,7 +874,8 @@ class ScanFiles(QtCore.QThread):
                     list = ''
                     for i in range(0,len(match_list)):
                         if match_list[i][1] == series_name:
-                            self.logger.info("Found match for '%s'." % (series_name))
+                            self.logger.info(\
+                              "Found match for '%s'." % (series_name))
                             series_id = match_list[i][0]
                             match = True
                         else:
@@ -799,8 +889,8 @@ class ScanFiles(QtCore.QThread):
                             series_id = match_list[selection][0]
                         except IndexError:
                             self.logger.info("That is not an option.")
-                scanner.add_series_to_db(series_id)
-                scanner.add_files_to_db(series_name, series_id)
+                if not series_id == 0:
+                    scanner.add_series_to_db(series_id)
+                    scanner.add_files_to_db(series_name, series_id)
             scanner.__del__()
-
         self.logger.info("Finished Scanning")
