@@ -71,7 +71,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 20. Add the ability to load local .nfo files.
 
-21. Add dialog about saving files (right now it just won't respond, but it doesn't let you know why).
+21. <del>Add dialog about saving files (right now it just won't respond, but it doesn't let you know why).</del>
 
 22. Add logging capability.
 
