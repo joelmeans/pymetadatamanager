@@ -30,7 +30,7 @@ class FileParser(object):
         """Parses a filename to extract show name, season, and episode"""
         for file in files:
             for ext in self.exts:
-                if file.endswith(ext):
+                if file.endswith(ext) and not file.startswith('.'):
                     ssxeee = re.search('[0-9]{2}x[0-9]{3}', file)
                     ssxee = re.search('[0-9]{2}x[0-9]{2}', file)
                     if ssxeee:
