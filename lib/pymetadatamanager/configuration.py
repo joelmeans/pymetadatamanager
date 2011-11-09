@@ -23,6 +23,7 @@ __date__ ="$Oct 13, 2011 12:46:59 PM$"
 
 import os
 import sys
+import logging
 from PyQt4 import QtXml
 
 class Config(object):
@@ -30,9 +31,11 @@ class Config(object):
     Provides configuration information for pymetadatamanager
     """
     def __init__(self):
+        self.logger = logging.getLogger('pymetadatamanager.configuration')
         self.home_dir = os.path.expanduser('~')
         self.config_dir = self.get_config_dir()
         self.config_file = os.path.join(self.config_dir, 'config.xml')
+        self.log_file = os.path.join(self.config_dir, 'pymetadatamanager.log')
         self.tvshowdb = os.path.join(self.config_dir, 'TV.db')
         self.tv_dirs = []
         self.movie_dirs = []
@@ -86,7 +89,7 @@ class Config(object):
                                    'My Videos', 'Movies'))
 
     def write_config_file(self):
-        print "Writing New Config File"
+        self.logger.info("Writing new config file")
         dom = QtXml.QDomDocument()
         xml_header_pi = dom.createProcessingInstruction('xml', 'version="1.0"')
         dom.appendChild(xml_header_pi)

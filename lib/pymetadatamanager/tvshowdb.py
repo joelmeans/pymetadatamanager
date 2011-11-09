@@ -21,6 +21,7 @@
 import os
 import re
 import urllib
+import logging
 from sqlite3 import dbapi2 as sqlite
 from tvdb import TVDB
 from PyQt4 import QtCore
@@ -35,11 +36,14 @@ class TVShowDB(object):
     information about TV episodes which are being catalogued.
     """
     def __init__(self, db_name):
-        self.dbTV = sqlite.connect(db_name, check_same_thread = False)
+        self.db_name = db_name
+        self.dbTV = sqlite.connect(self.db_name, check_same_thread = False)
         self.sqlTV = self.dbTV.cursor()
         self.new_version = 5
         self.tvdb = TVDB()
         self.MediaInfo = MediaInfo()
+        self.logger = logging.getLogger('pymetadatamanager.tvshowdb')
+        self.logger.info('Creating connection to tv show database')
 
     def __del__(self):
         self.sqlTV.close()
@@ -47,6 +51,7 @@ class TVShowDB(object):
 
     def init_db(self):
         """Initialize the database for use"""
+        self.logger.info('Initializing the database (%s)' % (self.db_name))
         # find out if a previous version of the database exists
         current_version = 0
         self.sqlTV.execute("SELECT * FROM sqlite_master WHERE type = \
@@ -163,10 +168,10 @@ class TVShowDB(object):
             self.sqlTV.execute('SELECT * FROM episodes WHERE episodeid=(?)', \
              (episode.episodeid, ))
             if len(self.sqlTV.fetchall()):
-                #print "Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number)
+                self.logger.info("Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number))
                 pass
             else:
-                #print "Adding season %s episode %s to the DB" % (episode.season_number, episode.episode_number)
+                self.logger.info("Adding season %s episode %s to the DB" % (episode.season_number, episode.episode_number))
                 self.sqlTV.execute('INSERT INTO episodes ("episodeid", "name", \
                  "overview", "season_number", "episode_number", "language", \
                  "prod_code", "rating", "first_aired", "thumb") VALUES \
@@ -434,11 +439,11 @@ class TVShowDB(object):
                  series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
                 if episodes[0] is not None:
                     self.write_episodes_to_db(episodes, series_id)
-                    #print "Adding Series %s, season %s, episode \
-                    # %s to database" \
-                    # % (series_id, file_season, file_episode)
+                    self.logger.info("Adding Series %s, season %s, episode \
+                      %s to database" \
+                      % (series_id, file_season, file_episode))
                 else:
-                    print "Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode)
+                    self.logger.info("Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode))
                 self.sqlTV.execute('SELECT episodes.id FROM episodes \
                  JOIN episodelinkshow ON episodelinkshow.idEpisode=episodes.id \
                  JOIN shows ON episodelinkshow.idShow=shows.id \
@@ -1274,19 +1279,20 @@ class TVShowDB(object):
 
         #Update any episodes and series which have been changed
         #  since the last update
-        print "Getting Episode Update List"
+        self.logger.info("Getting Episode Update List")
         episode_update_list = \
          self.tvdb.get_episode_update_list(last_update_time)
-        print "Getting Series Update List"
+        self.logger.info("Getting Series Update List")
         series_update_list = self.tvdb.get_series_update_list(last_update_time)
         for episode_id in episode_update_list:
             if self.check_db_for_episode(episode_id):
-                print "Updating info for episode %s" % (episode_id,)
+                self.logger.info("Updating info for episode %s" \
+                                 % (episode_id,))
                 episode = self.tvdb.get_episode_by_id(episode_id)
                 self.update_episode_to_db(episode)
         for series_id in series_update_list:
            if self.check_db_for_series(series_id):
-                print "Updating info for series %s" % (series_id,)
+                self.logger.info("Updating info for series %s" % (series_id,))
                 series = self.tvdb.get_series_by_id(series_id)
                 episodes = self.tvdb.get_episodes_by_series_id(series_id)
                 episode_list = []
@@ -1294,20 +1300,20 @@ class TVShowDB(object):
                 for episode in episodes:
                     episode_id = episode.episodeid
                     if not self.check_db_for_episode(episode_id):
-                        #print "  Adding info for episode %s" % (episode_id,)
+                        self.logger.info("Adding info for episode %s" % (episode_id,))
                         episode_list.append(episode)
                 if len(episode_list):
                     self.write_episodes_to_db(episode_list, series_id)
 
     def clean_db_files(self):
         """Cleans missing files out of the database"""
-        print "Checking for missing files."
+        self.logger.info("Checking for missing files.")
         self.sqlTV.execute('SELECT filepath, filename FROM files')
         files = self.sqlTV.fetchall()
         for file in files:
             fullpath = os.path.join(str(file[0]), str(file[1]))
             if not os.path.exists(fullpath):
-                print "  Removing %s" % (str(file[1]),)
+                self.logger.info("Removing %s" % (str(file[1]),))
                 self.sqlTV.execute('DELETE FROM files WHERE filename=(?)', \
                  (str(file[1]),))
         self.sqlTV.execute('SELECT idFile FROM filelinkepisode')
@@ -1390,7 +1396,7 @@ class TVShowDB(object):
         path = self.get_series_nfo_path(series_id)
         dom = self.make_series_dom(series_id)
         nfo_file = os.path.join(path, "tvshow.nfo")
-        print "Saving %s" % (nfo_file,)
+        self.logger.info("Saving %s" % (nfo_file,))
         nfo = open(nfo_file, "w")
         nfo.write(dom.toString(4))
         nfo.close()
@@ -1425,7 +1431,7 @@ class TVShowDB(object):
                 outfile = "fanart.jpg"
             if outfile is not None:
                 filename = os.path.join(path, outfile)
-                print "Saving %s" % (filename,)
+                self.logger.info("Saving %s" % (filename,))
                 urllib.urlretrieve(banner[0], filename)
 
     def write_episode_nfo(self, episode_id):
@@ -1438,12 +1444,12 @@ class TVShowDB(object):
             filename = os.path.splitext(filename)[0]
             dom = self.make_episode_dom(episode_id)
             nfo_file = os.path.join(filepath, "%s.nfo" % filename)
-            print "Saving %s" % (nfo_file,)
+            self.logger.info("Saving %s" % (nfo_file,))
             nfo = open(nfo_file, "w")
             nfo.write(dom.toString(4))
             nfo.close()
         except IndexError:
-            print "Error processing episode %s." % (episode_id,)
+            self.logger.error("Error processing episode %s." % (episode_id,))
 
     def write_all_episode_nfos(self, series_id):
         self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
@@ -1467,10 +1473,10 @@ class TVShowDB(object):
             dom = self.make_episode_dom(episode_id)
             thumb_file = os.path.join(filepath, "%s.tbn" % filename)
             if not url == '':
-                print "Saving %s" % (thumb_file,)
+                self.logger.info("Saving %s" % (thumb_file,))
                 urllib.urlretrieve(url, thumb_file)
         except (IndexError, IOError):
-            print "Error processing episode %s." % (episode_id,)
+            self.logger.error("Error processing episode %s." % (episode_id,))
 
     def write_all_episode_thumbs(self, series_id):
         self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \

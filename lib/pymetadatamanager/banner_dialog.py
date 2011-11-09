@@ -21,6 +21,7 @@
 __author__="jlmeans"
 __date__ ="$Oct 20, 2011 4:59:23 PM$"
 
+import logging
 from PyQt4 import QtGui, QtCore
 from banner_ui import Ui_BannerDialog
 from tvshowdb import TVShowDB
@@ -35,6 +36,7 @@ dbTV.init_db()
 
 class BannerDialog(QtGui.QDialog):
     def __init__(self, series_name, banner_type, season_number, parent=None):
+        self.logger = logging.getLogger('pymetadatamanager.banner_dialog')
         """Initializes the Dialog"""
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_BannerDialog()

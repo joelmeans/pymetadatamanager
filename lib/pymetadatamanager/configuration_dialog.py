@@ -22,6 +22,7 @@ __author__="jlmeans"
 __date__ ="$Oct 20, 2011 4:59:23 PM$"
 
 import os.path
+import logging
 from configuration import Config
 from configuration_ui import Ui_ConfigDialog
 from PyQt4 import QtGui
@@ -29,6 +30,7 @@ from PyQt4 import QtGui
 class ConfigDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         """Initializes the Dialog"""
+        self.logger = logging.getLogger('pymetadatamanager.configuration_dialog')
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_ConfigDialog()
         self.ui.setupUi(self)

@@ -22,6 +22,8 @@ __author__="jlmeans"
 __date__ ="$Jan 15, 2010 3:59:23 PM$"
 
 import os.path
+import logging
+import logging.handlers
 from PyQt4 import QtGui, QtCore
 from main_window_ui import Ui_MainWindow
 from tvshowdb import TVShowDB
@@ -42,6 +44,15 @@ from banner_dialog import BannerDialog
 #Get configuration information
 config = Config()
 
+#Set up the logging
+logger = logging.getLogger('pymetadatamanager')
+logger.setLevel(logging.DEBUG)
+fh = logging.handlers.TimedRotatingFileHandler(config.log_file, when='midnight',backupCount=2)
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s: %(levelname)-8s %(name)-38s\n    %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
 #Connect to the database
 dbTV = TVShowDB(config.tvshowdb)
 dbTV.init_db()
@@ -52,6 +63,8 @@ TVDB = TVDB()
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         """Initializes the Main Window"""
+        self.logger = logging.getLogger('pymetadatamanager.main_window')
+        self.logger.info('Creating the main window.')
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -80,6 +93,7 @@ class MainWindow(QtGui.QMainWindow):
         self.input_dialog.setGeometry(1000, 1000, 50, 100)
         self.input_dialog.setWindowTitle("Multiple Matches")
 
+        #Set up the thread for saving files
         self.save_files = SaveFiles()
 
         # Connect sockets to slots
@@ -560,7 +574,7 @@ class MainWindow(QtGui.QMainWindow):
         for video_dir in config.tv_dirs:
             self.progress.setLabelText("Scanning Files from %s into DB..." \
                                        %  (video_dir))
-            print "Scanning Files"
+            self.logger.info("Scanning files")
             scanner = Scanner(video_dir)
             scanner.set_series_list()
             self.progress.setMaximum(len(scanner.series_list))
@@ -569,17 +583,17 @@ class MainWindow(QtGui.QMainWindow):
                 self.progress.setValue(scanner.series_list.index(series_name))
                 match_list = scanner.get_series_id_list(series_name)
                 if len(match_list) == 0:
-                    print "No matches found on thetvdb.com for '%s'." % (series_name)
+                    self.logger.info("No matches found on thetvdb.com for '%s'." % (series_name))
                     series_id = raw_input("Please input the ID for the correct series:")
                 elif len(match_list) == 1:
-                    print "Found match for '%s'." % (series_name)
+                    self.logger.info("Found match for '%s'." % (series_name))
                     series_id = match_list[0][0]
                 else:
                     match = False
                     list = ''
                     for i in range(0,len(match_list)):
                         if match_list[i][1] == series_name:
-                            print "Found match for '%s'." % (series_name)
+                            self.logger.info("Found match for '%s'." % (series_name))
                             series_id = match_list[i][0]
                             match = True
                         else:
@@ -592,13 +606,13 @@ class MainWindow(QtGui.QMainWindow):
                         try:
                             series_id = match_list[selection][0]
                         except IndexError:
-                            print "That is not an option."
+                            self.logger.info("That is not an option.")
                 scanner.add_series_to_db(series_id)
                 scanner.add_files_to_db(series_name, series_id)
             scanner.__del__()
             self.progress.setValue(len(scanner.series_list))
 
-        print "Finished Scanning"
+        self.logger.info("Finished Scanning")
         #Create a dom representing the shows in the database
         shows = dbTV.make_shows_list()
         #Turn that into a model

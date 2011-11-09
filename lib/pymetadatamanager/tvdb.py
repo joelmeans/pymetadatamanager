@@ -25,6 +25,7 @@ import zipfile
 import cStringIO
 import os
 import re
+import logging
 from PyQt4 import QtXml
 from configuration import Config
 
@@ -36,6 +37,7 @@ class TVDB(object):
     thetvdb.com using their developer's API.
     """
     def __init__(self):
+        self.logger = logging.getLogger('pymetadatamanager.tvdb')
         # Define how we connect to thetvdb.com
         self.tvdb_apikey = "2A5FFFB6E15B508A"
         self.tvdb_mirror_url = "http://www.thetvdb.com"
@@ -242,7 +244,7 @@ class TVDB(object):
                     match_list.append((match_id, match_name))
                     series_node = series_node.nextSiblingElement("Series")
             except SyntaxError:
-                print "No possible matches found for %s." % (series_name)
+                self.logger.info("No possible matches found for %s." % (series_name))
         return match_list 
 
     def get_series_all_by_id(self, series_id):
@@ -263,7 +265,7 @@ class TVDB(object):
             series_node = data.firstChildElement("Series")
             series_info = self.Series(series_node, series_info_url)
         except SyntaxError:
-            print "Error"
+            self.logger.error("Syntax error in file from %s." % (series_info_url))
         return series_info
 
     def get_episodes_by_series_id(self, series_id):
@@ -424,20 +426,20 @@ class TVDB(object):
         if len(match_list) == 0:
             series_id = raw_input("Please input the ID for the correct series:")
         elif len(match_list) == 1:
-            print "Found match for '%s'." % (series_name)
+            self.logger.info("Found match for '%s'." % (series_name))
             series_id = match_list[0][0]
         else:
             for i in range(0,len(match_list)):
                 if match_list[i][1] == series_name:
-                    print "Found match for '%s'." % (series_name)
+                    self.logger.info("Found match for '%s'." % (series_name))
                     series_id = match_list[i][0]
         if not series_id:
-            print "Cannot find series."
+            self.logger.info("Cannot find series %s." % (series_name))
             return 0
         episodes = self.get_episodes_by_series_id(series_id)
         for episode in episodes:
             episode_name_to_match = self.massage_episode_name(episode.episode_name)
-            #print "'%s' == '%s'" % (episode_name_to_match, episode_name_in)
+            self.logger.debug("'%s' == '%s'" % (episode_name_to_match, episode_name_in))
             if episode_name_to_match == episode_name_in:
                 season_num = episode.season_number
                 episode_num = episode.episode_number

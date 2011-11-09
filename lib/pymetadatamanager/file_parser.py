@@ -20,9 +20,11 @@
 
 import os
 import re
+import logging
 
 class FileParser(object):
     def __init__(self):
+        self.logger = logging.getLogger('pymetadatamanager.file_parser')
         self.exts = ['mkv', 'avi', 'mpg', 'iso', 'm4v', 'mp4']
         self.file_list = []
 

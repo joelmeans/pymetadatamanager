@@ -18,6 +18,7 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ############################################################################
 
+import logging
 from file_parser import FileParser
 from tvdb import TVDB
 from tvshowdb import TVShowDB
@@ -29,6 +30,7 @@ class Scanner(object):
     """
 
     def __init__(self, path):
+        self.logger = logging.getLogger('pymetadatamanager.scanner')
         self.config = Config()
         self.dbTV = TVShowDB(self.config.tvshowdb)
       	self.dbTV.init_db()

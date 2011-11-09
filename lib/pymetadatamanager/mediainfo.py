@@ -23,6 +23,7 @@ __date__ ="$Feb 12, 2010 9:26:59 AM$"
 
 import os
 import subprocess
+import logging
 from PyQt4 import QtXml, QtCore
 from configuration import Config
 
@@ -36,8 +37,9 @@ class MediaInfo(object):
     a QDomDocument for processing by other programs.
     """
     def __init__(self):
+        self.logger = logging.getLogger('pymetadatamanager.mediainfo')
         config = Config()
-	self.mediainfo_cmd = config.mediainfo_path
+        self.mediainfo_cmd = config.mediainfo_path
         self.temp_dir = os.path.join(config.config_dir, "temp")
         if os.path.exists(self.temp_dir):
             if not os.path.isdir(self.temp_dir):

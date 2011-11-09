@@ -21,11 +21,15 @@
 __author__="jlmeans"
 __date__ ="$Jan 19, 2010 12:02:05 PM$"
 
+import logging
 from PyQt4 import QtCore
+
+module_logger = logging.getLogger('pymetadatamanager.models')
 
 class ShowNode(object):
     """A node for information about a show"""
     def __init__(self, name, parent=None):
+        self.logger = logging.getLogger('pymetadatamanager.models.ShowNode')
         self.name = QtCore.QString(name)
         self.parent = parent
         self.children = []
@@ -63,6 +67,7 @@ class ShowNode(object):
 class SeasonNode(object):
     """A node for information about a season"""
     def __init__(self, season_num, parent=None):
+        self.logger = logging.getLogger('pymetadatamanager.models.SeasonNode')
         if str(season_num) == '0':
             self.name = QtCore.QString("Specials")
         else:
@@ -104,6 +109,7 @@ class ShowListModel(QtCore.QAbstractListModel):
     def __init__(self, list, parent=None): 
         """Create a list model from the input list"""
         super(ShowListModel, self).__init__(parent) 
+        self.logger = logging.getLogger('pymetadatamanager.models.ShowListModel')
         self.listdata = list
  
     def rowCount(self, parent): 
@@ -119,6 +125,7 @@ class SeasonListModel(QtCore.QAbstractListModel):
     def __init__(self, list, parent=None): 
         """Create a list model from the input list"""
         super(SeasonListModel, self).__init__(parent) 
+        self.logger = logging.getLogger('pymetadatamanager.models.SeasonListModel')
         self.listdata = list
  
     def rowCount(self, parent): 
@@ -135,6 +142,7 @@ class SeasonEpisodeModel(QtCore.QAbstractItemModel):
     """Create a model of shows from a DomDocument containing show information"""
     def __init__(self, document, parent=None):
         super(SeasonEpisodeModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.SeasonEpisodeModel')
         self.treeView = parent
         self.headers = ['Season','Episode']
         self.columns = 3
@@ -227,6 +235,7 @@ class ShowModel(QtCore.QAbstractItemModel):
     """Create a model of shows from a DomDocument containing show information"""
     def __init__(self, document, parent=None):
         super(ShowModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.ShowModel')
         self.treeView = parent
         self.headers = ['Series', 'Season','Episode']
         self.columns = 4
@@ -321,6 +330,7 @@ class BannerModel(QtCore.QAbstractTableModel):
     """Create a table model of banners from a list of banner files"""
     def __init__(self, banners, parent=None):
         super(BannerModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.BannerModel')
         banners_col_0 = []
         banners_col_1 = []
         banners_col_2 = []
@@ -367,6 +377,7 @@ class BannerWideModel(QtCore.QAbstractTableModel):
     """Create a table model of banners from a list of banner files"""
     def __init__(self, banners, parent=None):
         super(BannerWideModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.BannerWideModel')
         self.list = banners
 
     def data(self, index, role):
@@ -389,6 +400,7 @@ class EmptyTableModel(QtCore.QAbstractTableModel):
     """Create an empty table model to clear a display"""
     def __init__(self, parent=None):
         super(EmptyTableModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.EmptyTableModel')
 
     def data(self, index, role):
         return QtCore.QVariant()
@@ -403,6 +415,7 @@ class EmptyListModel(QtCore.QAbstractListModel):
     """Create an empty list model to clear a display"""
     def __init__(self, parent=None):
         super(EmptyListModel, self).__init__(parent)
+        self.logger = logging.getLogger('pymetadatamanager.models.EmptyListModel')
 
     def data(self, index, role):
         return QtCore.QVariant()
