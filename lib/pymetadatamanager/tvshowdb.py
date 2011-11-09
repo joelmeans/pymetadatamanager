@@ -1379,6 +1379,7 @@ class TVShowDB(object):
         path = self.get_series_nfo_path(series_id)
         dom = self.make_series_dom(series_id)
         nfo_file = os.path.join(path, "tvshow.nfo")
+        print "Saving %s" % (nfo_file,)
         nfo = open(nfo_file, "w")
         nfo.write(dom.toString(4))
         nfo.close()
@@ -1413,6 +1414,7 @@ class TVShowDB(object):
                 outfile = "fanart.jpg"
             if outfile is not None:
                 filename = os.path.join(path, outfile)
+                print "Saving %s" % (filename,)
                 urllib.urlretrieve(banner[0], filename)
 
     def write_episode_nfo(self, episode_id):
@@ -1425,6 +1427,7 @@ class TVShowDB(object):
             filename = os.path.splitext(filename)[0]
             dom = self.make_episode_dom(episode_id)
             nfo_file = os.path.join(filepath, "%s.nfo" % filename)
+            print "Saving %s" % (nfo_file,)
             nfo = open(nfo_file, "w")
             nfo.write(dom.toString(4))
             nfo.close()
@@ -1453,6 +1456,7 @@ class TVShowDB(object):
             dom = self.make_episode_dom(episode_id)
             thumb_file = os.path.join(filepath, "%s.tbn" % filename)
             if not url == '':
+                print "Saving %s" % (thumb_file,)
                 urllib.urlretrieve(url, thumb_file)
         except (IndexError, IOError):
             print "Error processing episode %s." % (episode_id,)
@@ -1467,3 +1471,15 @@ class TVShowDB(object):
         for episode in episodes:
             episode_id = episode[0]
             self.write_episode_thumb(episode_id)
+
+    def get_all_episode_ids(self, series_id):
+        episode_ids = []
+        self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
+          JOIN shows ON episodelinkshow.idShow=shows.id \
+          JOIN episodes ON episodelinkshow.idEpisode=episodes.id \
+          JOIN filelinkepisode ON episodes.id=filelinkepisode.idEpisode \
+          WHERE shows.seriesid=(?)', (series_id,))
+        episodes = self.sqlTV.fetchall()
+        for episode in episodes:
+            episode_ids.append(episode[0])
+        return episode_ids

@@ -608,29 +608,46 @@ class MainWindow(QtGui.QMainWindow):
                 os.rmdir(os.path.join(root, name))
 
     def save_all(self):
+        self.progress.show()
+        self.progress.setMaximum(len(self.shows))
+        self.progress.setValue(1)
+        self.progress.repaint()
         for show in self.shows:
+            self.progress.setLabelText("Saving info and art for %s..." \
+                                       %  (show,))
+            self.progress.setValue(self.shows.index(show))
+            self.progress.repaint()
             series_id = dbTV.get_series_id(show)
             dbTV.write_series_nfo(series_id)
             dbTV.write_series_posters(series_id)
-            dbTV.write_all_episode_nfos(series_id)
-            dbTV.write_all_episode_thumbs(series_id)
+            episode_ids = dbTV.get_all_episode_ids(series_id)
+            for episode_id in episode_ids:
+                dbTV.write_episode_nfo(episode_id)
+                dbTV.write_episode_thumb(episode_id)
+        self.progress.setValue(len(self.shows))
 
     def save_series_artwork(self):
         series_id = dbTV.get_series_id(self.series_name)
         dbTV.write_series_posters(series_id)
-        dbTV.write_all_episode_thumbs(series_id)
+        episode_ids = dbTV.get_all_episode_ids(series_id)
+        for episode_id in episode_ids:
+            dbTV.write_episode_thumb(episode_id)
 
     def save_series_nfo(self):
         series_id = dbTV.get_series_id(self.series_name)
         dbTV.write_series_nfo(series_id)
-        dbTV.write_all_episode_nfos(series_id)
+        episode_ids = dbTV.get_all_episode_ids(series_id)
+        for episode_id in episode_ids:
+            dbTV.write_episode_nfo(episode_id)
 
     def save_series_both(self):
         series_id = dbTV.get_series_id(self.series_name)
         dbTV.write_series_nfo(series_id)
         dbTV.write_series_posters(series_id)
-        dbTV.write_all_episode_nfos(series_id)
-        dbTV.write_all_episode_thumbs(series_id)
+        episode_ids = dbTV.get_all_episode_ids(series_id)
+        for episode_id in episode_ids:
+            dbTV.write_episode_nfo(episode_id)
+            dbTV.write_episode_thumb(episode_id)
 
     def save_episode_artwork(self):
         episode_id = dbTV.get_episode_id(self.series_name, self.season_number, \
