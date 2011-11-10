@@ -143,7 +143,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_new_series_fanart.pressed.connect(\
           self.select_series_fanart)
         self.ui.actionScan_Files.triggered.connect(\
-          self.scan_all_files)
+          self.scan_files)
         self.ui.actionEdit_Preferences.triggered.connect(\
           self.edit_preferences)
         self.ui.actionClear_Cache.triggered.connect(\
@@ -162,30 +162,18 @@ class MainWindow(QtGui.QMainWindow):
           self.save_episode_nfo)
         self.ui.actionSave_episode_both.triggered.connect(\
           self.save_episode_both)
-        self.save_files.started.connect(self.saving_started_status)
-        self.save_files.finished.connect(self.saving_finished_status)
-        self.save_files.terminated.connect(self.saving_terminated_status)
+        self.save_files.started.connect(self.started_status)
+        self.save_files.finished.connect(self.finished_status)
+        self.save_files.terminated.connect(self.terminated_status)
         self.connect(self.save_files, \
                      QtCore.SIGNAL("updateStatus(QString)"), \
-                     self.saving_update_status)
+                     self.update_status)
         self.connect(self.save_files, \
                      QtCore.SIGNAL("updateProgress(int)"), \
-                     self.saving_update_progress)
+                     self.update_progress)
         self.connect(self.save_files, \
                      QtCore.SIGNAL("setupProgress(int)"), \
-                     self.saving_setup_progress)
-        self.scan_files.started.connect(self.scanning_started_status)
-        self.scan_files.finished.connect(self.scanning_finished_status)
-        self.scan_files.terminated.connect(self.scanning_terminated_status)
-        self.connect(self.scan_files, \
-                     QtCore.SIGNAL("updateStatus(QString)"), \
-                     self.scanning_update_status)
-        self.connect(self.scan_files, \
-                     QtCore.SIGNAL("updateProgress(int)"), \
-                     self.scanning_update_progress)
-        self.connect(self.scan_files, \
-                     QtCore.SIGNAL("setupProgress(int)"), \
-                     self.scanning_setup_progress)
+                     self.setup_progress)
 
         #Initialize some variables
         self.series_name_updated = 0

@@ -26,20 +26,17 @@ class FileParser(object):
     def __init__(self):
         self.logger = logging.getLogger('pymetadatamanager.file_parser')
         self.exts = ['mkv', 'avi', 'mpg', 'iso', 'm4v', 'mp4']
-        self.se = re.compile('[Ss]*[0-9]{1,2}[\._x]*[Ee]*[0-9-]{2,3}')
+        self.se = re.compile('[Ss]*[0-9]{1,2}[\._x ]{1}[Ee]*[0-9-]{2,3}')
         self.file_list = []
 
     def parse_filename(self, arg, directory, files):
         """Parses a filename to extract show name, season, and episode"""
         for file in files:
-            print file
             for ext in self.exts:
                 if file.endswith(ext) and not file.startswith('.'):
-                    print "Checking file %s" % (file)
                     season_ep = self.se.search(file)
                     if season_ep:
                         season_ep = season_ep.group(0)
-                        print season_ep
                         self.logger.debug("season_ep = %s" % (season_ep))
                         season, episode = re.findall('[0-9]{1,3}', season_ep)
                         show = file.split(season_ep)[0].rstrip(' _.')
@@ -47,6 +44,7 @@ class FileParser(object):
                         show_tuple = (directory, file, show_name, \
                           season.zfill(2), episode)
                         self.file_list.append(show_tuple)
+                else: print "Won't check %s" % (file)
 
     def parse_files_by_path(self, filepath):
         """Parses a directory tree to find tv show files"""
