@@ -96,9 +96,8 @@ class MainWindow(QtGui.QMainWindow):
         self.input_dialog.setGeometry(1000, 1000, 50, 100)
         self.input_dialog.setWindowTitle("Multiple Matches")
 
-        #Set up the threads for scanning and saving files
+        #Set up the thread for saving files
         self.save_files = SaveFiles()
-        self.scan_files = ScanFiles()
 
         # Connect sockets to slots
         self.ui.listView_shows.clicked.connect(self.list_view_clicked)
@@ -644,8 +643,55 @@ class MainWindow(QtGui.QMainWindow):
             self.set_season_info()
         self.ui.pushButton_new_season_wide.setDown(False)
 
-    def scan_all_files(self):
-        self.scan_files.scan_files(config.tv_dirs)
+    def scan_files(self):
+        for video_dir in config.tv_dirs:
+            self.progress.setLabelText("Scanning Files from %s into DB..." \
+                                       %  (video_dir))
+            self.logger.info("Scanning files")
+            scanner = Scanner(video_dir)
+            scanner.set_series_list()
+            self.progress.setMaximum(len(scanner.series_list))
+            self.progress.setValue(0)
+            for series_name in scanner.series_list:
+                self.progress.setValue(scanner.series_list.index(series_name))
+                match_list = scanner.get_series_id_list(series_name)
+                if len(match_list) == 0:
+                    self.logger.info("No matches found on thetvdb.com for '%s'." % (series_name))
+                    series_id = raw_input("Please input the ID for the correct series:")
+                elif len(match_list) == 1:
+                    self.logger.info("Found match for '%s'." % (series_name))
+                    series_id = match_list[0][0]
+                else:
+                    match = False
+                    list = ''
+                    for i in range(0,len(match_list)):
+                        if match_list[i][1] == series_name:
+                            self.logger.info("Found match for '%s'." % (series_name))
+                            series_id = match_list[i][0]
+                            match = True
+                        else:
+                            list += "[%d] %s (%s)\n " % (i, match_list[i][1], \
+                                                         match_list[i][0])
+                    if not match:
+                        selection = self.input_dialog.getInt(self, '', \
+                                    "Select best match:\n %s" % (list), \
+                                    0, 0, len(match_list) - 1)[0]
+                        try:
+                            series_id = match_list[selection][0]
+                        except IndexError:
+                            self.logger.info("That is not an option.")
+                scanner.add_series_to_db(series_id)
+                scanner.add_files_to_db(series_name, series_id)
+            scanner.__del__()
+            self.progress.setValue(len(scanner.series_list))
+
+        self.logger.info("Finished Scanning")
+        #Create a dom representing the shows in the database
+        shows = dbTV.make_shows_list()
+        #Turn that into a model
+        model = ShowListModel(shows)
+        #Set that as the model for the listView
+        self.ui.listView_shows.setModel(model)
 
     def edit_preferences(self):
         self.config_dialog.show()
@@ -692,53 +738,25 @@ class MainWindow(QtGui.QMainWindow):
         dbTV.write_episode_nfo(episode_id)
         dbTV.write_episode_thumb(episode_id)
 
-    def saving_started_status(self):
+    def started_status(self):
         self.statusBar().showMessage("Saving files.")
         self.pb.show()
 
-    def saving_finished_status(self):
+    def finished_status(self):
         self.pb.hide()
         self.statusBar().showMessage("File saving finished.")
 
-    def saving_terminated_status(self):
+    def terminated_status(self):
         self.pb.hide()
         self.statusBar().showMessage("File saving terminated.")
 
-    def saving_update_status(self, show):
-        self.statusBar().showMessage(\
-          "Saving info and artwork for %s" % (show,))
+    def update_status(self, show):
+        self.statusBar().showMessage("Saving info and artwork for %s" % (show,))
 
-    def saving_update_progress(self, progress):
+    def update_progress(self, progress):
         self.pb.setValue(progress)
 
-    def saving_setup_progress(self, max):
-        self.pb.setRange(0, max)
-
-    def scanning_started_status(self):
-        self.statusBar().showMessage("Scaning files.")
-        self.pb.show()
-
-    def scanning_finished_status(self):
-        self.pb.hide()
-        self.statusBar().showMessage("File scanning finished.")
-        #Create a dom representing the shows in the database
-        shows = dbTV.make_shows_list()
-        #Turn that into a model
-        model = ShowListModel(shows)
-        #Set that as the model for the listView
-        self.ui.listView_shows.setModel(model)
-
-    def scanning_terminated_status(self):
-        self.pb.hide()
-        self.statusBar().showMessage("File scanning terminated.")
-
-    def scanning_update_status(self, dir):
-        self.statusBar().showMessage("Scanning files from %s" % (dir,))
-
-    def scanning_update_progress(self, progress):
-        self.pb.setValue(progress)
-
-    def scanning_setup_progress(self, max):
+    def setup_progress(self, max):
         self.pb.setRange(0, max)
 
 class SaveFiles(QtCore.QThread):
@@ -831,66 +849,3 @@ class SaveFiles(QtCore.QThread):
                               episode_ids.index(episode_id))
                     self.db.write_episode_nfo(episode_id)
                     self.db.write_episode_thumb(episode_id)
-
-class ScanFiles(QtCore.QThread):
-    def __init__(self, parent = None):
-        QtCore.QThread.__init__(self, parent)
-        self.logger = logging.getLogger(\
-          'pymetadatamanager.main_window.ScanFiles')
-        self.exiting = False
-        self.db = TVShowDB(config.tvshowdb)
-
-    def __del__(self):
-        self.exiting = True
-        self.wait()
-
-    def scan_files(self, dirs):
-        self.dirs = dirs
-        self.start()
-
-    def run(self):
-        for video_dir in self.dirs:
-            self.emit(QtCore.SIGNAL("updateStatus(QString)"), \
-                      QtCore.QString(video_dir))
-            self.logger.info("Scanning files")
-            scanner = Scanner(video_dir)
-            scanner.set_series_list()
-            self.emit(QtCore.SIGNAL("setupProgress(int)"), \
-                      len(scanner.series_list))
-            for series_name in scanner.series_list:
-                self.emit(QtCore.SIGNAL("updateProgress(int)"), \
-                          scanner.series_list.index(series_name))
-                match_list = scanner.get_series_id_list(series_name)
-                if len(match_list) == 0:
-                    self.logger.info(\
-                      "No matches found on thetvdb.com for '%s'." \
-                      % (series_name))
-                    series_id = 0
-                elif len(match_list) == 1:
-                    self.logger.info("Found match for '%s'." % (series_name))
-                    series_id = match_list[0][0]
-                else:
-                    match = False
-                    list = ''
-                    for i in range(0,len(match_list)):
-                        if match_list[i][1] == series_name:
-                            self.logger.info(\
-                              "Found match for '%s'." % (series_name))
-                            series_id = match_list[i][0]
-                            match = True
-                        else:
-                            list += "[%d] %s (%s)\n " % (i, match_list[i][1], \
-                                                         match_list[i][0])
-                    if not match:
-                        selection = self.input_dialog.getInt(self, '', \
-                                    "Select best match:\n %s" % (list), \
-                                    0, 0, len(match_list) - 1)[0]
-                        try:
-                            series_id = match_list[selection][0]
-                        except IndexError:
-                            self.logger.info("That is not an option.")
-                if not series_id == 0:
-                    scanner.add_series_to_db(series_id)
-                    scanner.add_files_to_db(series_name, series_id)
-            scanner.__del__()
-        self.logger.info("Finished Scanning")
