@@ -33,7 +33,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
     d) <del>Add code for auto-selecting if there is a single match.</del>
 
-03. Add more filename parsing options.
+03. <del>Add more filename parsing options.</del>
 
 04. <del>Switch all ElementTree stuff over to QtXml.</del>
 

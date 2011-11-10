@@ -26,32 +26,26 @@ class FileParser(object):
     def __init__(self):
         self.logger = logging.getLogger('pymetadatamanager.file_parser')
         self.exts = ['mkv', 'avi', 'mpg', 'iso', 'm4v', 'mp4']
+        self.se = re.compile('[Ss]*[0-9]{1,2}[\._x]*[Ee]*[0-9-]{2,3}')
         self.file_list = []
 
     def parse_filename(self, arg, directory, files):
         """Parses a filename to extract show name, season, and episode"""
         for file in files:
+            print file
             for ext in self.exts:
                 if file.endswith(ext) and not file.startswith('.'):
-                    ssxeee = re.search('[0-9]{2}x[0-9]{3}', file)
-                    ssxee = re.search('[0-9]{2}x[0-9]{2}', file)
-                    if ssxeee:
-                        season_ep = ssxeee.group(0)
-                        season = season_ep.split('x')[0]
-                        episode = season_ep.split('x')[1]
-                        show = file.split(season_ep)[0].rstrip().rstrip('_')
+                    print "Checking file %s" % (file)
+                    season_ep = self.se.search(file)
+                    if season_ep:
+                        season_ep = season_ep.group(0)
+                        print season_ep
+                        self.logger.debug("season_ep = %s" % (season_ep))
+                        season, episode = re.findall('[0-9]{1,3}', season_ep)
+                        show = file.split(season_ep)[0].rstrip(' _.')
                         show_name = re.sub('_', ' ', show)
-                        show_tuple = (directory, file, show_name, season, \
-                          episode)
-                        self.file_list.append(show_tuple)
-                    elif ssxee:
-                        season_ep = ssxee.group(0)
-                        season = season_ep.split('x')[0]
-                        episode = season_ep.split('x')[1]
-                        show = file.split(season_ep)[0].rstrip().rstrip('_')
-                        show_name = re.sub('_', ' ', show)
-                        show_tuple = (directory, file, show_name, season, \
-                          episode)
+                        show_tuple = (directory, file, show_name, \
+                          season.zfill(2), episode)
                         self.file_list.append(show_tuple)
 
     def parse_files_by_path(self, filepath):
