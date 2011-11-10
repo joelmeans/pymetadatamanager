@@ -44,7 +44,6 @@ class FileParser(object):
                         show_tuple = (directory, file, show_name, \
                           season.zfill(2), episode)
                         self.file_list.append(show_tuple)
-                else: print "Won't check %s" % (file)
 
     def parse_files_by_path(self, filepath):
         """Parses a directory tree to find tv show files"""
