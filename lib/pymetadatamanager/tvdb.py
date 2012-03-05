@@ -29,6 +29,8 @@ import logging
 from PyQt4 import QtXml
 from configuration import Config
 
+dvdorder = True
+
 class TVDB(object):
     """
     The main interface to thetvdb.com.
@@ -95,8 +97,13 @@ class TVDB(object):
                       "latin-1").split("|") if director]
             self.episode_name = unicode(\
               node.firstChildElement("EpisodeName").text(), "latin-1")
-            self.episode_number = int(\
-              node.firstChildElement("EpisodeNumber").text())
+            dvd_ep = node.firstChildElement("DVD_episodenumber").text()
+            if not dvd_ep == '' and dvdorder:
+                self.episode_number = int(\
+                  node.firstChildElement("DVD_episodenumber").text().split('.')[0])
+            else:
+                self.episode_number = int(\
+                  node.firstChildElement("EpisodeNumber").text())
             self.first_aired = str(node.firstChildElement("FirstAired").text())
             self.guest_stars = [guest.strip() for guest in \
               unicode(node.firstChildElement("GuestStars").text(), \

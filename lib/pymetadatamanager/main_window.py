@@ -392,7 +392,8 @@ class MainWindow(QtGui.QMainWindow):
           series_id, 'season', self.season_number)
         if not self.selected_season_poster == "":
             filename = TVDB.retrieve_banner(self.selected_season_poster)
-            season_poster_pixmap = QtGui.QPixmap(filename).scaledToHeight(450)
+            season_poster_pixmap = QtGui.QPixmap(filename).scaled(300, 450,\
+                                                  QtCore.Qt.KeepAspectRatio)
             self.ui.label_season_poster.setPixmap(season_poster_pixmap)
         else:
             self.ui.label_season_poster.clear()

@@ -76,3 +76,11 @@ Development of this project is slow and there is a lot to do to make this a work
 22. Add logging capability.
 
 23. Add movie capability with themoviedb.com.
+
+24. Show info for episodes listed in season info (maybe a popup).
+
+## Bug Fixes
+
+01. Scale posters to correct width (it is cutting off if too wide).
+
+02. Remove series if there are no episodes present.
