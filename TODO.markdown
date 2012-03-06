@@ -69,7 +69,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 19. Add hilighting of missing episodes in season info tab.
 
-20. Add the ability to load local .nfo files.
+20. <del>Add the ability to load local .nfo files.</del>
 
 21. <del>Add dialog about saving files (right now it just won't respond, but it doesn't let you know why).</del>
 
@@ -78,6 +78,12 @@ Development of this project is slow and there is a lot to do to make this a work
 23. Add movie capability with themoviedb.com.
 
 24. Show info for episodes listed in season info (maybe a popup).
+
+25. Add ability to reload info from TVDB.com when local is used.
+
+26. Add local .nfo scraping as optional default.
+
+27. Drop automatic updating from TVDB.com and add a button to optionally do it.
 
 ## Bug Fixes
 

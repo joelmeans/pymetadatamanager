@@ -1377,7 +1377,7 @@ class TVShowDB(object):
             url = ""
         return url
 
-    def get_series_nfo_path(self, series_id):
+    def get_series_nfo_filename(self, series_id):
         self.sqlTV.execute('SELECT DISTINCT files.filepath FROM \
           filelinkepisode JOIN files ON filelinkepisode.idFile=files.id JOIN \
           episodelinkshow ON filelinkepisode.idEpisode=episodelinkshow.idEpisode \
@@ -1390,12 +1390,12 @@ class TVShowDB(object):
             if path not in paths:
                 paths.append(path)
         path = paths[0]
-        return path
+        nfo_file = os.path.join(path, "tvshow.nfo")
+        return nfo_file 
 
     def write_series_nfo(self, series_id):
-        path = self.get_series_nfo_path(series_id)
+        nfo_file = self.get_series_nfo_filename(series_id)
         dom = self.make_series_dom(series_id)
-        nfo_file = os.path.join(path, "tvshow.nfo")
         self.logger.info("Saving %s" % (nfo_file,))
         nfo = open(nfo_file, "w")
         nfo.write(dom.toString(4))
@@ -1434,7 +1434,7 @@ class TVShowDB(object):
                 self.logger.info("Saving %s" % (filename,))
                 urllib.urlretrieve(banner[0], filename)
 
-    def write_episode_nfo(self, episode_id):
+    def get_episode_nfo_filename(self, episode_id):
         self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
           filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
           JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
@@ -1442,14 +1442,20 @@ class TVShowDB(object):
         try:
             filename, filepath = self.sqlTV.fetchall()[0]
             filename = os.path.splitext(filename)[0]
-            dom = self.make_episode_dom(episode_id)
             nfo_file = os.path.join(filepath, "%s.nfo" % filename)
+            return nfo_file
+        except IndexError:
+            self.logger.error("Error processing episode %s." % (episode_id,))
+            return None
+
+    def write_episode_nfo(self, episode_id):
+        dom = self.make_episode_dom(episode_id)
+        nfo_file = self.get_episode_nfo_filename(episode_id)
+        if nfo_file is not None:
             self.logger.info("Saving %s" % (nfo_file,))
             nfo = open(nfo_file, "w")
             nfo.write(dom.toString(4))
             nfo.close()
-        except IndexError:
-            self.logger.error("Error processing episode %s." % (episode_id,))
 
     def write_all_episode_nfos(self, series_id):
         self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \

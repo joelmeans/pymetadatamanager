@@ -40,6 +40,7 @@ from models import ShowListModel,\
 from configuration import Config
 from configuration_dialog import ConfigDialog
 from banner_dialog import BannerDialog
+from nfo_reader import NfoReader
 
 #Get configuration information
 config = Config()
@@ -62,6 +63,9 @@ dbTV.init_db()
 
 #Setup the connection to thetvdb.com
 TVDB = TVDB()
+
+#Create an nfo_reader
+nfo_reader = NfoReader()
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -120,6 +124,8 @@ class MainWindow(QtGui.QMainWindow):
           self.update_series)
         self.ui.pushButton_revert_series_changes.pressed.connect(\
           self.revert_series)
+        self.ui.pushButton_load_local_series_nfo.pressed.connect(\
+          self.load_series_nfo)
         self.ui.line_episode_name.textEdited.connect(\
           self.set_episode_name_updated)
         self.ui.text_episode_plot.textChanged.connect(\
@@ -132,6 +138,8 @@ class MainWindow(QtGui.QMainWindow):
           self.update_episode)
         self.ui.pushButton_revert_episode_changes.pressed.connect(\
           self.revert_episode)
+        self.ui.pushButton_load_local_episode_nfo.pressed.connect(\
+          self.load_episode_nfo)
         self.ui.pushButton_new_series_poster.pressed.connect(\
           self.select_series_poster)
         self.ui.pushButton_new_series_wide_banner.pressed.connect(\
@@ -327,6 +335,15 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_save_series_changes.setEnabled(0)
         self.ui.pushButton_revert_series_changes.setEnabled(0)
 
+    def load_series_nfo(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        series_nfo_path = dbTV.get_series_nfo_path(series_id)
+        series_nfo = os.path.join(series_nfo_path, "tvshow.nfo")
+        series_doc = nfo_reader.readNfo(series_nfo)
+        self.set_series_info_from_dom(series_doc, 0)
+        self.ui.pushButton_save_series_changes.setEnabled(1)
+        self.ui.pushButton_revert_series_changes.setEnabled(1)
+
     def set_episode_name_updated(self, text):
         self.episode_name_updated = 1
         self.new_episode_name = str(text)
@@ -376,6 +393,16 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_save_episode_changes.setEnabled(0)
         self.ui.pushButton_revert_episode_changes.setEnabled(0)
 
+    def load_episode_nfo(self):
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
+        episode_nfo = dbTV.get_episode_nfo_filename(episode_id)
+        episode_doc = nfo_reader.readNfo(episode_nfo)
+        self.set_episode_info_from_dom(episode_doc)
+        self.ui.pushButton_save_episode_changes.setEnabled(1)
+        self.ui.pushButton_revert_episode_changes.setEnabled(1)
+
     def set_column_view(self):
         dom = dbTV.make_seasons_episodes_dom(self.series_name)
         model = SeasonEpisodeModel(dom)
@@ -412,12 +439,15 @@ class MainWindow(QtGui.QMainWindow):
               "No season wide banner selected")
 
     def set_series_info(self, tab_index):
-        """Sets the info for the current series in the display window"""
         #Get the series id from the database
         series_id = dbTV.get_series_id(self.series_name)
 
         #Create a QDomDocument containing the series details
         series_doc = dbTV.make_series_dom(series_id)
+        self.set_series_info_from_dom(series_doc, tab_index)        
+
+    def set_series_info_from_dom(self, series_doc, tab_index):
+        """Sets the info for the current series in the display window"""
         series_root = series_doc.firstChildElement('tvshow')
         #Extract the details and fill in the display
         elem_series_name = series_root.firstChildElement('title')
@@ -465,6 +495,7 @@ class MainWindow(QtGui.QMainWindow):
         series_status = elem_series_status.text()
         self.ui.lineEdit_status.setText(series_status)
 
+        series_id = dbTV.get_series_id(self.series_name)
         self.ui.lineEdit_tvdb_series_id.setText(str(series_id))        
 
         self.selected_series_poster = \
@@ -508,6 +539,10 @@ class MainWindow(QtGui.QMainWindow):
 
         #Create a QDomDocument containing the episode details
         episode_doc = dbTV.make_episode_dom(episode_id)
+        self.set_episode_info_from_dom(episode_doc)
+
+    def set_episode_info_from_dom(self, episode_doc):
+        """Sets the info for the show in the display window"""
         episode_root = episode_doc.firstChildElement('episodedetails')
 
         #Extract the details and fill in the display
