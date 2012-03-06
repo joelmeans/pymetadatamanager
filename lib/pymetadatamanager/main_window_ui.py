@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created: Tue Mar  6 12:51:37 2012
+# Created: Tue Mar  6 16:02:46 2012
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -140,6 +140,9 @@ class Ui_MainWindow(object):
         self.pushButton_load_local_series_nfo = QtGui.QPushButton(self.tab_series_info)
         self.pushButton_load_local_series_nfo.setObjectName(_fromUtf8("pushButton_load_local_series_nfo"))
         self.gridLayout_4.addWidget(self.pushButton_load_local_series_nfo, 2, 0, 1, 1)
+        self.pushButton_update_series_from_tvdb = QtGui.QPushButton(self.tab_series_info)
+        self.pushButton_update_series_from_tvdb.setObjectName(_fromUtf8("pushButton_update_series_from_tvdb"))
+        self.gridLayout_4.addWidget(self.pushButton_update_series_from_tvdb, 3, 0, 1, 1)
         self.formLayout.setLayout(8, QtGui.QFormLayout.FieldRole, self.gridLayout_4)
         self.horizontalLayout_2.addLayout(self.formLayout)
         self.label_series_banner = QtGui.QLabel(self.tab_series_info)
@@ -358,6 +361,9 @@ class Ui_MainWindow(object):
         self.pushButton_load_local_episode_nfo = QtGui.QPushButton(self.tab_episode_info)
         self.pushButton_load_local_episode_nfo.setObjectName(_fromUtf8("pushButton_load_local_episode_nfo"))
         self.gridLayout_5.addWidget(self.pushButton_load_local_episode_nfo, 2, 0, 1, 1)
+        self.pushButton_update_episode_from_tvdb = QtGui.QPushButton(self.tab_episode_info)
+        self.pushButton_update_episode_from_tvdb.setObjectName(_fromUtf8("pushButton_update_episode_from_tvdb"))
+        self.gridLayout_5.addWidget(self.pushButton_update_episode_from_tvdb, 3, 0, 1, 1)
         self.formLayout_2.setLayout(8, QtGui.QFormLayout.FieldRole, self.gridLayout_5)
         self.combo_writers = QtGui.QComboBox(self.tab_episode_info)
         self.combo_writers.setObjectName(_fromUtf8("combo_writers"))
@@ -465,7 +471,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget_main.setCurrentIndex(0)
-        self.tabWidget_tv_info.setCurrentIndex(3)
+        self.tabWidget_tv_info.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -481,6 +487,7 @@ class Ui_MainWindow(object):
         self.pushButton_revert_series_changes.setText(QtGui.QApplication.translate("MainWindow", "Revert Changes", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_save_series_changes.setText(QtGui.QApplication.translate("MainWindow", "Apply Changes", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_load_local_series_nfo.setText(QtGui.QApplication.translate("MainWindow", "Load Local .nfo", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_update_series_from_tvdb.setText(QtGui.QApplication.translate("MainWindow", "Update from TVDB", None, QtGui.QApplication.UnicodeUTF8))
         self.label_series_banner.setText(QtGui.QApplication.translate("MainWindow", "No series poster selected", None, QtGui.QApplication.UnicodeUTF8))
         self.label_banner_wide.setText(QtGui.QApplication.translate("MainWindow", "No series wide banner selected", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_new_series_poster.setText(QtGui.QApplication.translate("MainWindow", "Select New Poster", None, QtGui.QApplication.UnicodeUTF8))
@@ -505,6 +512,7 @@ class Ui_MainWindow(object):
         self.pushButton_revert_episode_changes.setText(QtGui.QApplication.translate("MainWindow", "Revert Changes", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_save_episode_changes.setText(QtGui.QApplication.translate("MainWindow", "Apply Changes", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_load_local_episode_nfo.setText(QtGui.QApplication.translate("MainWindow", "Load Local .nfo", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_update_episode_from_tvdb.setText(QtGui.QApplication.translate("MainWindow", "Update from TVDB", None, QtGui.QApplication.UnicodeUTF8))
         self.label_episode_thumb.setText(QtGui.QApplication.translate("MainWindow", "No episode thumb selected", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_tv_info.setTabText(self.tabWidget_tv_info.indexOf(self.tab_episode_info), QtGui.QApplication.translate("MainWindow", "Episode Info", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_main.setTabText(self.tabWidget_main.indexOf(self.tab_tv), QtGui.QApplication.translate("MainWindow", "TV Shows", None, QtGui.QApplication.UnicodeUTF8))

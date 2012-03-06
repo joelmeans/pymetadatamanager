@@ -24,7 +24,7 @@ __date__ ="$Jan 15, 2010 3:59:23 PM$"
 import os.path
 import logging
 import logging.handlers
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore, QtXml
 from main_window_ui import Ui_MainWindow
 from tvshowdb import TVShowDB
 from tvdb import TVDB
@@ -126,6 +126,8 @@ class MainWindow(QtGui.QMainWindow):
           self.revert_series)
         self.ui.pushButton_load_local_series_nfo.pressed.connect(\
           self.load_series_nfo)
+        self.ui.pushButton_update_series_from_tvdb.pressed.connect(\
+          self.update_series_from_tvdb)
         self.ui.line_episode_name.textEdited.connect(\
           self.set_episode_name_updated)
         self.ui.text_episode_plot.textChanged.connect(\
@@ -140,6 +142,8 @@ class MainWindow(QtGui.QMainWindow):
           self.revert_episode)
         self.ui.pushButton_load_local_episode_nfo.pressed.connect(\
           self.load_episode_nfo)
+        self.ui.pushButton_update_episode_from_tvdb.pressed.connect(\
+          self.update_episode_from_tvdb)
         self.ui.pushButton_new_series_poster.pressed.connect(\
           self.select_series_poster)
         self.ui.pushButton_new_series_wide_banner.pressed.connect(\
@@ -337,10 +341,115 @@ class MainWindow(QtGui.QMainWindow):
 
     def load_series_nfo(self):
         series_id = dbTV.get_series_id(self.series_name)
-        series_nfo_path = dbTV.get_series_nfo_path(series_id)
-        series_nfo = os.path.join(series_nfo_path, "tvshow.nfo")
+        series_nfo = dbTV.get_series_nfo_filename(series_id)
         series_doc = nfo_reader.readNfo(series_nfo)
         self.set_series_info_from_dom(series_doc, 0)
+        self.ui.pushButton_save_series_changes.setEnabled(1)
+        self.ui.pushButton_revert_series_changes.setEnabled(1)
+
+    def update_series_from_tvdb(self):
+        series_id = dbTV.get_series_id(self.series_name)
+        series = TVDB.get_series_by_id(series_id)
+        sep = "|"
+        dom = QtXml.QDomDocument()
+        root = dom.createElement("tvshow")
+        dom.appendChild(root)
+
+        elem_title = dom.createElement("title")
+        text_title = dom.createTextNode(series.name)
+        elem_title.appendChild(text_title)
+        root.appendChild(elem_title)
+
+        elem_rating = dom.createElement("rating")
+        text_rating = dom.createTextNode(series.rating)
+        elem_rating.appendChild(text_rating)
+        root.appendChild(elem_rating)
+
+        elem_year = dom.createElement("year") #empty for TV
+        text_year = dom.createTextNode("0")
+        elem_year.appendChild(text_year)
+        root.appendChild(elem_year)
+
+        elem_top250 = dom.createElement("top250") #empty for TV
+        text_top250 = dom.createTextNode("0")
+        elem_top250.appendChild(text_top250)
+        root.appendChild(elem_top250)
+
+        elem_season = dom.createElement("season") #-1 for TV
+        text_season = dom.createTextNode("-1")
+        elem_season.appendChild(text_season)
+        root.appendChild(elem_season)
+
+        elem_displayseason = dom.createElement("displayseason")
+        text_displayseason = dom.createTextNode("-1")
+        elem_displayseason.appendChild(text_displayseason)
+        root.appendChild(elem_displayseason)
+
+        elem_votes = dom.createElement("votes")
+        text_votes = dom.createTextNode("0")
+        elem_votes.appendChild(text_votes)
+        root.appendChild(elem_votes)
+
+        elem_plot = dom.createElement("plot")
+        text_plot = dom.createTextNode(series.overview)
+        elem_plot.appendChild(text_plot)
+        root.appendChild(elem_plot)
+
+        elem_runtime = dom.createElement("runtime")
+        text_runtime = dom.createTextNode(str(series.runtime))
+        elem_runtime.appendChild(text_runtime)
+        root.appendChild(elem_runtime)
+
+        elem_network = dom.createElement("network")
+        text_network = dom.createTextNode(series.network)
+        elem_network.appendChild(text_network)
+        root.appendChild(elem_network)
+
+        elem_airs_day = dom.createElement("airsday")
+        text_airs_day = dom.createTextNode(series.airs_day)
+        elem_airs_day.appendChild(text_airs_day)
+        root.appendChild(elem_airs_day)
+
+        elem_airs_time = dom.createElement("airstime")
+        text_airs_time = dom.createTextNode(series.airs_time)
+        elem_airs_time.appendChild(text_airs_time)
+        root.appendChild(elem_airs_time)
+
+        elem_episodeguide = dom.createElement("episodeguide")
+        text_episodeguide = dom.createTextNode(series.episodeguide)
+        elem_episodeguide.appendChild(text_episodeguide)
+        root.appendChild(elem_episodeguide)
+
+        elem_seriesid = dom.createElement("id")
+        text_seriesid = dom.createTextNode(str(series_id))
+        elem_seriesid.appendChild(text_seriesid)
+        root.appendChild(elem_seriesid)
+
+        elem_genre = dom.createElement("genre")
+        genres = sep.join(series.genre)
+        text_genres = dom.createTextNode(genres)
+        elem_genre.appendChild(text_genres)
+        root.appendChild(elem_genre)
+
+        elem_premiered = dom.createElement("premiered")
+        text_premiered = dom.createTextNode(series.first_aired)
+        elem_premiered.appendChild(text_premiered)
+        root.appendChild(elem_premiered)
+
+        elem_status = dom.createElement("status")
+        text_status = dom.createTextNode(series.status)
+        elem_status.appendChild(text_status)
+        root.appendChild(elem_status)
+
+        for x in series.actors:
+            elem_actor = dom.createElement("actor")
+            elem_actor_name = dom.createElement("name")
+            text_actor_name = dom.createTextNode(QtCore.QString(x))
+            elem_actor_name.appendChild(text_actor_name)
+            elem_actor.appendChild(elem_actor_name)
+            root.appendChild(elem_actor)
+
+        self.set_series_info_from_dom(dom, 0)
         self.ui.pushButton_save_series_changes.setEnabled(1)
         self.ui.pushButton_revert_series_changes.setEnabled(1)
 
@@ -400,6 +509,111 @@ class MainWindow(QtGui.QMainWindow):
         episode_nfo = dbTV.get_episode_nfo_filename(episode_id)
         episode_doc = nfo_reader.readNfo(episode_nfo)
         self.set_episode_info_from_dom(episode_doc)
+        self.ui.pushButton_save_episode_changes.setEnabled(1)
+        self.ui.pushButton_revert_episode_changes.setEnabled(1)
+
+    def update_episode_from_tvdb(self):
+        episode_id = dbTV.get_episode_id(self.series_name, \
+                                         self.season_number, \
+                                         self.episode_number)
+        episode = TVDB.get_episode_by_id(episode_id)
+        #separator for lists with multiple items (writers, directors, etc)
+        sep = "|"
+
+        dom = QtXml.QDomDocument()
+        root = dom.createElement("episodedetails")
+        dom.appendChild(root)
+
+        elem_title = dom.createElement("title")
+        text_title = dom.createTextNode(episode.episode_name)
+        elem_title.appendChild(text_title)
+        root.appendChild(elem_title)
+
+        elem_rating = dom.createElement("rating")
+        text_rating = dom.createTextNode(episode.rating)
+        elem_rating.appendChild(text_rating)
+        root.appendChild(elem_rating)
+
+        elem_year = dom.createElement("year") #0
+        text_year = dom.createTextNode('0')
+        elem_year.appendChild(text_year)
+        root.appendChild(elem_year)
+
+        elem_top250 = dom.createElement("top250") #0
+        text_top250 = dom.createTextNode('0')
+        elem_top250.appendChild(text_top250)
+        root.appendChild(elem_top250)
+
+        elem_season = dom.createElement("season")
+        text_season = dom.createTextNode(str(episode.season_number))
+        elem_season.appendChild(text_season)
+        root.appendChild(elem_season)
+
+        elem_episode = dom.createElement("episode")
+        text_episode = dom.createTextNode(str(episode.episode_number))
+        elem_episode.appendChild(text_episode)
+        root.appendChild(elem_episode)
+
+        elem_displayseason = dom.createElement("displayseason") #-1
+        text_displayseason = dom.createTextNode('-1')
+        elem_displayseason.appendChild(text_displayseason)
+        root.appendChild(elem_displayseason)
+
+        elem_displayepisode = dom.createElement("displayepisode") #-1
+        text_displayepisode = dom.createTextNode('-1')
+        elem_displayepisode.appendChild(text_displayepisode)
+        root.appendChild(elem_displayepisode)
+
+        elem_plot = dom.createElement("plot")
+        text_plot = dom.createTextNode(episode.overview)
+        elem_plot.appendChild(text_plot)
+        root.appendChild(elem_plot)
+
+        elem_thumb = dom.createElement("thumb")
+        text_thumb = dom.createTextNode(episode.thumb)
+        elem_thumb.appendChild(text_thumb)
+        root.appendChild(elem_thumb)
+
+        elem_playcount = dom.createElement("playcount")
+        text_playcount = dom.createTextNode('0')
+        elem_playcount.appendChild(text_playcount)
+        root.appendChild(elem_playcount)
+
+        elem_episodeid = dom.createElement("id")
+        text_episodeid = dom.createTextNode(str(episode_id))
+        elem_episodeid.appendChild(text_episodeid)
+        root.appendChild(elem_episodeid)
+
+        elem_credits = dom.createElement("credits") #Writers
+        credits = sep.join(episode.writers)
+        text_credits = dom.createTextNode(credits)
+        elem_credits.appendChild(text_credits)
+        root.appendChild(elem_credits)
+
+        elem_director = dom.createElement("director")
+        director = sep.join(episode.directors)
+        text_director = dom.createTextNode(director)
+        elem_director.appendChild(text_director)
+        root.appendChild(elem_director)
+
+        elem_code = dom.createElement("code")
+        text_code = dom.createTextNode(str(episode.production_code))
+        elem_code.appendChild(text_code)
+        root.appendChild(elem_code)
+
+        elem_aired = dom.createElement("aired")
+        text_aired = dom.createTextNode(episode.first_aired)
+        elem_aired.appendChild(text_aired)
+        root.appendChild(elem_aired)
+
+        for x in episode.guest_stars:
+            elem_actor = dom.createElement("actor")
+            elem_actor_name = dom.createElement("name")
+            text_actor_name = dom.createTextNode(QtCore.QString(x))
+            elem_actor_name.appendChild(text_actor_name)
+            elem_actor.appendChild(elem_actor_name)
+            root.appendChild(elem_actor)
+        self.set_episode_info_from_dom(dom)
         self.ui.pushButton_save_episode_changes.setEnabled(1)
         self.ui.pushButton_revert_episode_changes.setEnabled(1)
 

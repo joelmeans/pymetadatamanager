@@ -79,7 +79,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 24. Show info for episodes listed in season info (maybe a popup).
 
-25. Add ability to reload info from TVDB.com when local is used.
+25. <del>Add ability to reload info from TVDB.com when local is used.</del>
 
 26. Add local .nfo scraping as optional default.
 

@@ -58,7 +58,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_series_info">
              <attribute name="title">
@@ -276,6 +276,13 @@
                      <widget class="QPushButton" name="pushButton_load_local_series_nfo">
                       <property name="text">
                        <string>Load Local .nfo</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QPushButton" name="pushButton_update_series_from_tvdb">
+                      <property name="text">
+                       <string>Update from TVDB</string>
                       </property>
                      </widget>
                     </item>
@@ -863,6 +870,13 @@
                    <widget class="QPushButton" name="pushButton_load_local_episode_nfo">
                     <property name="text">
                      <string>Load Local .nfo</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QPushButton" name="pushButton_update_episode_from_tvdb">
+                    <property name="text">
+                     <string>Update from TVDB</string>
                     </property>
                    </widget>
                   </item>
