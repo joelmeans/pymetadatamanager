@@ -37,7 +37,7 @@ class FileParser(object):
                     season_ep = self.se.search(file)
                     if season_ep:
                         season_ep = season_ep.group(0)
-                        self.logger.debug("season_ep = %s" % (season_ep))
+                        #self.logger.debug("season_ep = %s" % (season_ep))
                         season, episode = re.findall('[0-9]{1,3}', season_ep)
                         show = file.split(season_ep)[0].rstrip(' _.')
                         show_name = re.sub('_', ' ', show)
@@ -47,5 +47,6 @@ class FileParser(object):
 
     def parse_files_by_path(self, filepath):
         """Parses a directory tree to find tv show files"""
+        self.logger.debug("Parsing files from %s" % (filepath,))
         os.path.walk(filepath, self.parse_filename, None)
         return self.file_list

@@ -71,13 +71,20 @@ class Scanner(object):
         episodes = self.TVDB.get_episodes_by_series_id(series_id)
         actors = self.TVDB.get_actors_by_id(series_id)
         banners = self.TVDB.get_banners_by_id(series_id)
+        series_name = self.TVDB.get_series_name(series_id)
+        self.logger.info("Adding series %s to DB", (series_name,))
 
-        self.dbTV.write_series_to_db(series)
-        self.dbTV.write_episodes_to_db(episodes, series_id)
-        self.dbTV.write_actors_to_db(actors)
-        self.dbTV.write_banners_to_db(banners)
+        if series is not None:
+            self.dbTV.write_series_to_db(series)
+        if episodes is not None:
+            self.dbTV.write_episodes_to_db(episodes, series_id)
+        if actors is not None:
+            self.dbTV.write_actors_to_db(actors)
+        if banners is not None:
+            self.dbTV.write_banners_to_db(banners)
 
     def add_files_to_db(self, series_name, series_id):
+        series_name = self.TVDB.get_series_name(series_id)
         #Create a list of files from this series
         series_file_list = []
         for file in self.file_list:
@@ -86,4 +93,5 @@ class Scanner(object):
                     series_file_list.append(file)
         #Add any new files to the DB
         if len(series_file_list):
+            self.logger.info("Adding files from %s to DB", (series_name,))
             self.dbTV.write_files_to_db(series_file_list, series_id)

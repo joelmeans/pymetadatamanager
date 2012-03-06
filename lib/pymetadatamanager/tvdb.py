@@ -161,7 +161,9 @@ class TVDB(object):
         tvdb_time_url = "%s/Updates.php?%s" % (self.tvdb_api_url, updates_args)
         try:
             server_time = urllib2.urlopen(tvdb_time_url)
+            self.logger.info("Grabbed url %s" % (tvdb_time_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (tvdb_time_url))
             return None
         dom = QtXml.QDomDocument()
         dom.setContent(server_time.read())
@@ -177,7 +179,9 @@ class TVDB(object):
          updates_args)
         try:
             updates = urllib2.urlopen(tvdb_update_url)
+            self.logger.info("Grabbed url %s" % (tvdb_update_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (tvdb_update_url))
             return None
         series_list = []
         if updates:
@@ -202,8 +206,10 @@ class TVDB(object):
          updates_args)
         try:
             updates = urllib2.urlopen(tvdb_update_url)
+            self.logger.info("Grabbed url %s" % (tvdb_update_url))
         except urllib2.HTTPError, e:
-           return None
+            self.logger.error("Error grabbing url %s" % (tvdb_update_url))
+            return None
         episode_list = []
         if updates:
             try:
@@ -232,9 +238,11 @@ class TVDB(object):
         series_search_url = "%s/GetSeries.php?%s" % (self.tvdb_api_url, \
          series_args)
         try:
-           matches = urllib2.urlopen(series_search_url)
+            matches = urllib2.urlopen(series_search_url)
+            self.logger.info("Grabbed url %s" % (series_search_url))
         except urllib2.HTTPError, e:
-           return None
+            self.logger.error("Error grabbing url %s" % (tvdb_update_url))
+            return None
         match_list = []
         seriesid = 0
         if matches:
@@ -261,7 +269,9 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id, self.lang)
         try:
             series_info_remote = urllib2.urlopen(series_info_url)
+            self.logger.info("Grabbed url %s" % (series_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
         series_info_memory = cStringIO.StringIO(series_info_remote.read()) 
         series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
@@ -282,7 +292,9 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id, self.lang)
         try:
             series_info_remote = urllib2.urlopen(series_info_url)
+            self.logger.info("Grabbed url %s" % (series_info_url))
         except:
+            self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
         series_info_memory = cStringIO.StringIO(series_info_remote.read())
         series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
@@ -304,7 +316,9 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id)
         try:
             series_info_remote = urllib2.urlopen(series_info_url)
+            self.logger.info("Grabbed url %s" % (series_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
         series_info_memory = cStringIO.StringIO(series_info_remote.read())
         series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
@@ -326,7 +340,9 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id)
         try:
             series_info_remote = urllib2.urlopen(series_info_url)
+            self.logger.info("Grabbed url %s" % (series_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
         series_info_memory = cStringIO.StringIO(series_info_remote.read())
         series_info_zip = zipfile.ZipFile(series_info_memory, 'r')
@@ -350,7 +366,9 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id)
         try:
             series_info = urllib2.urlopen(series_info_url)
+            self.logger.info("Grabbed url %s" % (series_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
         dom = QtXml.QDomDocument()
         dom.setContent(series_info.read())
@@ -365,7 +383,9 @@ class TVDB(object):
             (self.tvdb_apikey_url, episode_id, self.lang)
         try:
             episode_info = urllib2.urlopen(episode_info_url)
+            self.logger.info("Grabbed url %s" % (episode_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (episode_info_url))
             return None
         dom = QtXml.QDomDocument()
         dom.setContent(episode_info.read())
@@ -381,7 +401,9 @@ class TVDB(object):
                episode.lstrip('0'), self.lang)
         try:
             episode_info = urllib2.urlopen(episode_info_url)
+            self.logger.info("Grabbed url %s" % (episode_info_url))
         except urllib2.HTTPError, e:
+            self.logger.error("Error grabbing url %s" % (episode_info_url))
             return None
         dom = QtXml.QDomDocument()
         dom.setContent(episode_info.read())
