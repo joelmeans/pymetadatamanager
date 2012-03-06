@@ -608,7 +608,7 @@ class TVShowDB(object):
          (series_id, ))
         value_db = self.sqlTV.fetchall()
         if len(value_db):
-            for x in value_db[0]: series_name = x
+            for x in value_db[0]: series_name = x[1]
         else:
             series_name = None
         return series_name

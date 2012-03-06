@@ -73,7 +73,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 21. <del>Add dialog about saving files (right now it just won't respond, but it doesn't let you know why).</del>
 
-22. Add logging capability.
+22. <del>Add logging capability.</del>
 
 23. Add movie capability with themoviedb.com.
 
@@ -81,6 +81,8 @@ Development of this project is slow and there is a lot to do to make this a work
 
 ## Bug Fixes
 
-01. Scale posters to correct width (it is cutting off if too wide).
+01. <del>Scale posters to correct width (it is cutting off if too wide).</del>
 
 02. Remove series if there are no episodes present.
+
+03. Add popup for input of ID for unmatched series name.
