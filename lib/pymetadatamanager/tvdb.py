@@ -28,8 +28,7 @@ import re
 import logging
 from PyQt4 import QtXml
 from configuration import Config
-
-dvdorder = True
+from show_utils import Series, Episode, Actor, Banner
 
 class TVDB(object):
     """
@@ -55,105 +54,6 @@ class TVDB(object):
                 os.mkdir(self.cache_dir)
         else:
             os.mkdir(self.cache_dir)
-
-    class Series(object):
-        """Class to hold info about a series"""
-        def __init__(self, node, url):
-            self.episodeguide = url
-            self.seriesid = int(node.firstChildElement("id").text())
-            self.actors = [actor.strip() for actor in \
-              unicode(node.firstChildElement("Actors").text(), \
-                      "latin-1").split("|") if actor]
-            self.airs_day = str(\
-              node.firstChildElement("Airs_DayOfWeek").text())
-            self.airs_time = str(node.firstChildElement("Airs_Time").text())
-            self.content_rating = str(\
-              node.firstChildElement("ContentRating").text())
-            self.first_aired = str(node.firstChildElement("FirstAired").text())
-            self.genre = [genre.strip() for genre in \
-              str(node.firstChildElement("Genre").text()).split("|") if genre]
-            self.language = str(node.firstChildElement("Language").text())
-            self.network = str(node.firstChildElement("Network").text())
-            self.overview = unicode(node.firstChildElement("Overview").text(), \
-                                    "latin-1")
-            self.rating = str(node.firstChildElement("Rating").text())
-            self.runtime = str(node.firstChildElement("Runtime").text())
-            if self.runtime == '':
-                self.runtime = '0'
-            self.name = str(node.firstChildElement("SeriesName").text())
-            self.status = str(node.firstChildElement("Status").text())
-            self.banner = str(node.firstChildElement("banner").text())
-            self.fanart = str(node.firstChildElement("fanart").text())
-            self.poster = str(node.firstChildElement("poster").text())
-            self.last_updated = str(\
-              node.firstChildElement("lastupdated").text())
-
-    class Episode(object):
-        """Class to hold info about an episode"""
-        def __init__(self, node, tvdb_banner_url):
-            self.episodeid = int(node.firstChildElement("id").text())
-            self.directors = [director.strip() for director in \
-              unicode(node.firstChildElement("Director").text(), \
-                      "latin-1").split("|") if director]
-            self.episode_name = unicode(\
-              node.firstChildElement("EpisodeName").text(), "latin-1")
-            dvd_ep = node.firstChildElement("DVD_episodenumber").text()
-            if not dvd_ep == '' and dvdorder:
-                self.episode_number = int(\
-                  node.firstChildElement("DVD_episodenumber").text().split('.')[0])
-            else:
-                self.episode_number = int(\
-                  node.firstChildElement("EpisodeNumber").text())
-            self.first_aired = str(node.firstChildElement("FirstAired").text())
-            self.guest_stars = [guest.strip() for guest in \
-              unicode(node.firstChildElement("GuestStars").text(), \
-                      "latin-1").split("|") if guest]
-            self.language = str(node.firstChildElement("Language").text())
-            self.overview = unicode(\
-              node.firstChildElement("Overview").text(), "latin-1")
-            self.production_code = \
-              str(node.firstChildElement("ProductionCode").text())
-            self.rating = str(node.firstChildElement("Rating").text())
-            self.season_number = int(\
-              node.firstChildElement("SeasonNumber").text())
-            self.writers = [writer.strip() for writer in \
-              unicode(node.firstChildElement("Writer").text(), \
-                      "latin-1").split("|") if writer]
-            thumb_path = str(node.firstChildElement("filename").text())
-            if not thumb_path == "":
-                self.thumb = "%s/%s" % (tvdb_banner_url, thumb_path)
-            else:
-                self.thumb = ""
-            self.last_updated = node.firstChildElement("lastupdated").text()
-
-    class Actor(object):
-        """Class to hold actor info"""
-        def __init__(self, node, seriesid, tvdb_banner_url):
-            self.seriesid = seriesid
-            self.actorid = unicode(node.firstChildElement("id").text(), \
-                                   "latin-1")
-            thumbnail = str(node.firstChildElement("Image").text())
-            if not thumbnail == "":
-                self.thumb = "%s/%s" % (tvdb_banner_url, thumbnail)
-            else:
-                self.thumb = "none"
-            self.name = unicode(node.firstChildElement("Name").text(), \
-                                "latin-1")
-            self.role = unicode(node.firstChildElement("Role").text(), \
-                                "latin-1")
-
-    class Banner(object):
-        """Class to hold banner info"""
-        def __init__(self, node, seriesid, tvdb_banner_url):
-            self.seriesid = seriesid
-            self.id = int(node.firstChildElement("id").text())
-            self.path = str(node.firstChildElement("BannerPath").text())
-            self.type = str(node.firstChildElement("BannerType").text())
-            self.type2 = str(node.firstChildElement("BannerType2").text())
-            self.colors = str(node.firstChildElement("Colors").text())
-            self.season = str(node.firstChildElement("Season").text())
-            self.thumb = str(node.firstChildElement("ThumbnailPath").text())
-            self.url = tvdb_banner_url
 
     def get_server_time(self):
         """Gets the current server time.  Needed for updates"""
@@ -264,6 +164,7 @@ class TVDB(object):
 
     def get_series_all_by_id(self, series_id):
         """Grabs the information for series with id "series_id" """
+        series = Series()
         xml_file_in_zip = "%s.xml" % (self.lang,)
         series_info_url = "%s/series/%s/all/%s.zip" % \
           (self.tvdb_apikey_url, series_id, self.lang)
@@ -280,13 +181,14 @@ class TVDB(object):
             dom.setContent(series_info_zip.read(xml_file_in_zip))
             data = dom.firstChildElement("Data") 
             series_node = data.firstChildElement("Series")
-            series_info = self.Series(series_node, series_info_url)
+            series.set(series_node, series_info_url, 'tvdb')
         except SyntaxError:
             self.logger.error("Syntax error in file from %s." % (series_info_url))
-        return series_info
+        return series
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
+        episode = Episode()
         xml_file_in_zip = "%s.xml" % (self.lang,)
         series_info_url = "%s/series/%s/all/%s.zip" % \
           (self.tvdb_apikey_url, series_id, self.lang)
@@ -305,13 +207,14 @@ class TVDB(object):
         episode_info = []
         episode_node = data.firstChildElement("Episode")
         while not episode_node.isNull():
-            episode_info.append(\
-              self.Episode(episode_node, self.tvdb_banner_url))
+            episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
+            episode_info.append(episode)
             episode_node = episode_node.nextSiblingElement("Episode")
         return episode_info
 
     def get_actors_by_id(self, series_id):
         """Gets information about the actors in a given series"""
+        actor = Actor()
         series_info_url = "%s/series/%s/all/en.zip" % \
           (self.tvdb_apikey_url, series_id)
         try:
@@ -329,13 +232,14 @@ class TVDB(object):
         actors = dom.firstChildElement("Actors")
         actor_node = actors.firstChildElement("Actor")
         while not actor_node.isNull():
-            actor_info_list.append(self.Actor(actor_node, \
-                series_id, self.tvdb_banner_url))
+            actor.set(actor_node, series_id, self.tvdb_banner_url, 'tvdb')
+            actor_info_list.append(actor)
             actor_node = actor_node.nextSiblingElement("Actor") 
         return actor_info_list
 
     def get_banners_by_id(self, series_id):
         """Gets information about banners for a given series"""
+        banner = Banner()
         series_info_url = "%s/series/%s/all/en.zip" % \
           (self.tvdb_apikey_url, series_id)
         try:
@@ -353,13 +257,14 @@ class TVDB(object):
         banners = dom.firstChildElement("Banners")
         banner_node = banners.firstChildElement("Banner")
         while not banner_node.isNull():
-            banner_info_list.append(self.Banner(banner_node, series_id, \
-              self.tvdb_banner_url))
+            banner.set(banner_node, series_id, self.tvdb_banner_url, 'tvdb')
+            banner_info_list.append(banner)
             banner_node = banner_node.nextSiblingElement("Banner")
         return banner_info_list
 
     def get_series_by_id(self, series_id):
         """Parse the <lang>.xml file for series information"""
+        series = Series()
         series_info_url = "%s/series/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, self.lang)
         series_info_zip_url = "%s/series/%s/all/en.zip" % \
@@ -374,11 +279,12 @@ class TVDB(object):
         dom.setContent(series_info.read())
         data = dom.firstChildElement("Data")
         series_node = data.firstChildElement("Series")
-        series_info = self.Series(series_node, series_info_zip_url)
-        return series_info
+        series.set(series_node, series_info_zip_url, 'tvdb')
+        return series
 
     def get_episode_by_id(self, episode_id):
         """Parse the <lang>.xml file for episode information"""
+        episode = Episode()
         episode_info_url = "%s/episodes/%s/%s.xml" % \
             (self.tvdb_apikey_url, episode_id, self.lang)
         try:
@@ -390,15 +296,20 @@ class TVDB(object):
         dom = QtXml.QDomDocument()
         dom.setContent(episode_info.read())
         data = dom.firstChildElement("Data")
-        episode_node = data.firstChildElement("Episode")
-        episode_info = self.Episode(episode_node, self.tvdb_banner_url)
-        return episode_info
+        if not data.isNull():
+            episode_node = data.firstChildElement("Episode")
+            episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
+            return episode
+        else:
+            self.logger.error("File from %s came back empty." % (episode_info_url))
+            return None
 
-    def get_episode_by_season_episode(self, series_id, season, episode):
+    def get_episode_by_season_episode(self, series_id, season, episode_no):
         """Parse the <lang>.xml file for episode information"""
+        episode = Episode()
         episode_info_url = "%s/series/%s/default/%s/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, season.lstrip('0'), \
-               episode.lstrip('0'), self.lang)
+               episode_no.lstrip('0'), self.lang)
         try:
             episode_info = urllib2.urlopen(episode_info_url)
             self.logger.info("Grabbed url %s" % (episode_info_url))
@@ -408,9 +319,13 @@ class TVDB(object):
         dom = QtXml.QDomDocument()
         dom.setContent(episode_info.read())
         data = dom.firstChildElement("Data")
-        episode_node = data.firstChildElement("Episode")
-        episode_info = self.Episode(episode_node, self.tvdb_banner_url)
-        return episode_info
+        if not data.isNull():
+            episode_node = data.firstChildElement("Episode")
+            episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
+            return episode
+        else:
+            self.logger.error("File from %s came back empty." % (episode_info_url))
+            return None
 
     def retrieve_banner(self, url):
         """Retrieves a banner from <url> and saves it as <filename>"""

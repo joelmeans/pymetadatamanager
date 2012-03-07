@@ -314,11 +314,13 @@ class TVShowDB(object):
     def write_banners_to_db(self, banners):
         """Writes info about series banners to the database"""
         for banner in banners:
+#            self.logger.debug("banner.path = %s" % (banner.path,))
             #See if the banner is already in the db
-            self.sqlTV.execute('SELECT * FROM banners WHERE idBanner=(?)', \
-             (banner.id, ))
+            self.sqlTV.execute('SELECT * FROM banners WHERE path=(?)', \
+             (banner.path, ))
             found_list = self.sqlTV.fetchall()
             if len(found_list):
+#                self.logger.debug("alread found in database")
                 pass
             else:
                 self.sqlTV.execute('INSERT INTO banners \
@@ -326,6 +328,7 @@ class TVShowDB(object):
                  "thumbnailPath", "season", "url") VALUES (?,?,?,?,?,?,?,?)', \
                  (banner.id, banner.path, banner.type, banner.type2, \
                  banner.colors, banner.thumb, banner.season, banner.url))
+            self.dbTV.commit()
             #Link the banner to the series
             self.sqlTV.execute('SELECT id FROM banners WHERE path=(?)', \
              (banner.path, ))
@@ -439,8 +442,8 @@ class TVShowDB(object):
                  series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
                 if episodes[0] is not None:
                     self.write_episodes_to_db(episodes, series_id)
-                    self.logger.info("Adding Series %s, season %s, episode \
-                      %s to database" \
+                    self.logger.info(\
+                      "Adding Series %s, season %s, episode %s to database" \
                       % (series_id, file_season, file_episode))
                 else:
                     self.logger.info("Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode))
@@ -461,8 +464,10 @@ class TVShowDB(object):
             if len(self.sqlTV.fetchall()):
                 pass
             else:
-                self.sqlTV.execute('INSERT INTO filelinkepisode ("idFile", \
-             "idEpisode") VALUES (?, ?)', (id_file, id_episode))
+                if not id_episode == 0:
+                    self.sqlTV.execute(\
+                      'INSERT INTO filelinkepisode ("idFile", "idEpisode") \
+                      VALUES (?, ?)', (id_file, id_episode))
             #See if we know the video info for the file already
             self.sqlTV.execute('SELECT * FROM videolinkfile WHERE \
              idFile=(?)', (id_file,))

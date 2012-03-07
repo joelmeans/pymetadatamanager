@@ -40,6 +40,7 @@ class Config(object):
         self.tv_dirs = []
         self.movie_dirs = []
         self.mediainfo_path = ""
+        self.prefer_local = 0 
         if not os.path.isfile(self.config_file):
             self.set_default_dirs()
         else:
@@ -109,11 +110,16 @@ class Config(object):
         mediainfo_path_text = dom.createTextNode(self.mediainfo_path)
         mediainfo_path.appendChild(mediainfo_path_text)
         root.appendChild(mediainfo_path)
+        prefer_local = dom.createElement("prefer_local")
+        prefer_local_text = dom.createTextNode(str(self.prefer_local))
+        prefer_local.appendChild(prefer_local_text)
+        root.appendChild(prefer_local)
         config = open(self.config_file, 'w')
         config.write(dom.toString(4))
         config.close()
 
     def read_config_file(self):
+        self.logger.debug("Reading config file")
         config_file = os.path.join(self.config_dir, 'config.xml')
         dom = QtXml.QDomDocument()
         data = open(config_file, 'r')
@@ -130,3 +136,6 @@ class Config(object):
         mediainfo_path = config.firstChildElement("mediainfo")
         if not mediainfo_path.isNull():
             self.mediainfo_path = str(mediainfo_path.text())
+        prefer_local = config.firstChildElement("prefer_local")
+        if not prefer_local.isNull():
+            self.prefer_local = int(prefer_local.text())

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'configuration.ui'
 #
-# Created: Tue Oct 25 09:25:11 2011
-#      by: PyQt4 UI code generator 4.8.1
+# Created: Tue Mar  6 17:35:09 2012
+#      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -17,19 +17,22 @@ except AttributeError:
 class Ui_ConfigDialog(object):
     def setupUi(self, ConfigDialog):
         ConfigDialog.setObjectName(_fromUtf8("ConfigDialog"))
-        ConfigDialog.resize(554, 240)
+        ConfigDialog.resize(554, 291)
         self.buttonBox = QtGui.QDialogButtonBox(ConfigDialog)
-        self.buttonBox.setGeometry(QtCore.QRect(200, 190, 341, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(200, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.label_3 = QtGui.QLabel(ConfigDialog)
-        self.label_3.setGeometry(QtCore.QRect(10, 10, 379, 82))
+        self.label_3.setGeometry(QtCore.QRect(10, 10, 461, 82))
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.widget = QtGui.QWidget(ConfigDialog)
-        self.widget.setGeometry(QtCore.QRect(10, 70, 531, 102))
+        self.widget.setGeometry(QtCore.QRect(10, 70, 423, 147))
         self.widget.setObjectName(_fromUtf8("widget"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.widget)
+        self.verticalLayout_4 = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout_4.setMargin(0)
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
@@ -82,6 +85,18 @@ class Ui_ConfigDialog(object):
         self.pushButton_mediainfo_browse.setObjectName(_fromUtf8("pushButton_mediainfo_browse"))
         self.verticalLayout_3.addWidget(self.pushButton_mediainfo_browse)
         self.horizontalLayout.addLayout(self.verticalLayout_3)
+        self.verticalLayout_4.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.label_5 = QtGui.QLabel(self.widget)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.horizontalLayout_2.addWidget(self.label_5)
+        self.checkBox_prefer_local = QtGui.QCheckBox(self.widget)
+        self.checkBox_prefer_local.setObjectName(_fromUtf8("checkBox_prefer_local"))
+        self.horizontalLayout_2.addWidget(self.checkBox_prefer_local)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_2)
 
         self.retranslateUi(ConfigDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), ConfigDialog.accept)
@@ -97,4 +112,6 @@ class Ui_ConfigDialog(object):
         self.pushButton_tv_browse.setText(QtGui.QApplication.translate("ConfigDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_movie_browse.setText(QtGui.QApplication.translate("ConfigDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_mediainfo_browse.setText(QtGui.QApplication.translate("ConfigDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("ConfigDialog", "Prefer Local Files", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkBox_prefer_local.setText(QtGui.QApplication.translate("ConfigDialog", " ", None, QtGui.QApplication.UnicodeUTF8))
 

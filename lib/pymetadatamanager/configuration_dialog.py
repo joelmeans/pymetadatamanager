@@ -25,7 +25,7 @@ import os.path
 import logging
 from configuration import Config
 from configuration_ui import Ui_ConfigDialog
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 class ConfigDialog(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -38,6 +38,7 @@ class ConfigDialog(QtGui.QDialog):
         self.config = Config()
         self.ui.lineEdit_tv_dirs.setText(",".join(self.config.tv_dirs))
         self.ui.lineEdit_movie_dirs.setText(",".join(self.config.movie_dirs))
+        self.ui.checkBox_prefer_local.setChecked(self.config.prefer_local)
         self.ui.lineEdit_mediainfo_path.setText(self.config.mediainfo_path)
         self.ui.pushButton_tv_browse.clicked.connect(self.tv_browser)
         self.ui.pushButton_movie_browse.clicked.connect(self.movie_browser)
@@ -80,5 +81,8 @@ class ConfigDialog(QtGui.QDialog):
         for dir in str(self.ui.lineEdit_movie_dirs.text()).split(","):
             self.config.movie_dirs.append(dir)
         self.config.mediainfo_path = self.ui.lineEdit_mediainfo_path.text()
+        if self.ui.checkBox_prefer_local.isChecked():
+            self.config.prefer_local = 1
+        else:
+            self.config.prefer_local = 0
         self.config.write_config_file()
-        self.config.read_config_file()

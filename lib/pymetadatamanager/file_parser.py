@@ -41,8 +41,22 @@ class FileParser(object):
                         season, episode = re.findall('[0-9]{1,3}', season_ep)
                         show = file.split(season_ep)[0].rstrip(' _.')
                         show_name = re.sub('_', ' ', show)
+                        filename = os.path.splitext(file)[0]
+                        nfo_name = "%s.nfo" % (filename,)
+                        nfo_fullpath = os.path.join(directory, nfo_name)
+                        if os.path.isfile(nfo_fullpath):
+                            nfo = nfo_fullpath
+                        else:
+                            nfo = ""
+                        series_path = re.sub('[S|s]eason[ |_][0-9]*', '', \
+                                             directory)
+                        series_nfo = os.path.join(series_path, "tvshow.nfo")
+                        if os.path.isfile(series_nfo):
+                            nfo_s = series_nfo
+                        else:
+                            nfo_s = ""
                         show_tuple = (directory, file, show_name, \
-                          season.zfill(2), episode)
+                          season.zfill(2), episode, series_nfo, nfo)
                         self.file_list.append(show_tuple)
 
     def parse_files_by_path(self, filepath):
