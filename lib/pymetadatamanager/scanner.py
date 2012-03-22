@@ -69,10 +69,10 @@ class Scanner(object):
         return match_list
 
     def add_series_to_db_by_id(self, series_id):
-        series = self.TVDB.get_series_all_by_id(series_id)
-        episodes = self.TVDB.get_episodes_by_series_id(series_id)
-        actors = self.TVDB.get_actors_by_id(series_id)
-        banners = self.TVDB.get_banners_by_id(series_id)
+        series = self.TVDB.get_all_series_info(series_id)
+        episodes = self.TVDB.get_series_episodes(series_id)
+        actors = self.TVDB.get_series_actors(series_id)
+        banners = self.TVDB.get_series_banners(series_id)
 
         series_name = self.dbTV.get_series_name(series_id)
         self.logger.info("Adding series %s to DB" % (series_name,))

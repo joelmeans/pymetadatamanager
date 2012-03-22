@@ -355,7 +355,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def update_series_from_tvdb(self):
         series_id = dbTV.get_series_id(self.series_name)
-        series = TVDB.get_series_by_id(series_id)
+        series = TVDB.get_series_info(series_id)
         dom = dom_from_series(series)
         self.set_series_info_from_dom(dom, 0)
         self.ui.pushButton_save_series_changes.setEnabled(1)
@@ -425,7 +425,7 @@ class MainWindow(QtGui.QMainWindow):
         episode_id = dbTV.get_episode_id(self.series_name, \
                                          self.season_number, \
                                          self.episode_number)
-        episode = TVDB.get_episode_by_id(episode_id)
+        episode = TVDB.get_episode_info(episode_id)
         dom = dom_from_episode(episode)
         self.set_episode_info_from_dom(dom)
         self.ui.pushButton_save_episode_changes.setEnabled(1)

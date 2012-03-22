@@ -168,10 +168,11 @@ class TVShowDB(object):
             self.sqlTV.execute('SELECT * FROM episodes WHERE episodeid=(?)', \
              (episode.episodeid, ))
             if len(self.sqlTV.fetchall()):
-                self.logger.info("Season %s episode %s is already in the DB" % (episode.season_number, episode.episode_number))
-                pass
+                self.logger.info("Season %s episode %s is already in the DB" \
+                  % (episode.season_number, episode.episode_number))
             else:
-                self.logger.info("Adding season %s episode %s to the DB" % (episode.season_number, episode.episode_number))
+                self.logger.info("Adding season %s episode %s to the DB" \
+                  % (episode.season_number, episode.episode_number))
                 self.sqlTV.execute('INSERT INTO episodes ("episodeid", "name", \
                  "overview", "season_number", "episode_number", "language", \
                  "prod_code", "rating", "first_aired", "thumb") VALUES \
@@ -187,88 +188,34 @@ class TVShowDB(object):
                   episode.first_aired, \
                   episode.thumb))
                 #Link the episode to the series
-                self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
-                id_episode_list = self.sqlTV.fetchall()
-                self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-                 (series_id, ))
-                id_show_list = self.sqlTV.fetchall()
-                for x in id_episode_list[0]: id_episode = x
-                for y in id_show_list[0]: id_show = y
-                #Make sure the link doesn't already exist
-                self.sqlTV.execute('SELECT * FROM episodelinkshow WHERE \
-                 idEpisode=(?) AND idShow=(?)', (id_episode, id_show))
-                if len(self.sqlTV.fetchall()):
-                    pass
-                else:
-                    self.sqlTV.execute('INSERT INTO episodelinkshow \
-                     ("idEpisode", "idShow") VALUES (?,?)', \
-                     (id_episode, id_show))
+                self.link_episode_to_series(series_id, episode.episodeid)
             #Add in the actors appearing in single episodes as guests
             for guest in episode.guest_stars:
                 #See if the actor is already in the db
                 self.sqlTV.execute('SELECT * FROM actors WHERE name=(?)', \
-                 (guest, ))
-                if len(self.sqlTV.fetchall()):
-                    pass
-                else:
+                  (guest, ))
+                if not len(self.sqlTV.fetchall()):
                     self.sqlTV.execute('INSERT INTO actors ("name", "thumb") \
                      VALUES (?, ?)', (guest, "none"))
-                #Link the actor to the episode
-                self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
-                 (guest, ))
-                id_guest_list = self.sqlTV.fetchall()
-                self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
-                id_episode_list = self.sqlTV.fetchall()
-                for x in id_guest_list[0]: id_guest = x
-                for y in id_episode_list[0]: id_episode = y
-                self.sqlTV.execute('INSERT INTO actorlinkepisode ("idActor", \
-                 "idEpisode") VALUES (?, ?)', (id_guest, id_episode))
+				self.link_guest_to_episode(episode.episodeid, guest)
             #Add in the directors
             for director in episode.directors:
                 #See if the director is already in the db
                 self.sqlTV.execute('SELECT * FROM directors WHERE name=(?)', \
-                 (director, ))
-                if len (self.sqlTV.fetchall()):
-                    pass
-                else:
+                  (director, ))
+                if not len (self.sqlTV.fetchall()):
                     self.sqlTV.execute('INSERT INTO directors ("name") \
                      VALUES (?)', (director, ))
-                #Link the director to the episode
-                self.sqlTV.execute('SELECT id FROM directors WHERE name=(?)', \
-                 (director, ))
-                id_director_list = self.sqlTV.fetchall()
-                self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
-                id_episode_list = self.sqlTV.fetchall()
-                for x in id_director_list[0]: id_director = x
-                for y in id_episode_list[0]: id_episode = y
-                self.sqlTV.execute('INSERT INTO directorlinkepisode \
-                 ("idDirector", "idEpisode") VALUES (?, ?)', \
-                 (id_director, id_episode))
+                self.link_director_to_episode(episode.episodeid, director)
             #Add in the writers
             for writer in episode.writers:
                 #See if the writer is already in the db
                 self.sqlTV.execute('SELECT * FROM writers WHERE name=(?)', \
-                 (writer, ))
-                if len (self.sqlTV.fetchall()):
-                    pass
-                else:
+                  (writer, ))
+                if not len (self.sqlTV.fetchall()):
                     self.sqlTV.execute('INSERT INTO writers ("name") \
                      VALUES (?)', (writer, ))
-                #Link the writer to the episode
-                self.sqlTV.execute('SELECT id FROM writers WHERE name=(?)', \
-                 (writer, ))
-                id_writer_list = self.sqlTV.fetchall()
-                self.sqlTV.execute('SELECT id FROM episodes WHERE \
-                 episodeid=(?)', (episode.episodeid, ))
-                id_episode_list = self.sqlTV.fetchall()
-                for x in id_writer_list[0]: id_writer = x
-                for y in id_episode_list[0]: id_episode = y
-                self.sqlTV.execute('INSERT INTO writerlinkepisode \
-                 ("idWriter", "idEpisode") VALUES (?, ?)', \
-                 (id_writer, id_episode))
+                self.link_writer_to_episode(episode.episodeid, writer)
         self.dbTV.commit()
 
     def write_actors_to_db(self, actors):
@@ -291,24 +238,7 @@ class TVShowDB(object):
             else:
                 self.sqlTV.execute('INSERT INTO actors ("name", "thumb") \
                  VALUES (?,?)', (actor.name, actor.thumb))
-            #Link the actor to the series
-            self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
-             (actor.name, ))
-            id_actor_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-             (actor.seriesid, ))
-            id_show_list = self.sqlTV.fetchall()
-            for x in id_actor_list[0]: id_actor = x
-            for y in id_show_list[0]: id_show = y
-            #Make sure the link isn't already there
-            self.sqlTV.execute('SELECT * FROM actorlinkshow WHERE idActor=(?) \
-             and idShow=(?)', (id_actor, id_show))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO actorlinkshow \
-                 ("idActor", "idShow", "role") VALUES (?,?,?)', \
-                 (id_actor, id_show, actor.role))
+            self.link_actor_to_series(actor.seriesid, actor.name, actor.role)
         self.dbTV.commit()
 
     def write_banners_to_db(self, banners):
@@ -328,24 +258,7 @@ class TVShowDB(object):
                  "thumbnailPath", "season", "url") VALUES (?,?,?,?,?,?,?,?)', \
                  (banner.id, banner.path, banner.type, banner.type2, \
                  banner.colors, banner.thumb, banner.season, banner.url))
-            self.dbTV.commit()
-            #Link the banner to the series
-            self.sqlTV.execute('SELECT id FROM banners WHERE path=(?)', \
-             (banner.path, ))
-            id_banner_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-             (banner.seriesid, ))
-            id_show_list = self.sqlTV.fetchall()
-            for x in id_banner_list[0]: id_banner = x
-            for y in id_show_list[0]: id_show = y
-            #Make sure the link isn't already there
-            self.sqlTV.execute('SELECT * FROM bannerlinkshow WHERE \
-             idBanner=(?) and idShow=(?)', (id_banner, id_show))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                self.sqlTV.execute('INSERT INTO bannerlinkshow \
-                 ("idBanner", "idShow") VALUES (?,?)', (id_banner, id_show, ))
+            self.link_banner_to_series(banner.seriesid, banner.path)
         self.dbTV.commit()
 
     def write_series_to_db(self, series):
@@ -376,38 +289,18 @@ class TVShowDB(object):
             #Add the genres if they aren't already there and link them up
             for genre in series.genre:
                 self.sqlTV.execute('SELECT * FROM genres WHERE name=(?)', \
-                 (genre, ))
-                if len (self.sqlTV.fetchall()):
-                    pass
-                else:
+                  (genre, ))
+                if not len (self.sqlTV.fetchall()):
                     self.sqlTV.execute('INSERT INTO genres ("name") \
-                     VALUES (?)', (genre, ))
-                self.sqlTV.execute('SELECT id FROM genres WHERE name=(?)', \
-                 (genre, ))
-                id_genre_list = self.sqlTV.fetchall()
-                self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-                 (series.seriesid, ))
-                id_show_list = self.sqlTV.fetchall()
-                for x in id_genre_list[0]: id_genre = x
-                for y in id_show_list[0]: id_show = y
-                self.sqlTV.execute('INSERT INTO genrelinkshow \
-                 ("idGenre", "idShow") VALUES (?, ?)', (id_genre, id_show))
+                      VALUES (?)', (genre, ))
+                self.link_series_to_genre(genre, series.seriesid)
             #Add the network if it isn't already there and link it up
             self.sqlTV.execute('SELECT * FROM networks WHERE name=(?)', \
              (series.network, ))
             if not len (self.sqlTV.fetchall()):
                 self.sqlTV.execute('INSERT INTO networks ("name") VALUES (?)', \
                  (series.network, ))
-            self.sqlTV.execute('SELECT id FROM networks WHERE name=(?)', \
-             (series.network, ))
-            id_network_list = self.sqlTV.fetchall()
-            self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
-             (series.seriesid, ))
-            id_show_list = self.sqlTV.fetchall()
-            for x in id_network_list[0]: id_network = x
-            for y in id_show_list[0]: id_show = y
-            self.sqlTV.execute('INSERT INTO networklinkshow \
-             ("idNetwork", "idShow") VALUES (?, ?)', (id_network, id_show))
+            self.link_series_to_network(series.network, series.seriesid)
         self.dbTV.commit()
 
     def write_files_to_db(self, file_list, series_id):
@@ -421,122 +314,279 @@ class TVShowDB(object):
             #See if the file is already in the db
             self.sqlTV.execute('SELECT * FROM files WHERE filename=(?)', \
                                (file_name, ))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
+            if not len(self.sqlTV.fetchall()):
                 self.sqlTV.execute('INSERT INTO files ("filename", \
                  "filepath") VALUES (?,?)', (file_name, file_path))
             #Link the file to the appropriate episode
-            self.sqlTV.execute('SELECT id FROM files WHERE filename=(?)', \
-                               (file_name, ))
-            id_file_list = self.sqlTV.fetchall()
-            for x in id_file_list[0]: id_file = x
-            self.sqlTV.execute('SELECT episodes.id FROM episodes JOIN \
-             episodelinkshow ON episodelinkshow.idEpisode=episodes.id JOIN \
-             shows ON episodelinkshow.idShow=shows.id WHERE shows.seriesid=(?) \
-             AND episodes.season_number=(?) AND episodes.episode_number=(?)', \
-             (series_id, file_season, file_episode))
-            id_episode_list = self.sqlTV.fetchall()
-            if not len(id_episode_list):
-                episodes = [self.tvdb.get_episode_by_season_episode(\
-                 series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
-                if episodes[0] is not None:
-                    self.write_episodes_to_db(episodes, series_id)
-                    self.logger.info(\
-                      "Adding Series %s, season %s, episode %s to database" \
-                      % (series_id, file_season, file_episode))
-                else:
-                    self.logger.info("Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode))
-                self.sqlTV.execute('SELECT episodes.id FROM episodes \
-                 JOIN episodelinkshow ON episodelinkshow.idEpisode=episodes.id \
-                 JOIN shows ON episodelinkshow.idShow=shows.id \
-                 WHERE shows.seriesid=(?) AND episodes.season_number=(?) \
-                 AND episodes.episode_number=(?)', \
-                 (series_id, file_season, file_episode))
-                id_episode_list = self.sqlTV.fetchall()
-            if not len(id_episode_list) < 1:
-                for y in id_episode_list[0]:
-                    id_episode = y
-            else:
-                id_episode = 00000
-            self.sqlTV.execute('SELECT * FROM filelinkepisode WHERE \
-             idFile=(?) and idEpisode=(?)', (id_file, id_episode))
-            if len(self.sqlTV.fetchall()):
-                pass
-            else:
-                if not id_episode == 0:
-                    self.sqlTV.execute(\
-                      'INSERT INTO filelinkepisode ("idFile", "idEpisode") \
-                      VALUES (?, ?)', (id_file, id_episode))
+        	id_show, id_file = self.link_file_to_episode(series_id, file)
             #See if we know the video info for the file already
-            self.sqlTV.execute('SELECT * FROM videolinkfile WHERE \
-             idFile=(?)', (id_file,))
-            if not len(self.sqlTV.fetchall()):
-                #Get the meta info for the file
-                formats = []
-                file_fullpath = file_path + "/" + file_name
-                dom = self.MediaInfo.make_info_dom(file_fullpath)
-                root = dom.documentElement()
-                elem_file = root.firstChildElement('File')
-                elem_track = elem_file.firstChildElement('track')
-                while not elem_track.isNull():
-                    if elem_track.attribute('type') == 'Video':
-                        elem_video = elem_track
-                        elem_codec = elem_video.firstChildElement('Codec_ID')
-                        if elem_codec.isNull():
-                            codec = "unknown"
-                        else:
-                            codec = str(elem_codec.text()).lower().split('/')[-1]
-                            if codec == "avc": codec = "h264"
-                        elem_width = elem_video.firstChildElement('Width')
-                        if elem_width.isNull():
-                            width = 0
-                        else:
-                            width = str(elem_width.text()).strip(' pixels')
-                            width = re.sub("\s+", "", width)
-                        elem_height = elem_video.firstChildElement('Height')
-                        if elem_height.isNull():
-                            height = 0
-                        else:
-                            height = str(elem_height.text()).strip(' pixels')
-                            height = re.sub("\s+", "", height)
-                        elem_aspect = \
-                         elem_video.firstChildElement('Display_aspect_ratio')
-                        if elem_aspect.isNull():
-                            aspect = 0
-                        else:
-                            aspect_sep = str(elem_aspect.text()).split(':')
-                            if len(aspect_sep) < 2:
+            if not id_file:
+                self.sqlTV.execute('SELECT * FROM videolinkfile WHERE \
+                  idFile=(?)', (id_file,))
+                if not len(self.sqlTV.fetchall()):
+                    #Get the meta info for the file
+	                formats = []
+                    file_fullpath = file_path + "/" + file_name
+                    dom = self.MediaInfo.make_info_dom(file_fullpath)
+                    root = dom.documentElement()
+                    elem_file = root.firstChildElement('File')
+                    elem_track = elem_file.firstChildElement('track')
+                    while not elem_track.isNull():
+                        if elem_track.attribute('type') == 'Video':
+                            elem_video = elem_track
+                            elem_codec = elem_video.firstChildElement('Codec_ID')
+                            if elem_codec.isNull():
+                                codec = "unknown"
+                            else:
+                                codec = \
+                                  str(elem_codec.text()).lower().split('/')[-1]
+                                if codec == "avc": codec = "h264"
+                            elem_width = elem_video.firstChildElement('Width')
+                            if elem_width.isNull():
+                                width = 0
+                            else:
+                                width = str(elem_width.text()).strip(' pixels')
+                                width = re.sub("\s+", "", width)
+                            elem_height = elem_video.firstChildElement('Height')
+                            if elem_height.isNull():
+                                height = 0
+                            else:
+                                height = str(elem_height.text()).strip(' pixels')
+                                height = re.sub("\s+", "", height)
+                            elem_aspect = \
+                              elem_video.firstChildElement('Display_aspect_ratio')
+                            if elem_aspect.isNull():
                                 aspect = 0
                             else:
-                                if aspect_sep[1] > 0:
-                                    aspect = \
-                                     float(aspect_sep[0]) / float(aspect_sep[1])
-                                else:
+                                aspect_sep = str(elem_aspect.text()).split(':')
+                                if len(aspect_sep) < 2:
                                     aspect = 0
-                        formats.append((codec, aspect, int(width), int(height)))
-                    elem_track = elem_track.nextSiblingElement('track')
-                for format in formats:
-                    self.sqlTV.execute('SELECT id FROM video_formats WHERE \
-                     codec=(?) AND aspect=(?) AND width=(?) AND height=(?)', \
-                     format)
-                    id_format_list = self.sqlTV.fetchall()
-                    if not len(id_format_list):
-                        self.sqlTV.execute('INSERT INTO video_formats \
-                         ("codec", "aspect", "width", "height") \
-                         VALUES (?,?,?,?)', format)
-                        self.sqlTV.execute('SELECT id FROM video_formats WHERE \
-                         codec=(?) AND aspect=(?) AND width=(?) \
-                         AND height=(?)', format)
-                        id_format_list = self.sqlTV.fetchall()
-                        for y in id_format_list[0]: id_format = int(y)
-                    else:
-                        for y in id_format_list[0]: id_format = int(y)
-                    self.sqlTV.execute('INSERT INTO videolinkfile \
-                     ("idVideoFormat", "idFile") VALUES (?, ?)', \
-                     (id_format, id_file))
+                                else:
+                                    if aspect_sep[1] > 0:
+                                        aspect = \
+                                          float(aspect_sep[0]) \
+                                            / float(aspect_sep[1])
+                                else:
+                                        aspect = 0
+                            formats.append((codec, aspect, int(width), int(height)))
+                        elem_track = elem_track.nextSiblingElement('track')
+                    for format in formats:
+                        self.link_file_to_format(format, id_file)
             self.dbTV.commit()
 
+	def link_episode_to_series(self, series_id, episode_id):
+	    """Create a link from an episode to a show"""
+        #Link the episode to the series
+        self.sqlTV.execute('SELECT id FROM episodes WHERE \
+          episodeid=(?)', (episode_id, ))
+        id_episode_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+          (series_id, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_episode_list[0]: id_episode = x
+        for y in id_show_list[0]: id_show = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM episodelinkshow WHERE \
+          idEpisode=(?) AND idShow=(?)', (id_episode, id_show))
+        if not len(self.sqlTV.fetchall()):
+            self.sqlTV.execute('INSERT INTO episodelinkshow \
+              ("idEpisode", "idShow") VALUES (?,?)', \
+              (id_episode, id_show))
+        return (id_show, id_episode)
+
+	def link_guest_to_episode(self, episode_id, guest):
+	    """Create a link from a guest actor to an episode"""
+        self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
+          (guest, ))
+        id_guest_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM episodes WHERE \
+           episodeid=(?)', (episode_id, ))
+        id_episode_list = self.sqlTV.fetchall()
+        for x in id_guest_list[0]: id_guest = x
+        for y in id_episode_list[0]: id_episode = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM actorlinkepisode WHERE \
+          idActor=(?) AND idEpisode=(?)', (id_guest, id_episode))
+        if not len(self.sqlTV.fetchall()):
+	        self.sqlTV.execute('INSERT INTO actorlinkepisode ("idActor", \
+    	      "idEpisode") VALUES (?, ?)', (id_guest, id_episode))
+    	return (id_episode, id_guest)
+
+	def link_director_to_episode(self, episode_id, director):
+	    """Create a link from a director to an episode"""
+        self.sqlTV.execute('SELECT id FROM directors WHERE name=(?)', \
+          (director, ))
+        id_director_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM episodes WHERE \
+          episodeid=(?)', (episode_id, ))
+        id_episode_list = self.sqlTV.fetchall()
+        for x in id_director_list[0]: id_director = x
+        for y in id_episode_list[0]: id_episode = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM directorlinkepisode WHERE \
+          idDirector=(?) AND idEpisode=(?)', (id_director, id_episode))
+        if not len(self.sqlTV.fetchall()):
+	        self.sqlTV.execute('INSERT INTO directorlinkepisode \
+    	      ("idDirector", "idEpisode") VALUES (?, ?)', \
+        	  (id_director, id_episode))
+        return (id_episode, id_director)
+
+	def link_writer_to_episode(self, episode_id, writer):
+	    """Create a link from a director to an episode"""
+        self.sqlTV.execute('SELECT id FROM writers WHERE name=(?)', \
+          (writer, ))
+        id_writer_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM episodes WHERE \
+          episodeid=(?)', (episode_id, ))
+        id_episode_list = self.sqlTV.fetchall()
+        for x in id_writer_list[0]: id_writer = x
+        for y in id_episode_list[0]: id_episode = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM writerlinkepisode WHERE \
+          idWriter=(?) AND idEpisode=(?)', (id_writer, id_episode))
+        if not len(self.sqlTV.fetchall()):
+	        self.sqlTV.execute('INSERT INTO writerlinkepisode \
+    	      ("idWriter", "idEpisode") VALUES (?, ?)', \
+        	  (id_writer, id_episode))
+        return (id_episode, id_writer)
+
+	def link_actor_to_series(self, series_id, actor, role):
+	    """Create a link from an actor to a series"""
+		self.sqlTV.execute('SELECT id FROM actors WHERE name=(?)', \
+          (actor, ))
+        id_actor_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+          (series_id, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_actor_list[0]: id_actor = x
+        for y in id_show_list[0]: id_show = y
+        #Make sure the link isn't already there
+        self.sqlTV.execute('SELECT * FROM actorlinkshow WHERE idActor=(?) \
+          and idShow=(?)', (id_actor, id_show))
+        if not len(self.sqlTV.fetchall()):
+            self.sqlTV.execute('INSERT INTO actorlinkshow \
+              ("idActor", "idShow", "role") VALUES (?,?,?)', \
+              (id_actor, id_show, role))
+		return (id_show, id_actor)
+		
+	def link_banner_to_series(self, series_id, banner)
+		"""Create a link from a banner to a series"""
+		self.sqlTV.execute('SELECT id FROM banners WHERE path=(?)', \
+          (banner, ))
+        id_banner_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+          (series_id, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_banner_list[0]: id_banner = x
+        for y in id_show_list[0]: id_show = y
+        #Make sure the link isn't already there
+        self.sqlTV.execute('SELECT * FROM bannerlinkshow WHERE \
+          idBanner=(?) and idShow=(?)', (id_banner, id_show))
+        if not len(self.sqlTV.fetchall()):
+            self.sqlTV.execute('INSERT INTO bannerlinkshow \
+              ("idBanner", "idShow") VALUES (?,?)', (id_banner, id_show, ))
+    	return (id_show, id_banner)
+
+	def link_series_to_genre(self, genre, series_id):
+		"""Create a link from a series to a genre."""
+        self.sqlTV.execute('SELECT id FROM genres WHERE name=(?)', \
+          (genre, ))
+        id_genre_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+          (series_id, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_genre_list[0]: id_genre = x
+        for y in id_show_list[0]: id_show = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM genrelinkshow WHERE \
+          idGenre=(?) AND idShow=(?)', (id_genre, id_show))
+        if not len(self.sqlTV.fetchall()):
+	        self.sqlTV.execute('INSERT INTO genrelinkshow \
+              ("idGenre", "idShow") VALUES (?, ?)', (id_genre, id_show))
+        return (id_genre, id_show)
+
+	def link_series_to_network(self, network, series_id):
+        self.sqlTV.execute('SELECT id FROM networks WHERE name=(?)', \
+          (network, ))
+        id_network_list = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
+          (series_id, ))
+        id_show_list = self.sqlTV.fetchall()
+        for x in id_network_list[0]: id_network = x
+        for y in id_show_list[0]: id_show = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM networklinkshow WHERE \
+          idNetwork=(?) AND idShow=(?)', (id_network, id_show))
+        if not len(self.sqlTV.fetchall()):
+	        self.sqlTV.execute('INSERT INTO networklinkshow \
+        	  ("idNetwork", "idShow") VALUES (?, ?)', (id_network, id_show))
+        return (id_network, id_show)
+
+	def link_file_to_format(self, format, id_file):
+		"""Create a link from a file to a format spec."""
+        self.sqlTV.execute('SELECT id FROM video_formats WHERE \
+          codec=(?) AND aspect=(?) AND width=(?) AND height=(?)', \
+          format)
+        id_format_list = self.sqlTV.fetchall()
+        if not len(id_format_list):
+            self.sqlTV.execute('INSERT INTO video_formats \
+              ("codec", "aspect", "width", "height") \
+              VALUES (?,?,?,?)', format)
+            self.sqlTV.execute('SELECT id FROM video_formats WHERE \
+              codec=(?) AND aspect=(?) AND width=(?) \
+              AND height=(?)', format)
+            id_format_list = self.sqlTV.fetchall()
+            for y in id_format_list[0]: id_format = int(y)
+            self.sqlTV.execute('INSERT INTO videolinkfile \
+              ("idVideoFormat", "idFile") VALUES (?, ?)', \
+              (id_format, id_file))
+        return (id_format, id_file)
+
+	def link_file_to_episode(self, series_id, file):
+		"""Create a link from a file to an episode."""
+        file_path = file[0]
+        file_name = file[1]
+        file_season = file[3]
+        file_episode = file[4]
+
+        self.sqlTV.execute('SELECT id FROM files WHERE filename=(?)', \
+                           (file_name, ))
+        id_file_list = self.sqlTV.fetchall()
+        for x in id_file_list[0]: id_file = x
+        self.sqlTV.execute('SELECT episodes.id FROM episodes JOIN \
+          episodelinkshow ON episodelinkshow.idEpisode=episodes.id JOIN \
+          shows ON episodelinkshow.idShow=shows.id WHERE shows.seriesid=(?) \
+          AND episodes.season_number=(?) AND episodes.episode_number=(?)', \
+          (series_id, file_season, file_episode))
+        id_episode_list = self.sqlTV.fetchall()
+        if not len(id_episode_list):
+            episodes = [self.tvdb.get_episode_by_season_episode(\
+              series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
+            if episodes[0] is not None:
+                self.write_episodes_to_db(episodes, series_id)
+                self.logger.info(\
+                  "Adding Series %s, season %s, episode %s to database" \
+                   % (series_id, file_season, file_episode))
+            else:
+                self.logger.info("Series %s, season %s, episode %s not found on thetvdb.com" % (series_id, file_season, file_episode))
+				return 0
+            self.sqlTV.execute('SELECT episodes.id FROM episodes \
+              JOIN episodelinkshow ON episodelinkshow.idEpisode=episodes.id \
+              JOIN shows ON episodelinkshow.idShow=shows.id \
+              WHERE shows.seriesid=(?) AND episodes.season_number=(?) \
+              AND episodes.episode_number=(?)', \
+              (series_id, file_season, file_episode))
+            id_episode_list = self.sqlTV.fetchall()
+        for y in id_episode_list[0]: id_episode = y
+        #Make sure the link doesn't already exist
+        self.sqlTV.execute('SELECT * FROM filelinkepisode WHERE \
+          idFile=(?) and idEpisode=(?)', (id_file, id_episode))
+        if not len(self.sqlTV.fetchall()):
+            self.sqlTV.execute(\
+              'INSERT INTO filelinkepisode ("idFile", "idEpisode") \
+              VALUES (?, ?)', (id_file, id_episode))
+		return (id_episode, id_file)
+	
     def check_db_for_series_name(self, series_name):
         """See if a series with a given series_name exists in the database"""
         seriesname = '%s%s%s' % ("%", series_name, "%")
@@ -1293,12 +1343,12 @@ class TVShowDB(object):
             if self.check_db_for_episode(episode_id):
                 self.logger.info("Updating info for episode %s" \
                                  % (episode_id,))
-                episode = self.tvdb.get_episode_by_id(episode_id)
+                episode = self.tvdb.get_episode_info(episode_id)
                 self.update_episode_to_db(episode)
         for series_id in series_update_list:
            if self.check_db_for_series(series_id):
                 self.logger.info("Updating info for series %s" % (series_id,))
-                series = self.tvdb.get_series_by_id(series_id)
+                series = self.tvdb.get_series_info(series_id)
                 episodes = self.tvdb.get_episodes_by_series_id(series_id)
                 episode_list = []
                 self.update_series_to_db(series)

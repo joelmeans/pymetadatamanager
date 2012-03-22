@@ -79,7 +79,7 @@ class TVDB(object):
          updates_args)
         try:
             updates = urllib2.urlopen(tvdb_update_url)
-            self.logger.info("Grabbed url %s" % (tvdb_update_url))
+            self.logger.debug("Grabbed url %s" % (tvdb_update_url))
         except urllib2.HTTPError, e:
             self.logger.error("Error grabbing url %s" % (tvdb_update_url))
             return None
@@ -95,7 +95,7 @@ class TVDB(object):
                     series_element = \
                                    series_element.nextSiblingElement("Series")
             except SyntaxError:
-                pass
+                self.logger.debug("No series updates found.")
         return series_list
 
     def get_episode_update_list(self, last_time):
@@ -106,7 +106,7 @@ class TVDB(object):
          updates_args)
         try:
             updates = urllib2.urlopen(tvdb_update_url)
-            self.logger.info("Grabbed url %s" % (tvdb_update_url))
+            self.logger.debug("Grabbed url %s" % (tvdb_update_url))
         except urllib2.HTTPError, e:
             self.logger.error("Error grabbing url %s" % (tvdb_update_url))
             return None
@@ -122,29 +122,26 @@ class TVDB(object):
                     episode_element = \
                                   episode_element.nextSiblingElement("Episode")
             except SyntaxError:
-                pass
+                self.logger.debug("No episode updates found.")
         return episode_list
 
     def find_series(self, series_name):
         """Finds matches for name "series_name" from thetvdb.com
 
-        This function queries thetvdb.com for "series_name".  If an
-        exact match is found in the results, the seriesid for that 
-        series is returned.  If an exact match is not found, a list
-        of possible matches is presented and the user is asked to 
-        input the ID of the correct show."""
+        This function queries thetvdb.com for "series_name".  A list
+        of possible matches, containing (series_id, series_name) tuples,
+        is returned.  In the case of a URL error, None is returned."""
         series_args = urllib.urlencode({"seriesname": series_name}, \
          doseq=True)
         series_search_url = "%s/GetSeries.php?%s" % (self.tvdb_api_url, \
          series_args)
         try:
             matches = urllib2.urlopen(series_search_url)
-            self.logger.info("Grabbed url %s" % (series_search_url))
+            self.logger.debug("Grabbed url %s" % (series_search_url))
         except urllib2.HTTPError, e:
             self.logger.error("Error grabbing url %s" % (tvdb_update_url))
             return None
         match_list = []
-        seriesid = 0
         if matches:
             try:
                 dom = QtXml.QDomDocument()
@@ -159,10 +156,11 @@ class TVDB(object):
                     match_list.append((match_id, match_name))
                     series_node = series_node.nextSiblingElement("Series")
             except SyntaxError:
-                self.logger.info("No possible matches found for %s." % (series_name))
+                self.logger.debug("No possible matches found for %s." \
+                                 % (series_name))
         return match_list 
 
-    def get_series_all_by_id(self, series_id):
+    def get_all_series_info(self, series_id):
         """Grabs the information for series with id "series_id" """
         series = Series()
         xml_file_in_zip = "%s.xml" % (self.lang,)
@@ -186,7 +184,7 @@ class TVDB(object):
             self.logger.error("Syntax error in file from %s." % (series_info_url))
         return series
 
-    def get_episodes_by_series_id(self, series_id):
+    def get_series_episodes(self, series_id):
         """Parse the <lang>.xml file for episode information"""
         xml_file_in_zip = "%s.xml" % (self.lang,)
         series_info_url = "%s/series/%s/all/%s.zip" % \
@@ -212,9 +210,8 @@ class TVDB(object):
             episode_node = episode_node.nextSiblingElement("Episode")
         return episode_info
 
-    def get_actors_by_id(self, series_id):
+    def get_series_actors(self, series_id):
         """Gets information about the actors in a given series"""
-        actor = Actor()
         series_info_url = "%s/series/%s/all/en.zip" % \
           (self.tvdb_apikey_url, series_id)
         try:
@@ -232,12 +229,13 @@ class TVDB(object):
         actors = dom.firstChildElement("Actors")
         actor_node = actors.firstChildElement("Actor")
         while not actor_node.isNull():
+	        actor = Actor()
             actor.set(actor_node, series_id, self.tvdb_banner_url, 'tvdb')
             actor_info_list.append(actor)
             actor_node = actor_node.nextSiblingElement("Actor") 
         return actor_info_list
 
-    def get_banners_by_id(self, series_id):
+    def get_series_banners(self, series_id):
         """Gets information about banners for a given series"""
         banner = Banner()
         series_info_url = "%s/series/%s/all/en.zip" % \
@@ -262,7 +260,7 @@ class TVDB(object):
             banner_node = banner_node.nextSiblingElement("Banner")
         return banner_info_list
 
-    def get_series_by_id(self, series_id):
+    def get_series_info(self, series_id):
         """Parse the <lang>.xml file for series information"""
         series = Series()
         series_info_url = "%s/series/%s/%s.xml" % \
@@ -282,7 +280,7 @@ class TVDB(object):
         series.set(series_node, series_info_zip_url, 'tvdb')
         return series
 
-    def get_episode_by_id(self, episode_id):
+    def get_episode_info(self, episode_id):
         """Parse the <lang>.xml file for episode information"""
         episode_info_url = "%s/episodes/%s/%s.xml" % \
             (self.tvdb_apikey_url, episode_id, self.lang)
@@ -362,7 +360,7 @@ class TVDB(object):
         episode_name = " ".join(episode_name.split())
         return episode_name
 
-    def get_ssxee_by_seriesname_episodename(self, series_name, episode_name):
+    def get_season_episode_by_name(self, series_name, episode_name):
         """Lookup and return season and episode number from episode name."""
         episode_name_in = self.massage_episode_name(episode_name)
         match_list = self.find_series(series_name)
@@ -383,11 +381,11 @@ class TVDB(object):
         episodes = self.get_episodes_by_series_id(series_id)
         for episode in episodes:
             episode_name_to_match = self.massage_episode_name(episode.episode_name)
-            self.logger.debug("'%s' == '%s'" % (episode_name_to_match, episode_name_in))
+            self.logger.debug("'%s' == '%s'" \
+                              % (episode_name_to_match, episode_name_in))
             if episode_name_to_match == episode_name_in:
                 season_num = episode.season_number
                 episode_num = episode.episode_number
-                return (season_num, episode_num)
             else:
                 season_num = 00
                 episode_num = 00
