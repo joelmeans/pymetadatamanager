@@ -35,7 +35,7 @@ class NfoReader(object):
             self.logger.info("Reading file %s" % (filepath,))
         except IOError:
             self.logger.error("No file %s found" % (filepath,))
-            return 0
+            return None
         dom = QtXml.QDomDocument()
         dom.setContent(data.read())
         data.close()

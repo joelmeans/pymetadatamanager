@@ -416,9 +416,10 @@ class MainWindow(QtGui.QMainWindow):
                                          self.episode_number)
         episode_nfo = dbTV.get_episode_nfo_filename(episode_id)
         dom = nfo_reader.readNfo(episode_nfo)
-        self.set_episode_info_from_dom(dom)
-        self.ui.pushButton_save_episode_changes.setEnabled(1)
-        self.ui.pushButton_revert_episode_changes.setEnabled(1)
+        if dom is not None:
+            self.set_episode_info_from_dom(dom)
+            self.ui.pushButton_save_episode_changes.setEnabled(1)
+            self.ui.pushButton_revert_episode_changes.setEnabled(1)
 
     def update_episode_from_tvdb(self):
         episode_id = dbTV.get_episode_id(self.series_name, \
@@ -572,9 +573,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushButton_load_local_episode_nfo.setEnabled(1)
         self.ui.pushButton_update_episode_from_tvdb.setEnabled(1)
 
-    def set_episode_info_from_dom(self, episode_doc):
+    def set_episode_info_from_dom(self, dom):
         """Sets the info for the show in the display window"""
-        episode_root = episode_doc.firstChildElement('episodedetails')
+        episode_root = dom.firstChildElement('episodedetails')
 
         #Extract the details and fill in the display
         elem_episode_title = episode_root.firstChildElement('title')
@@ -742,6 +743,8 @@ class MainWindow(QtGui.QMainWindow):
                     self.logger.info("Adding info from thetvdb.com")
                     scanner.add_series_to_db_by_id(series_id)
                 scanner.add_files_to_db(series_id, series_name)
+            dbTV.clean_unlinked_files()
+            dbTV.remove_shows_with_no_files()
             scanner.__del__()
             self.progress.setValue(len(scanner.series_list))
 

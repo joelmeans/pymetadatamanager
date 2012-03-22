@@ -188,7 +188,6 @@ class TVDB(object):
 
     def get_episodes_by_series_id(self, series_id):
         """Parse the <lang>.xml file for episode information"""
-        episode = Episode()
         xml_file_in_zip = "%s.xml" % (self.lang,)
         series_info_url = "%s/series/%s/all/%s.zip" % \
           (self.tvdb_apikey_url, series_id, self.lang)
@@ -207,6 +206,7 @@ class TVDB(object):
         episode_info = []
         episode_node = data.firstChildElement("Episode")
         while not episode_node.isNull():
+            episode = Episode()
             episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
             episode_info.append(episode)
             episode_node = episode_node.nextSiblingElement("Episode")
@@ -284,7 +284,6 @@ class TVDB(object):
 
     def get_episode_by_id(self, episode_id):
         """Parse the <lang>.xml file for episode information"""
-        episode = Episode()
         episode_info_url = "%s/episodes/%s/%s.xml" % \
             (self.tvdb_apikey_url, episode_id, self.lang)
         try:
@@ -297,6 +296,7 @@ class TVDB(object):
         dom.setContent(episode_info.read())
         data = dom.firstChildElement("Data")
         if not data.isNull():
+            episode = Episode()
             episode_node = data.firstChildElement("Episode")
             episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
             return episode
@@ -306,7 +306,6 @@ class TVDB(object):
 
     def get_episode_by_season_episode(self, series_id, season, episode_no):
         """Parse the <lang>.xml file for episode information"""
-        episode = Episode()
         episode_info_url = "%s/series/%s/default/%s/%s/%s.xml" % \
             (self.tvdb_apikey_url, series_id, season.lstrip('0'), \
                episode_no.lstrip('0'), self.lang)
@@ -320,6 +319,7 @@ class TVDB(object):
         dom.setContent(episode_info.read())
         data = dom.firstChildElement("Data")
         if not data.isNull():
+            episode = Episode()
             episode_node = data.firstChildElement("Episode")
             episode.set(episode_node, self.tvdb_banner_url, 'tvdb')
             return episode

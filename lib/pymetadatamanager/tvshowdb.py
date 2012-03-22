@@ -1331,6 +1331,141 @@ class TVShowDB(object):
                  WHERE idFile=(?)', (int(link[0]),))
         self.dbTV.commit()
 
+    def find_unlinked_files(self):
+        """Find files not linked to episodes"""
+        self.logger.info("Checking for missing links")
+        self.sqlTV.execute('SELECT files.id \
+                            FROM files LEFT OUTER JOIN filelinkepisode \
+                            ON files.id=filelinkepisode.idFile \
+                            WHERE filelinkepisode.idEpisode IS NULL')
+        file_ids = self.sqlTV.fetchall()
+        return file_ids
+
+    def find_unlinked_episodes(self):
+        """Find episodes not linke to a show"""
+        self.logger.info("Finding episodes not linked to a show.")
+        self.sqlTV.execute('SELECT episodes.id FROM episodes \
+                            LEFT OUTER JOIN episodelinkshow \
+                            ON episodes.id=episodelinkshow.idEpisode \
+                            LEFT OUTER JOIN shows \
+                            ON episodelinkshow.idShow=shows.id \
+                            WHERE shows.id IS NULL')
+        ep_ids = self.sqlTV.fetchall()
+        return ep_ids
+
+    def find_bad_file_episode_links(self):
+        """Find bad links in filelinkepisode"""
+        self.sqlTV.execute('SELECT filelinkepisode.idEpisode \
+                            FROM filelinkepisode LEFT OUTER JOIN files \
+                            ON files.id=filelinkepisode.idFile \
+                            WHERE files.id IS NULL')
+        ep_ids = self.sqlTV.fetchall()
+        return ep_ids
+
+    def find_bad_episode_show_links(self):
+        """Finds episodes not linked with a show"""
+        self.sqlTV.execute('SELECT episodelinkshow.idEpisode \
+                            FROM episodelinkshow LEFT OUTER JOIN shows \
+                            ON episodelinkshow.idShow=shows.id \
+                            WHERE shows.id IS NULL')
+        ep_ids = self.sqlTV.fetchall()
+        return ep_ids
+
+    def find_bad_actor_links(self):
+        """Finds actors with no links to episodes or shows"""
+        self.sqlTV.execute('SELECT * FROM actors \
+                            LEFT OUTER JOIN actorlinkshow \
+                            ON actors.id=actorlinkshow.idActor \
+                            LEFT OUTER JOIN actorlinkepisode \
+                            ON actors.id=actorlinkepisode.idActor \
+                            WHERE actorlinkshow.idShow IS NULL \
+                            AND actorlinkepisode.idEpisode IS NULL')
+        actor_ids = self.sqlTV.fetchall()
+        return actor_ids
+
+    def remove_duplicate_writer_links(self):
+        """Removes duplicate links in table writerlinkepisode"""
+        self.sqlTV.execute('DELETE FROM writerlinkepisode WHERE rowid IN \
+                           (SELECT rowid FROM writerlinkepisode AS dupes \
+                            WHERE rowid > \
+                            (SELECT MIN(rowid) \
+                             FROM writerlinkepisode AS first \
+                             WHERE first.idWriter = dupes.idWriter \
+                             AND first.idEpisode = dupes.idEpisode))')
+        self.dbTV.commit()
+
+    def remove_duplicate_director_links(self):
+        """Removes duplicate links in table directorlinkepisode"""
+        self.sqlTV.execute('DELETE FROM directorlinkepisode WHERE rowid IN \
+                           (SELECT rowid FROM directorlinkepisode AS dupes \
+                            WHERE rowid > \
+                            (SELECT MIN(rowid) \
+                             FROM directorlinkepisode AS first \
+                             WHERE first.idDirector = dupes.idDirector \
+                             AND first.idEpisode = dupes.idEpisode))')
+        self.dbTV.commit()
+
+    def remove_duplicate_actor_links(self):
+        """Removes duplicate links in table actorlinkepisode"""
+        self.sqlTV.execute('DELETE FROM actorlinkepisode WHERE rowid IN \
+                           (SELECT rowid FROM actorlinkepisode AS dupes \
+                            WHERE rowid > \
+                            (SELECT MIN(rowid) \
+                             FROM actorlinkepisode AS first \
+                             WHERE first.idActor = dupes.idActor \
+                             AND first.idEpisode = dupes.idEpisode))')
+        self.sqlTV.execute('DELETE FROM actorlinkshow WHERE rowid IN \
+                           (SELECT rowid FROM actorlinkshow AS dupes \
+                            WHERE rowid > \
+                            (SELECT MIN(rowid) \
+                             FROM actorlinkshow AS first \
+                             WHERE first.idActor = dupes.idActor \
+                             AND first.idShow = dupes.idShow))')
+        self.dbTV.commit()
+
+    def find_shows_with_no_files(self):
+        """Find shows with no associated files"""
+        self.logger.info("Checking for shows with no files")
+        names_with_no_files = []
+        self.sqlTV.execute('SELECT DISTINCT name, seriesid FROM shows')
+        all_names = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT DISTINCT shows.name, shows.seriesid \
+                            FROM shows JOIN episodelinkshow \
+                            ON episodelinkshow.idShow=shows.id \
+                            JOIN episodes \
+                            ON episodelinkshow.idEpisode=episodes.id \
+                            JOIN filelinkepisode \
+                            ON filelinkepisode.idEpisode=episodes.id \
+                            JOIN files ON filelinkepisode.idFile=files.id')
+        names_with_files = self.sqlTV.fetchall()
+        for name in all_names:
+            if name not in names_with_files:
+                names_with_no_files.append(name)
+        return names_with_no_files
+
+    def remove_shows_with_no_files(self):
+        self.logger.info("Removing shows with no associated files")
+        shows = self.find_shows_with_no_files()
+        for show in shows:
+            self.sqlTV.execute('DELETE FROM shows WHERE seriesid=(?)', \
+                               (int(show[1]),))
+        self.logger.info("Removing episodes with no associated show")
+        eps = self.find_unlinked_episodes()
+        self.logger.debug(eps)
+        for ep in eps:
+            self.sqlTV.execute('DELETE FROM episodes WHERE id=(?)', \
+                               (int(ep[0]),))
+        self.dbTV.commit()
+
+    def clean_unlinked_files(self):
+        """Delete files not linked to episodes from DB"""
+        self.logger.info("Removing unlinked files from db")
+        file_ids = self.find_unlinked_files()
+        for file_id in file_ids:
+            self.sqlTV.execute('DELETE FROM files WHERE id=(?)', \
+              (int(file_id[0]),))
+        self.dbTV.commit()
+
     def link_selected_banner_show(self, show, url):
         """Links selected banner to specific show"""
         self.sqlTV.execute('SELECT DISTINCT url FROM banners')
