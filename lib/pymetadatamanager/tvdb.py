@@ -304,9 +304,14 @@ class TVDB(object):
 
     def get_episode_by_season_episode(self, series_id, season, episode_no):
         """Parse the <lang>.xml file for episode information"""
+        self.logger.debug("Season %s Episode %s" % (season, episode_no))
+        if season == '00':
+            season = '0'
+        else:
+            season = season.lstrip('0')
+        episode_no = episode_no.lstrip('0')
         episode_info_url = "%s/series/%s/default/%s/%s/%s.xml" % \
-            (self.tvdb_apikey_url, series_id, season.lstrip('0'), \
-               episode_no.lstrip('0'), self.lang)
+            (self.tvdb_apikey_url, series_id, season, episode_no, self.lang)
         try:
             episode_info = urllib2.urlopen(episode_info_url)
             self.logger.info("Grabbed url %s" % (episode_info_url))

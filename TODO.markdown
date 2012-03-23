@@ -59,7 +59,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 14. <del>Add ability to get season and episode numbers given series and episode name.</del>
 
-15. <del>Fix filename parsing to ignore extra stuff in the name after '_' or between '.'.</del>
+15. <del>Fix filename parsing to ignore extra stuff in the name after or between '.'.</del>
 
 16. <del>Fix problem with having an apostrope in a show name (e.g. "Blue's Clues").</del>
 
@@ -85,10 +85,14 @@ Development of this project is slow and there is a lot to do to make this a work
 
 27. Drop automatic updating from TVDB.com and add a button to optionally do it.
 
+28. Add a way to show unmatched files and add some info manually.
+
+29. Fix handling of 'Specials' (Season 0).
+
 ## Bug Fixes
 
 01. <del>Scale posters to correct width (it is cutting off if too wide).</del>
 
-02. Remove series if there are no episodes present.
+02. <del>Remove series if there are no episodes present.
 
 03. Add popup for input of ID for unmatched series name.

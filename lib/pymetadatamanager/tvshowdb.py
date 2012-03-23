@@ -563,7 +563,7 @@ class TVShowDB(object):
         id_episode_list = self.sqlTV.fetchall()
         if not len(id_episode_list):
             episodes = [self.tvdb.get_episode_by_season_episode(\
-              series_id, file_season.lstrip('0'), file_episode.lstrip('0'))]
+              series_id, file_season, file_episode)]
             if episodes[0] is not None:
                 self.write_episodes_to_db(episodes, series_id)
                 self.logger.info(\

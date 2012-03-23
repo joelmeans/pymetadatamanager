@@ -18,6 +18,7 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ############################################################################
 
+import re
 import logging
 from PyQt4 import QtCore, QtXml
 
@@ -35,17 +36,31 @@ class Series(object):
         if source == 'tvdb':
             self.episodeguide = url
             self.seriesid = int(node.firstChildElement("id").text())
-            self.actors = [actor.strip() for actor in \
-              unicode(node.firstChildElement("Actors").text(), \
-                      "latin-1").split("|") if actor]
+            actors = unicode(node.firstChildElement("Actors").text(), \
+              "latin-1")
+            if re.search('\|', actors):
+                self.actors = [actor.strip() for actor in actors.split('|') \
+                  if actor]
+            elif re.search(',', actors):
+                self.actors = [actor.strip() for actor in actors.split(',') \
+                  if actor]
+            else:
+                self.actors = [actors.strip()]
             self.airs_day = str(\
               node.firstChildElement("Airs_DayOfWeek").text())
             self.airs_time = str(node.firstChildElement("Airs_Time").text())
             self.content_rating = str(\
               node.firstChildElement("ContentRating").text())
             self.first_aired = str(node.firstChildElement("FirstAired").text())
-            self.genre = [genre.strip() for genre in \
-              str(node.firstChildElement("Genre").text()).split("|") if genre]
+            genres = str(node.firstChildElement("Genre").text())
+            if re.search('\|', genres):
+                self.genre = [genre.strip() for genre in \
+                  genres.split('|') if genre]
+            elif re.search(',', genres):
+                self.genre = [genre.strip() for genre in \
+                  genres.split(',') if genre]
+            else:
+                self.genre = [genres.strip()]
             self.language = str(node.firstChildElement("Language").text())
             self.network = str(node.firstChildElement("Network").text())
             self.overview = unicode(node.firstChildElement("Overview").text(), \
@@ -108,9 +123,16 @@ class Episode(object):
     def set(self, node, tvdb_banner_url, source):
         if source == 'tvdb':
             self.episodeid = int(node.firstChildElement("id").text())
-            self.directors = [director.strip() for director in \
-              unicode(node.firstChildElement("Director").text(), \
-                      "latin-1").split("|") if director]
+            directors = unicode(node.firstChildElement("Director").text(), \
+              "latin-1")
+            if re.search('\|', directors):
+                self.directors = [director.strip() for director in \
+                  directors.split('|') if director]
+            elif re.search(',', directors):
+                self.directors = [director.strip() for director in \
+                  directors.split(',') if director]
+            else:
+                self.directors = [directors.strip()]
             self.episode_name = unicode(\
               node.firstChildElement("EpisodeName").text(), "latin-1")
             dvd_ep = node.firstChildElement("DVD_episodenumber").text()
@@ -122,9 +144,16 @@ class Episode(object):
                 self.episode_number = int(\
                   node.firstChildElement("EpisodeNumber").text())
             self.first_aired = str(node.firstChildElement("FirstAired").text())
-            self.guest_stars = [guest.strip() for guest in \
-              unicode(node.firstChildElement("GuestStars").text(), \
-                      "latin-1").split("|") if guest]
+            guests = unicode(node.firstChildElement("GuestStars").text(), \
+              "latin-1")
+            if re.search('\|', guests):
+                self.guest_stars = [guest.strip() for guest in \
+                    guests.split('|') if guest]
+            elif re.search(',', guests):
+                self.guest_stars = [guest.strip() for guest in \
+                    guests.split(',') if guest]
+            else:
+                self.guest_stars = [guests.strip()]
             self.language = str(node.firstChildElement("Language").text())
             self.overview = unicode(\
               node.firstChildElement("Overview").text(), "latin-1")
@@ -133,9 +162,16 @@ class Episode(object):
             self.rating = str(node.firstChildElement("Rating").text())
             self.season_number = int(\
               node.firstChildElement("SeasonNumber").text())
-            self.writers = [writer.strip() for writer in \
-              unicode(node.firstChildElement("Writer").text(), \
-                      "latin-1").split("|") if writer]
+            writers = unicode(node.firstChildElement("Writer").text(), \
+              "latin-1")
+            if re.search('\|', writers):
+                self.writers = [writer.strip() for writer in \
+                  writers.split('|') if writer]
+            elif re.search(',', writers):
+                self.writers = [writer.strip() for writer in \
+                  writers.split(',') if writer]
+            else:
+                self.writers = [writers.strip()]
             thumb_path = str(node.firstChildElement("filename").text())
             if not thumb_path == "":
                 self.thumb = "%s/%s" % (tvdb_banner_url, thumb_path)
@@ -144,10 +180,16 @@ class Episode(object):
             self.last_updated = node.firstChildElement("lastupdated").text()
         elif source == 'nfo':
             self.episodeid = int(node.firstChildElement("id").text())
-            self.directors = [director.strip() for director in \
-              unicode(node.firstChildElement("director").text(), \
-                      "latin-1").split("|") \
-              if director]
+            directors = unicode(node.firstChildElement("director").text(), \
+              "latin-1")
+            if re.search('\|', directors):
+                self.directors = [director.strip() for director in \
+                  directors.split('|') if director]
+            elif re.search(',', directors):
+                self.directors = [director.strip() for director in \
+                  directors.split(',') if director]
+            else:
+                self.directors = [directors.strip()]
             self.episode_name = unicode(\
               node.firstChildElement("title").text(), "latin-1")
             self.episode_number = int(node.firstChildElement("episode").text())
@@ -159,9 +201,16 @@ class Episode(object):
             self.production_code = str(node.firstChildElement("code").text())
             self.rating = str(node.firstChildElement("rating").text())
             self.season_number = int(node.firstChildElement("season").text())
-            self.writers = [writer.strip() for writer in \
-              str(node.firstChildElement("credits").text()).split("|") \
-              if writer]
+            writers = unicode(node.firstChildElement("credits").text(), \
+              "latin-1")
+            if re.search('\|', writers):
+                self.writers = [writer.strip() for writer in \
+                  writers.split('|') if writer]
+            elif re.search(',', writers):
+                self.writers = [writer.strip() for writer in \
+                  writers.split(',') if writer]
+            else:
+                self.writers = [writers.strip()]
             self.thumb = str(node.firstChildElement("thumb").text())
             self.last_updated = ""
 

@@ -568,8 +568,8 @@ class MainWindow(QtGui.QMainWindow):
                                          self.episode_number)
 
         #Create a QDomDocument containing the episode details
-        episode_doc = dbTV.make_episode_dom(episode_id)
-        self.set_episode_info_from_dom(episode_doc)
+        dom = dbTV.make_episode_dom(episode_id)
+        self.set_episode_info_from_dom(dom)
         self.ui.pushButton_load_local_episode_nfo.setEnabled(1)
         self.ui.pushButton_update_episode_from_tvdb.setEnabled(1)
 
@@ -610,20 +610,18 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.line_tvdb_rating.setText(episode_rating)
 
         elem_episode_directors = episode_root.firstChildElement('director')
-        episode_directors = elem_episode_directors.text().split("|")
+        episode_directors = unicode(elem_episode_directors.text(), \
+          "latin-1").split('|')
         self.ui.combo_directors.clear()
-        i = 0
-        while i < episode_directors.count():
-            self.ui.combo_directors.addItem(episode_directors.takeAt(i))
-            i = i + 1
+        for director in episode_directors:
+            self.ui.combo_directors.addItem(director)
 
         elem_episode_writers = episode_root.firstChildElement('credits')
-        episode_writers = elem_episode_writers.text().split("|")
+        episode_writers = unicode(elem_episode_writers.text(), \
+          "latin-1").split('|')
         self.ui.combo_writers.clear()
-        i = 0
-        while i < episode_writers.count():
-            self.ui.combo_writers.addItem(episode_writers.takeAt(i))
-            i = i + 1
+        for writer in episode_writers:
+            self.ui.combo_writers.addItem(writer)
 
         episode_actors = []
         elem_episode_actor = episode_root.firstChildElement('actor')
