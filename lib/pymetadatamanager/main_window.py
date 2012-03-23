@@ -135,6 +135,8 @@ class MainWindow(QtGui.QMainWindow):
           self.set_episode_plot_updated)
         self.ui.line_airdate.textEdited.connect(\
           self.set_episode_airdate_updated)
+        self.ui.line_tvdb_id.textEdited.connect(\
+          self.set_episode_id_updated)
         self.ui.line_tvdb_rating.textEdited.connect(\
           self.set_episode_tvdb_rating_updated)
         self.ui.pushButton_save_episode_changes.pressed.connect(\
@@ -377,6 +379,13 @@ class MainWindow(QtGui.QMainWindow):
     def set_episode_airdate_updated(self, text):
         self.episode_airdate_updated = 1
         self.new_episode_airdate = str(text)
+        self.ui.pushButton_save_episode_changes.setEnabled(1)
+        self.ui.pushButton_revert_episode_changes.setEnabled(1)
+
+    def set_episode_id_updated(self, text):
+        ### FIXME ###
+        self.episode_id_updated = 1
+        self.new_episode_id = str(text)
         self.ui.pushButton_save_episode_changes.setEnabled(1)
         self.ui.pushButton_revert_episode_changes.setEnabled(1)
 
@@ -707,11 +716,13 @@ class MainWindow(QtGui.QMainWindow):
             scanner.set_series_list()
             self.progress.setMaximum(len(scanner.series_list))
             self.progress.setValue(0)
+            self.logger.debug(scanner.series_list)
             for series_name in scanner.series_list:
                 self.progress.setValue(scanner.series_list.index(series_name))
                 match_list = scanner.get_series_id_list(series_name)
                 if len(match_list) == 0:
                     self.logger.info("No matches found on thetvdb.com for '%s'." % (series_name))
+                ### FIXME ###
                     series_id = raw_input("Please input the ID for the correct series:")
                 elif len(match_list) == 1:
                     self.logger.info("Found match for '%s'." % (series_name))
@@ -741,8 +752,8 @@ class MainWindow(QtGui.QMainWindow):
                 else:
                     self.logger.info("Adding info from thetvdb.com")
                     scanner.add_series_to_db_by_id(series_id)
+                self.logger.info("Adding files to db.")
                 scanner.add_files_to_db(series_id, series_name)
-            dbTV.clean_unlinked_files()
             dbTV.remove_shows_with_no_files()
             scanner.__del__()
             self.progress.setValue(len(scanner.series_list))

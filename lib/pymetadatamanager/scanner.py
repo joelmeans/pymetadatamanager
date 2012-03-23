@@ -38,7 +38,7 @@ class Scanner(object):
         self.TVDB = TVDB()
         self.FP = FileParser()
         self.new_time = self.TVDB.get_server_time()
-        self.dbTV.update_db()
+#        self.dbTV.update_db()
         self.dbTV.clean_db_files()
         self.series_list = []
         self.set_file_list(path)
@@ -48,7 +48,7 @@ class Scanner(object):
         try:
             self.dbTV.set_update_time(self.new_time)
         except AttributeError:
-            pass
+            self.logger.error("Error setting update time.")
 
     def set_file_list(self, path):
         self.file_list = self.FP.parse_files_by_path(path)
@@ -58,9 +58,8 @@ class Scanner(object):
             dir = file[0]
             filename = file[1]
             series_name = file[2]
-            if not self.dbTV.check_db_for_file(dir, filename):
-                if not series_name in self.series_list:
-                    self.series_list.append(series_name)
+            if not series_name in self.series_list:
+                self.series_list.append(series_name)
 
     def get_series_id_list(self, series_name):
         series_id = self.dbTV.check_db_for_series(series_name)
@@ -91,8 +90,6 @@ class Scanner(object):
         episode_nfos = []
         for file in self.file_list:
             name = file[2]
-#            self.logger.debug("name = %s" % (name,))
-#            self.logger.debug("series_name = %s" % (series_name,))
             if name == series_name:
                 episode_nfos.append(file[6])
                 series_nfo = file[5]
@@ -116,9 +113,6 @@ class Scanner(object):
                 self.dbTV.write_banners_to_db(banners)
     
     def add_files_to_db(self, series_id, series_name):
-#        series_name = self.dbTV.get_series_name(series_id)
-        self.logger.debug("add_file_to_db: series_id = %s" % (series_id))
-        self.logger.debug("add_file_to_db: series_name = %s" % (series_name))
         #Create a list of files from this series
         series_file_list = []
         for file in self.file_list:
@@ -129,3 +123,12 @@ class Scanner(object):
         if len(series_file_list):
             self.logger.info("Adding files from %s to DB" % (series_name,))
             self.dbTV.write_files_to_db(series_file_list, series_id)
+        unlinked = self.dbTV.find_unlinked_files()
+        unlinked_list = []
+        for unlinked_file in unlinked:
+            for file in self.file_list:
+                file_path = file[0]
+                file_name = file[1]
+                if unlinked_file[1] == file_name \
+                  and unlinked_file[2] == file_path:
+                    unlinked_list.append(file)

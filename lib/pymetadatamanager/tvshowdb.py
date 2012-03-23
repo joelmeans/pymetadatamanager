@@ -1236,7 +1236,7 @@ class TVShowDB(object):
         return dom
 
     def make_episodes_list(self, series_id, season_number):
-        """Get a list of all episodes in a give season"""
+        """Get a list of all episodes in a given season"""
         self.sqlTV.execute("SELECT episodes.episode_number, episodes.name \
          FROM shows JOIN episodelinkshow ON episodelinkshow.idShow=shows.id \
          JOIN episodes ON episodelinkshow.idEpisode=episodes.id WHERE \
@@ -1478,12 +1478,12 @@ class TVShowDB(object):
     def find_unlinked_files(self):
         """Find files not linked to episodes"""
         self.logger.info("Checking for missing links")
-        self.sqlTV.execute('SELECT files.id \
+        self.sqlTV.execute('SELECT files.id, files.filename, files.filepath \
                             FROM files LEFT OUTER JOIN filelinkepisode \
                             ON files.id=filelinkepisode.idFile \
                             WHERE filelinkepisode.idEpisode IS NULL')
-        file_ids = self.sqlTV.fetchall()
-        return file_ids
+        reply = self.sqlTV.fetchall()
+        return reply
 
     def find_unlinked_episodes(self):
         """Find episodes not linked to a show"""
@@ -1527,6 +1527,26 @@ class TVShowDB(object):
         actor_ids = self.sqlTV.fetchall()
         return actor_ids
 
+    def find_shows_with_no_files(self):
+        """Find shows with no associated files"""
+        self.logger.info("Checking for shows with no files")
+        names_with_no_files = []
+        self.sqlTV.execute('SELECT DISTINCT name, seriesid FROM shows')
+        all_names = self.sqlTV.fetchall()
+        self.sqlTV.execute('SELECT DISTINCT shows.name, shows.seriesid \
+                            FROM shows JOIN episodelinkshow \
+                            ON episodelinkshow.idShow=shows.id \
+                            JOIN episodes \
+                            ON episodelinkshow.idEpisode=episodes.id \
+                            JOIN filelinkepisode \
+                            ON filelinkepisode.idEpisode=episodes.id \
+                            JOIN files ON filelinkepisode.idFile=files.id')
+        names_with_files = self.sqlTV.fetchall()
+        for name in all_names:
+            if name not in names_with_files:
+                names_with_no_files.append(name)
+        return names_with_no_files
+
     def remove_duplicate_writer_links(self):
         """Removes duplicate links in table writerlinkepisode"""
         self.sqlTV.execute('DELETE FROM writerlinkepisode WHERE rowid IN \
@@ -1567,26 +1587,6 @@ class TVShowDB(object):
                              AND first.idShow = dupes.idShow))')
         self.dbTV.commit()
 
-    def find_shows_with_no_files(self):
-        """Find shows with no associated files"""
-        self.logger.info("Checking for shows with no files")
-        names_with_no_files = []
-        self.sqlTV.execute('SELECT DISTINCT name, seriesid FROM shows')
-        all_names = self.sqlTV.fetchall()
-        self.sqlTV.execute('SELECT DISTINCT shows.name, shows.seriesid \
-                            FROM shows JOIN episodelinkshow \
-                            ON episodelinkshow.idShow=shows.id \
-                            JOIN episodes \
-                            ON episodelinkshow.idEpisode=episodes.id \
-                            JOIN filelinkepisode \
-                            ON filelinkepisode.idEpisode=episodes.id \
-                            JOIN files ON filelinkepisode.idFile=files.id')
-        names_with_files = self.sqlTV.fetchall()
-        for name in all_names:
-            if name not in names_with_files:
-                names_with_no_files.append(name)
-        return names_with_no_files
-
     def remove_shows_with_no_files(self):
         self.logger.info("Removing shows with no associated files")
         shows = self.find_shows_with_no_files()
@@ -1604,10 +1604,10 @@ class TVShowDB(object):
     def clean_unlinked_files(self):
         """Delete files not linked to episodes from DB"""
         self.logger.info("Removing unlinked files from db")
-        file_ids = self.find_unlinked_files()
-        for file_id in file_ids:
+        files = self.find_unlinked_files()
+        for file in files:
             self.sqlTV.execute('DELETE FROM files WHERE id=(?)', \
-              (int(file_id[0]),))
+              (int(file[0]),))
         self.dbTV.commit()
 
     def write_series_posters(self, series_id):
