@@ -719,6 +719,7 @@ class MainWindow(QtGui.QMainWindow):
             self.logger.debug(scanner.series_list)
             for series_name in scanner.series_list:
                 self.progress.setValue(scanner.series_list.index(series_name))
+                self.progress.show()
                 match_list = scanner.get_series_id_list(series_name)
                 if len(match_list) == 0:
                     self.logger.info("No matches found on thetvdb.com for '%s'." % (series_name))

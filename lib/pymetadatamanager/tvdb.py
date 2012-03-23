@@ -168,7 +168,7 @@ class TVDB(object):
           (self.tvdb_apikey_url, series_id, self.lang)
         try:
             series_info_remote = urllib2.urlopen(series_info_url)
-            self.logger.info("Grabbed url %s" % (series_info_url))
+            self.logger.debug("Grabbed url %s" % (series_info_url))
         except urllib2.HTTPError, e:
             self.logger.error("Error grabbing url %s" % (series_info_url))
             return None
@@ -182,6 +182,7 @@ class TVDB(object):
             series.set(series_node, series_info_url, 'tvdb')
         except SyntaxError:
             self.logger.error("Syntax error in file from %s." % (series_info_url))
+            return None
         return series
 
     def get_series_episodes(self, series_id):

@@ -87,7 +87,7 @@ Development of this project is slow and there is a lot to do to make this a work
 
 28. Add a way to show unmatched files and add some info manually.
 
-29. Fix handling of 'Specials' (Season 0).
+29. Figure out handling of dvdorder on a per-series basis.
 
 ## Bug Fixes
 

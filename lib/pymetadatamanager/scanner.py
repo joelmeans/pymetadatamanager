@@ -37,12 +37,11 @@ class Scanner(object):
       	self.dbTV.init_db()
         self.TVDB = TVDB()
         self.FP = FileParser()
+        self.nfo_reader = NfoReader()
         self.new_time = self.TVDB.get_server_time()
-#        self.dbTV.update_db()
         self.dbTV.clean_db_files()
         self.series_list = []
         self.set_file_list(path)
-        self.nfo_reader = NfoReader()
 
     def __del__(self):
         try:
@@ -65,25 +64,27 @@ class Scanner(object):
         series_id = self.dbTV.check_db_for_series(series_name)
         if not series_id:
             match_list = self.TVDB.find_series(series_name)
+        else:
+            match_list = [(series_id, match_list)]
         return match_list
 
     def add_series_to_db_by_id(self, series_id):
-        series = self.TVDB.get_all_series_info(series_id)
-        episodes = self.TVDB.get_series_episodes(series_id)
-        actors = self.TVDB.get_series_actors(series_id)
-        banners = self.TVDB.get_series_banners(series_id)
-
-        series_name = self.dbTV.get_series_name(series_id)
-        self.logger.info("Adding series %s to DB" % (series_name,))
-
-        if series is not None:
-            self.dbTV.write_series_to_db(series)
-            if episodes is not None:
-                self.dbTV.write_episodes_to_db(episodes, series_id)
-            if actors is not None:
-                self.dbTV.write_actors_to_db(actors)
-            if banners is not None:
-                self.dbTV.write_banners_to_db(banners)
+        if not self.dbTV.check_db_for_series(series_id):
+            series = self.TVDB.get_all_series_info(series_id)
+            episodes = self.TVDB.get_series_episodes(series_id)
+            actors = self.TVDB.get_series_actors(series_id)
+            banners = self.TVDB.get_series_banners(series_id)
+    
+            if series is not None:
+                self.dbTV.write_series_to_db(series)
+                series_name = self.dbTV.get_series_name(series_id)
+                self.logger.info("Adding series %s to DB" % (series_name,))
+                if episodes is not None:
+                    self.dbTV.write_episodes_to_db(episodes, series_id)
+                if actors is not None:
+                    self.dbTV.write_actors_to_db(actors)
+                if banners is not None:
+                    self.dbTV.write_banners_to_db(banners)
 
     def add_series_to_db_by_nfo(self, series_name):
         episodes = []
@@ -132,3 +133,5 @@ class Scanner(object):
                 if unlinked_file[1] == file_name \
                   and unlinked_file[2] == file_path:
                     unlinked_list.append(file)
+        if len(unlinked_list):
+            self.dbTV.write_files_to_db(series_file_list, series_id)

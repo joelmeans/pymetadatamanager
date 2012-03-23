@@ -22,7 +22,7 @@ import re
 import logging
 from PyQt4 import QtCore, QtXml
 
-dvdorder = True
+dvdorder = False 
 
 class Series(object):
     """Class to hold info about a series"""
