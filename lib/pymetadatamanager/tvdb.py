@@ -229,7 +229,7 @@ class TVDB(object):
         actors = dom.firstChildElement("Actors")
         actor_node = actors.firstChildElement("Actor")
         while not actor_node.isNull():
-	        actor = Actor()
+            actor = Actor()
             actor.set(actor_node, series_id, self.tvdb_banner_url, 'tvdb')
             actor_info_list.append(actor)
             actor_node = actor_node.nextSiblingElement("Actor") 
@@ -237,7 +237,6 @@ class TVDB(object):
 
     def get_series_banners(self, series_id):
         """Gets information about banners for a given series"""
-        banner = Banner()
         series_info_url = "%s/series/%s/all/en.zip" % \
           (self.tvdb_apikey_url, series_id)
         try:
@@ -255,6 +254,7 @@ class TVDB(object):
         banners = dom.firstChildElement("Banners")
         banner_node = banners.firstChildElement("Banner")
         while not banner_node.isNull():
+            banner = Banner()
             banner.set(banner_node, series_id, self.tvdb_banner_url, 'tvdb')
             banner_info_list.append(banner)
             banner_node = banner_node.nextSiblingElement("Banner")
@@ -378,7 +378,7 @@ class TVDB(object):
         if not series_id:
             self.logger.info("Cannot find series %s." % (series_name))
             return 0
-        episodes = self.get_episodes_by_series_id(series_id)
+        episodes = self.get_series_episodes(series_id)
         for episode in episodes:
             episode_name_to_match = self.massage_episode_name(episode.episode_name)
             self.logger.debug("'%s' == '%s'" \

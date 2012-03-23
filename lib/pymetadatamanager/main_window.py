@@ -661,6 +661,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.label_season_banner_wide.clear()
 
     def select_series_poster(self):
+        self.logger.info("Selecting new series poster")
         banner_dialog = BannerDialog(self.series_name, "series_posters", 0)
         accepted = banner_dialog.exec_()
         if accepted:
