@@ -1,1 +1,1 @@
-__all__ = ['configuration', 'file_parser', 'MainWindow', 'mediainfo', 'models', 'scanner', 'scraper_ui', 'show_utils', 'tvdb', 'tvshowdb']
+__all__ = ['banner_dialog', 'banner_ui', 'configuration_dialog', 'configuration', 'configuration_ui', 'file_parser', 'main_window', 'main_window_ui', 'mediainfo', 'models', 'nfo_reader', 'scanner', 'show_utils', 'tvdb', 'tvshowdb']

@@ -592,6 +592,43 @@ class TVShowDB(object):
             id_episode = 0
         return (id_episode, id_file)
     
+    def link_selected_banner_show(self, show, url):
+        """Links selected banner to specific show"""
+        self.sqlTV.execute('SELECT DISTINCT url FROM banners')
+        base_url_results = self.sqlTV.fetchall()
+        base_urls = []
+        for base_url in base_url_results:
+            base_urls.append("%s/" % str(base_url[0]))
+        for base_url in base_urls:
+            url = url.replace(base_url, '')
+        url = url.replace('/_cache/', '')
+        search_url = "%s%s%s" % ("%", url, "%")
+        self.sqlTV.execute( \
+          'SELECT id, type, type2, season FROM banners WHERE path LIKE (?)', \
+           (search_url,))
+        banner_id, banner_type, banner_type2, banner_season = \
+          self.sqlTV.fetchall()[0]
+        if banner_type == 'season':
+            banner_type = banner_type2
+        search_name = "%s%s%s" % ("%", show, "%")
+        self.sqlTV.execute('SELECT id FROM shows WHERE name LIKE (?)', \
+                           (search_name,))
+        show_id = self.sqlTV.fetchall()[0][0]
+        self.sqlTV.execute('SELECT idBanner FROM selectedbannerlinkshow \
+                            WHERE idShow LIKE (?) \
+                            AND type LIKE (?) \
+                            AND season LIKE (?)', \
+                           (show_id, banner_type, banner_season))
+        result = self.sqlTV.fetchall()
+        for link in result:
+            banner_id_del = link[0]
+            self.sqlTV.execute('DELETE FROM selectedbannerlinkshow \
+                                WHERE idBanner=(?)', (int(banner_id_del),))
+        self.sqlTV.execute('INSERT INTO selectedbannerlinkshow ("idBanner", \
+                 "idShow", "type", "season") VALUES (?, ?, ?, ?)', \
+                 (banner_id, show_id, banner_type, banner_season))
+        self.dbTV.commit()
+
     def check_db_for_series_name(self, series_name):
         """See if a series with a given series_name exists in the database"""
         seriesname = '%s%s%s' % ("%", series_name, "%")
@@ -673,11 +710,61 @@ class TVShowDB(object):
             series_name = None
         return series_name
 
-    def db_query(self, sql):
-        """Perform any query on the db.  Used for testing purposes only"""
-        self.sqlTV.execute(sql)
-        result = self.sqlTV.fetchall()
-        return result
+    def get_selected_banner_url(self, series_id, type, season):
+        self.sqlTV.execute('SELECT banners.url, banners.path \
+          FROM selectedbannerlinkshow JOIN banners \
+          ON selectedbannerlinkshow.idBanner=banners.id JOIN shows \
+          ON selectedbannerlinkshow.idShow=shows.id \
+          WHERE shows.seriesid=(?) AND selectedbannerlinkshow.type=(?) \
+          AND selectedbannerlinkshow.season=(?)', (series_id, type, season))
+        try:
+            base_url, path = self.sqlTV.fetchall()[0]
+            url = "%s/%s" % (base_url, path)
+        except IndexError:
+            url = ""
+        return url
+
+    def get_series_nfo_filename(self, series_id):
+        self.sqlTV.execute('SELECT DISTINCT files.filepath FROM \
+          filelinkepisode JOIN files ON filelinkepisode.idFile=files.id JOIN \
+          episodelinkshow ON filelinkepisode.idEpisode=episodelinkshow.idEpisode \
+          JOIN shows ON episodelinkshow.idShow=shows.id WHERE shows.seriesid=(?)', \
+          (series_id,))
+        filepaths = self.sqlTV.fetchall()
+        paths = []
+        for filepath in filepaths:
+            path = re.sub('[S|s]eason[ |_][0-9]*', '', str(filepath[0]))
+            if path not in paths:
+                paths.append(path)
+        path = paths[0]
+        nfo_file = os.path.join(path, "tvshow.nfo")
+        return nfo_file 
+
+    def get_episode_nfo_filename(self, episode_id):
+        self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
+          filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
+          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
+          episodes.episodeid=(?)", (episode_id,))
+        try:
+            filename, filepath = self.sqlTV.fetchall()[0]
+            filename = os.path.splitext(filename)[0]
+            nfo_file = os.path.join(filepath, "%s.nfo" % filename)
+            return nfo_file
+        except IndexError:
+            self.logger.error("Error processing episode %s." % (episode_id,))
+            return None
+
+    def get_all_episode_ids(self, series_id):
+        episode_ids = []
+        self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
+          JOIN shows ON episodelinkshow.idShow=shows.id \
+          JOIN episodes ON episodelinkshow.idEpisode=episodes.id \
+          JOIN filelinkepisode ON episodes.id=filelinkepisode.idEpisode \
+          WHERE shows.seriesid=(?)', (series_id,))
+        episodes = self.sqlTV.fetchall()
+        for episode in episodes:
+            episode_ids.append(episode[0])
+        return episode_ids
 
     def make_shows_dom(self):
         """Creates a QDomDocument for the shows in the database"""
@@ -1305,6 +1392,7 @@ class TVShowDB(object):
         self.dbTV.commit()
 
     def update_series_field(self, field, value, seriesid):
+        """Update a single field in the shows table"""
         sql = "UPDATE shows SET %s=(?) WHERE seriesid=(?)" % (field,)
         self.sqlTV.execute(sql, (value, seriesid))
         self.sqlTV.execute('SELECT id FROM shows WHERE seriesid=(?)', \
@@ -1319,6 +1407,7 @@ class TVShowDB(object):
         self.dbTV.commit()
 
     def update_episode_field(self, field, value, episodeid):
+        """Update a single field in the episodes table"""
         sql = "UPDATE episodes SET %s=(?) WHERE episodeid=(?)" % (field,)
         self.sqlTV.execute(sql, (value, episodeid))
         self.sqlTV.execute('SELECT id FROM episodes WHERE episodeid=(?)', \
@@ -1397,7 +1486,7 @@ class TVShowDB(object):
         return file_ids
 
     def find_unlinked_episodes(self):
-        """Find episodes not linke to a show"""
+        """Find episodes not linked to a show"""
         self.logger.info("Finding episodes not linked to a show.")
         self.sqlTV.execute('SELECT episodes.id FROM episodes \
                             LEFT OUTER JOIN episodelinkshow \
@@ -1521,81 +1610,6 @@ class TVShowDB(object):
               (int(file_id[0]),))
         self.dbTV.commit()
 
-    def link_selected_banner_show(self, show, url):
-        """Links selected banner to specific show"""
-        self.sqlTV.execute('SELECT DISTINCT url FROM banners')
-        base_url_results = self.sqlTV.fetchall()
-        base_urls = []
-        for base_url in base_url_results:
-            base_urls.append("%s/" % str(base_url[0]))
-        for base_url in base_urls:
-            url = url.replace(base_url, '')
-        url = url.replace('/_cache/', '')
-        search_url = "%s%s%s" % ("%", url, "%")
-        self.sqlTV.execute( \
-          'SELECT id, type, type2, season FROM banners WHERE path LIKE (?)', \
-           (search_url,))
-        banner_id, banner_type, banner_type2, banner_season = \
-          self.sqlTV.fetchall()[0]
-        if banner_type == 'season':
-            banner_type = banner_type2
-        search_name = "%s%s%s" % ("%", show, "%")
-        self.sqlTV.execute('SELECT id FROM shows WHERE name LIKE (?)', \
-                           (search_name,))
-        show_id = self.sqlTV.fetchall()[0][0]
-        self.sqlTV.execute('SELECT idBanner FROM selectedbannerlinkshow \
-                            WHERE idShow LIKE (?) \
-                            AND type LIKE (?) \
-                            AND season LIKE (?)', \
-                           (show_id, banner_type, banner_season))
-        result = self.sqlTV.fetchall()
-        for link in result:
-            banner_id_del = link[0]
-            self.sqlTV.execute('DELETE FROM selectedbannerlinkshow \
-                                WHERE idBanner=(?)', (int(banner_id_del),))
-        self.sqlTV.execute('INSERT INTO selectedbannerlinkshow ("idBanner", \
-                 "idShow", "type", "season") VALUES (?, ?, ?, ?)', \
-                 (banner_id, show_id, banner_type, banner_season))
-        self.dbTV.commit()
-
-    def get_selected_banner_url(self, series_id, type, season):
-        self.sqlTV.execute('SELECT banners.url, banners.path \
-          FROM selectedbannerlinkshow JOIN banners \
-          ON selectedbannerlinkshow.idBanner=banners.id JOIN shows \
-          ON selectedbannerlinkshow.idShow=shows.id \
-          WHERE shows.seriesid=(?) AND selectedbannerlinkshow.type=(?) \
-          AND selectedbannerlinkshow.season=(?)', (series_id, type, season))
-        try:
-            base_url, path = self.sqlTV.fetchall()[0]
-            url = "%s/%s" % (base_url, path)
-        except IndexError:
-            url = ""
-        return url
-
-    def get_series_nfo_filename(self, series_id):
-        self.sqlTV.execute('SELECT DISTINCT files.filepath FROM \
-          filelinkepisode JOIN files ON filelinkepisode.idFile=files.id JOIN \
-          episodelinkshow ON filelinkepisode.idEpisode=episodelinkshow.idEpisode \
-          JOIN shows ON episodelinkshow.idShow=shows.id WHERE shows.seriesid=(?)', \
-          (series_id,))
-        filepaths = self.sqlTV.fetchall()
-        paths = []
-        for filepath in filepaths:
-            path = re.sub('[S|s]eason[ |_][0-9]*', '', str(filepath[0]))
-            if path not in paths:
-                paths.append(path)
-        path = paths[0]
-        nfo_file = os.path.join(path, "tvshow.nfo")
-        return nfo_file 
-
-    def write_series_nfo(self, series_id):
-        nfo_file = self.get_series_nfo_filename(series_id)
-        dom = self.make_series_dom(series_id)
-        self.logger.info("Saving %s" % (nfo_file,))
-        nfo = open(nfo_file, "w")
-        nfo.write(dom.toString(4))
-        nfo.close()
-
     def write_series_posters(self, series_id):
         path = self.get_series_nfo_path(series_id)
         self.sqlTV.execute('SELECT banners.url, banners.path, \
@@ -1629,19 +1643,13 @@ class TVShowDB(object):
                 self.logger.info("Saving %s" % (filename,))
                 urllib.urlretrieve(banner[0], filename)
 
-    def get_episode_nfo_filename(self, episode_id):
-        self.sqlTV.execute("SELECT files.filename, files.filepath FROM \
-          filelinkepisode JOIN files ON files.id=filelinkepisode.idFile \
-          JOIN episodes ON filelinkepisode.idEpisode=episodes.id WHERE \
-          episodes.episodeid=(?)", (episode_id,))
-        try:
-            filename, filepath = self.sqlTV.fetchall()[0]
-            filename = os.path.splitext(filename)[0]
-            nfo_file = os.path.join(filepath, "%s.nfo" % filename)
-            return nfo_file
-        except IndexError:
-            self.logger.error("Error processing episode %s." % (episode_id,))
-            return None
+    def write_series_nfo(self, series_id):
+        nfo_file = self.get_series_nfo_filename(series_id)
+        dom = self.make_series_dom(series_id)
+        self.logger.info("Saving %s" % (nfo_file,))
+        nfo = open(nfo_file, "w")
+        nfo.write(dom.toString(4))
+        nfo.close()
 
     def write_episode_nfo(self, episode_id):
         dom = self.make_episode_dom(episode_id)
@@ -1690,14 +1698,9 @@ class TVShowDB(object):
             episode_id = episode[0]
             self.write_episode_thumb(episode_id)
 
-    def get_all_episode_ids(self, series_id):
-        episode_ids = []
-        self.sqlTV.execute('SELECT episodes.episodeid FROM episodelinkshow \
-          JOIN shows ON episodelinkshow.idShow=shows.id \
-          JOIN episodes ON episodelinkshow.idEpisode=episodes.id \
-          JOIN filelinkepisode ON episodes.id=filelinkepisode.idEpisode \
-          WHERE shows.seriesid=(?)', (series_id,))
-        episodes = self.sqlTV.fetchall()
-        for episode in episodes:
-            episode_ids.append(episode[0])
-        return episode_ids
+    def db_query(self, sql):
+        """Perform any query on the db.  Used for testing purposes only"""
+        self.sqlTV.execute(sql)
+        result = self.sqlTV.fetchall()
+        return result
+
