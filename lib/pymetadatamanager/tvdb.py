@@ -383,7 +383,7 @@ class TVDB(object):
                     series_id = match_list[i][0]
         if not series_id:
             self.logger.info("Cannot find series %s." % (series_name))
-            return 0
+            return (0, 0)
         episodes = self.get_series_episodes(series_id)
         for episode in episodes:
             episode_name_to_match = self.massage_episode_name(episode.episode_name)
@@ -392,7 +392,7 @@ class TVDB(object):
             if episode_name_to_match == episode_name_in:
                 season_num = episode.season_number
                 episode_num = episode.episode_number
+                return (season_num, episode_num)
             else:
-                season_num = 00
-                episode_num = 00
-        return (season_num, episode_num)
+                self.logger.info("No match found")
+        return (0, 0)
