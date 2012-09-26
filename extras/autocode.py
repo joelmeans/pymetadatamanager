@@ -9,11 +9,14 @@
 #  video to x264 in the requested container using HandBrakeCLI.  It is
 #  designed to work with MPEG2/AC3 recordings from an HDHomerun.
 #  For mkv output, it will also attach the cover art from MythTV and 
-#  write chapter markers at the commercial cuts.  For m4v, it creates
-#  an aac audio track as the first track and then copies over the
-#  original ac3 track.  The recommended method for using it is as
-#  a user job in MythTV.  Set up the job with the desired name and use
-#  the following as the command:
+#  write chapter markers at the commercial cuts (requires mkvmerge).
+#  For m4v, it creates an aac audio track as the first track and then
+#  copies over the original ac3 track.  It also copies a chapter mark
+#  file and the artwork to the output directory.  These can then be
+#  added to the m4v file using something like Subler on Mac OS X.
+#  The recommended method for using it is as a user job in MythTV.
+#  Set up the job with the desired name and use the following as the 
+#  command:
 #    <path>/autocode.py -s %STARTTIMEISOUTC% -c %CHANID% -f {mkv,m4v}
 #  Be sure to set the ip/port of the mythtv services api below as
 #  well as the desired output directory and temp directory.
