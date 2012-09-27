@@ -17,7 +17,7 @@
 #  The recommended method for using it is as a user job in MythTV.
 #  Set up the job with the desired name and use the following as the 
 #  command:
-#    <path>/autocode.py -s %STARTTIMEISOUTC% -c %CHANID% -f {mkv,m4v}
+#    <path>/autocode.py [-lnc] [-f m4v] %STARTTIMEISOUTC% %CHANID%
 #  Be sure to set the ip/port of the mythtv services api below as
 #  well as the desired output directory and temp directory.
 #  Note that you need to copy 45-autocode.py to /etc/rsyslog.d and setup
@@ -82,28 +82,44 @@ formatter = logging.Formatter('%(name)s: %(levelname)s %(message)s')
 syslog.setFormatter(formatter)
 logger.addHandler(syslog)
 
-#create a temporary directory for intermediate files
-tmpdir = tempfile.mkdtemp(prefix='autocode_', dir=tempdir)
-logger.info("Using temp directory '%s'", tmpdir)
-
 #parse up the inputs
 parser = argparse.ArgumentParser(description='Transcode a MythTV recording to a .mp4 file with x264 video and aac and ac3 audio tracks.')
-parser.add_argument('-c', '--chanid', \
-                    dest='chanid', \
-                    required = True, \
-                    help='the channel id of the recording')
-parser.add_argument('-s', '--starttimeiso', \
-                    dest='starttimeiso', \
-                    required = True, \
-                    help='the ISO-formatted start time of the recording')
-parser.add_argument('-f', '--format', \
-                    dest='fmt', \
-                    required = True, \
-                    help='the desired output container (mkv/m4v)')
+parser.add_argument("chanid", \
+                    help="the channel id of the recording")
+parser.add_argument("starttimeiso", \
+                    help="the ISO-formatted start time of the recording")
+parser.add_argument("-f", "--format", \
+                    action="store", \
+                    dest="fmt", \
+                    default="mkv", \
+                    help="the desired output container (mkv/m4v)")
+parser.add_argument("-l", "--lossless", \
+                    action="store_true", \
+                    dest="lossless", \
+                    default=False, \
+                    help="put the losslessly transcoded mpeg in mkv")
+parser.add_argument("-n", "--no-cuts", \
+                    action="store_true", \
+                    dest="nocuts", \
+                    default=False, \
+                    help="put the original mpeg in mkv")
+parser.add_argument("-c", "--comms", \
+                    action="store_true", \
+                    dest="comms", \
+                    default=False, \
+                    help="use commercial skip list instead of cutlist")
 args = parser.parse_args()
 
 starttimeiso = args.starttimeiso
 fmt = args.fmt
+lossless = args.lossless
+nocuts = args.nocuts
+comms = args.comms
+
+#create a temporary directory for intermediate files
+tmpdir = tempfile.mkdtemp(prefix='autocode_', dir=tempdir)
+logger.info("Using temp directory '%s'", tmpdir)
+
 if fmt not in fmts:
     logger.error("Invalid output format: %s",  fmt)
     sys.exit("Invalid output format specified.")
@@ -133,7 +149,7 @@ logger.debug('title = %s', title)
 logger.debug('season = %s', season)
 logger.debug('episode = %s', episode)
 logger.debug('subtitle = %s', subtitle)
-logger.debug('filename = %s' % (filename,))
+logger.debug('filename = %s', filename)
 
 #parse up filename from services api
 if filename is not None:
@@ -142,19 +158,14 @@ if filename is not None:
 
 #setup the mythtranscode command
 mythtranscode = os.path.join(mythdir, "mythtranscode")
-mythtranscode_opts = "--honorcutlist --mpeg2"
+if nocuts:
+    mythtranscode_opts = "--mpeg2"
+else:
+    mythtranscode_opts = "--honorcutlist --mpeg2"
 mythtranscode_opts_parsed = mythtranscode_opts.split()
 mythtranscode_command = [mythtranscode]
 for arg in mythtranscode_opts_parsed:
     mythtranscode_command.append(arg)
-
-#setup mythutil command (to get commercial cut locations)
-mythcommflag = os.path.join(mythdir, "mythutil")
-mythcommflag_opts = '-q --getcutlist --chanid {} --starttime {}'.format(chanid, starttime)
-mythcommflag_opts_parsed = mythcommflag_opts.split()
-mythcommflag_command = [mythcommflag]
-for arg in mythcommflag_opts_parsed:
-    mythcommflag_command.append(arg)
 
 #setup the handbrake command
 hb = os.path.join(hbdir, "HandBrakeCLI")
@@ -170,32 +181,72 @@ hb_command = [hb]
 for arg in hb_opts_parsed:
     hb_command.append(arg)
 
+#setup mythutil command (to get commercial cut locations)
+mythutil = os.path.join(mythdir, "mythutil")
+if comms:
+    mythutil_opts = '-q --getskiplist --chanid {} --starttime {}'.format(chanid, starttime)
+else:
+    mythutil_opts = '-q --getcutlist --chanid {} --starttime {}'.format(chanid, starttime)
+mythutil_opts_parsed = mythutil_opts.split()
+mythutil_command = [mythutil]
+for arg in mythutil_opts_parsed:
+    mythutil_command.append(arg)
+
 #get the list of cuts and parse it to make the chapter file
 if chanid in interlaced_chanids:
     fps = 30000./1001.
 else:
     fps = 60000./1001.
-chapters = [(0,0,0,0)]
-cuts = subprocess.Popen(mythcommflag_command, stderr=subprocess.STDOUT, \
+cuts = subprocess.Popen(mythutil_command, stderr=subprocess.STDOUT, \
                         stdout=subprocess.PIPE).communicate()
-cuts = cuts[0].split("Cutlist: ")[1].rstrip('\n').split('-')
-for section in cuts:
-    if not section.find(',') == -1:
-        start = section.split(',')[0]
-        end = section.split(',')[1]
-        frames = int(end) - int(start)
-        time = frames / fps
-        time = time + 0.001 * chapters[-1][3] + \
-                              chapters[-1][2] + \
-                        60. * chapters[-1][1] + \
-                  60. * 60. * chapters[-1][0]
-        milliseconds = int(math.floor((time - math.floor(time)) * 1000))
-        seconds = int(math.floor(time))
-        minutes = int(math.floor(seconds / 60.))
-        hours = int(math.floor(minutes / 60.))
-        seconds = seconds - minutes * 60
-        minutes = minutes - hours * 60
-        chapters.append((hours,minutes,seconds,milliseconds))
+if comms:
+    chapters = []
+    slices = cuts[0].split("Commercial Skip List: ")[1].rstrip('\n').split(',')
+    for slice in slices:
+        for frame in slice.split('-'):
+            time = int(frame) / fps
+            milliseconds = int(math.floor((time - math.floor(time)) * 1000))
+            seconds = int(math.floor(time))
+            minutes = int(math.floor(seconds / 60.))
+            hours = int(math.floor(minutes / 60.))
+            seconds = seconds - minutes * 60
+            minutes = minutes - hours * 60
+            chapters.append((hours,minutes,seconds,milliseconds))
+else:
+    if nocuts:
+        chapters = []
+        slices = cuts[0].split("Cutlist: ")[1].rstrip('\n').split(',')
+        for slice in slices:
+            for frame in slice.split('-'):
+                time = int(frame) / fps
+                milliseconds = int(math.floor((time - math.floor(time)) * 1000))
+                seconds = int(math.floor(time))
+                minutes = int(math.floor(seconds / 60.))
+                hours = int(math.floor(minutes / 60.))
+                seconds = seconds - minutes * 60
+                minutes = minutes - hours * 60
+                chapters.append((hours,minutes,seconds,milliseconds))
+         chapters.pop()
+    else:
+        chapters = [(0,0,0,0)]
+        cuts = cuts[0].split("Cutlist: ")[1].rstrip('\n').split('-')
+        for section in cuts:
+            if not section.find(',') == -1:
+                start = section.split(',')[0]
+                end = section.split(',')[1]
+                frames = int(end) - int(start)
+                time = frames / fps
+                time = time + 0.001 * chapters[-1][3] + \
+                                      chapters[-1][2] + \
+                                60. * chapters[-1][1] + \
+                          60. * 60. * chapters[-1][0]
+                milliseconds = int(math.floor((time - math.floor(time)) * 1000))
+                seconds = int(math.floor(time))
+                minutes = int(math.floor(seconds / 60.))
+                hours = int(math.floor(minutes / 60.))
+                seconds = seconds - minutes * 60
+                minutes = minutes - hours * 60
+                chapters.append((hours,minutes,seconds,milliseconds))
 
 formatted_chapters = []
 for chapter in chapters[0:-1]:
@@ -261,15 +312,16 @@ chap_file.close()
 #do the lossless transcode to remove cutlist
 logger.info("Transcoding %s.mpg.", output_name)
 subprocess.Popen(mythtranscode_command, stderr=subprocess.STDOUT,\
-                 stdout=subprocess.PIPE).communicate()
+                     stdout=subprocess.PIPE).communicate()
 
+if not lossless and not nocuts:
 #do the transcoding with handbrake
-if fmt == 'mkv':
-    logger.info("Converting '%s.mpg' to '%s.mkv'.", output_name, output_name)
-elif fmt == 'm4v':
-    logger.info("Converting '%s.mpg' to '%s.m4v'.", output_name, output_name)
-subprocess.Popen(hb_command, stderr=subprocess.STDOUT,\
-                         stdout=subprocess.PIPE).communicate()
+    if fmt == 'mkv':
+        logger.info("Converting '%s.mpg' to '%s.mkv'.", output_name, output_name)
+    elif fmt == 'm4v':
+        logger.info("Converting '%s.mpg' to '%s.m4v'.", output_name, output_name)
+    subprocess.Popen(hb_command, stderr=subprocess.STDOUT,\
+                     stdout=subprocess.PIPE).communicate()
 
 #create or copy the final output file
 outfile = os.path.join(output_dir, output_name)
@@ -290,9 +342,10 @@ if fmt == 'mkv':
     mkvmerge_command.append(chap_filename)
     mkvmerge_command.append('--attach-file')
     mkvmerge_command.append(cover_filename)
-    mkvmerge_command.append('{}.mkv'.format(tmpfile))
-
-    print mkvmerge_command
+    if lossless or nocuts:
+        mkvmerge_command.append('{}.mpg'.format(tmpfile))
+    else:
+        mkvmerge_command.append('{}.mkv'.format(tmpfile))
 
     logger.info("Writing output to %s.mkv", outfile)
     subprocess.Popen(mkvmerge_command, \
@@ -305,6 +358,6 @@ if fmt == 'm4v':
     shutil.copyfile('{}.txt'.format(tmpfile), '{}.txt'.format(outfile))
 
 #logger.info("Cleaning up the temporary files.")
-shutil.rmtree(tmpdir)
+#shutil.rmtree(tmpdir)
 
 logger.info("Finished")
